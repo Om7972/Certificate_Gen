@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - CertificateGen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="js/auth.js"></script>
+    <script>
+        const currentUser = checkAuth();
+        if (!currentUser) window.location.href = 'login.html';
+    </script>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3>Cert<span>Gen</span></h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="generator.html"><i class="fas fa-certificate"></i> Generator</a></li>
+            <li><a href="history.html" class="active"><i class="fas fa-history"></i> History</a></li>
+            <li><a href="naming-engine.html"><i class="fas fa-robot"></i> Smart Naming</a></li>
+            <li><a href="generator.html#watermark"><i class="fas fa-stamp"></i> Watermark Control</a></li>
+            <li><a href="analytics.html"><i class="fas fa-chart-line"></i> Usage Analytics</a></li>
+            <li><a href="notifications.html"><i class="fas fa-bell"></i> Smart Notifications</a></li>
+            <li><a href="history.html" class="active"><i class="fas fa-share-alt"></i> Sharing Hub</a></li>
+            <li><a href="sandbox.html"><i class="fas fa-vials"></i> Preview Sandbox</a></li>
+            <li class="admin-only" style="display:none;"><a href="audit-logs.html"><i class="fas fa-shield-alt"></i>
+                    Audit Logs</a></li>
+            <li class="admin-only" style="display:none;"><a href="expiry-rules.html"><i
+                        class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
+            <li class="admin-only" style="display:none;"><a href="fraud-detection.html"><i
+                        class="fas fa-user-shield"></i> Fraud Detection</a></li>
+            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-navbar">
+            <h4 class="mb-0">Certificate History</h4>
+            <div class="user-profile">
+                <span id="userNameDisplay">User</span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5>All Generated Certificates</h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="loadHistory()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Recipient Name</th>
+                            <th>Email</th>
+                            <th>Course</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- Filled by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        document.getElementById('userNameDisplay').textContent = user?.name || 'User';
+
+        async function loadHistory() {
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">Loading...</td></tr>';
+
+            try {
+                const token = user?.token;
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const res = await fetch('http://localhost:5000/api/certificates', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await res.json();
+
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        alert('Session expired. Please login again.');
+                        logout();
+                        return;
+                    }
+                    throw new Error(result.message || 'Failed to fetch');
+                }
+
+                // Backend returns { success: true, data: [...] }
+                const certificates = result.data || [];
+
+                tbody.innerHTML = '';
+                if (certificates.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No certificates found.</td></tr>';
+                    return;
+                }
+
+                certificates.forEach(cert => {
+                    const date = new Date(cert.createdAt).toLocaleDateString();
+                    const row = `
+                        <tr>
+                            <td><small class="text-muted">${cert._id.substring(0, 8)}...</small></td>
+                            <td>${cert.recipientName}</td>
+                            <td>${cert.recipientEmail}</td>
+                            <td>${cert.courseName}</td>
+                            <td>${date}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" title="Download"><i class="fas fa-download"></i></button>
+                                <button class="btn btn-sm btn-info text-white" title="Email"><i class="fas fa-envelope"></i></button>
+                                <a href="share.html?id=${cert.certificateId}" class="btn btn-sm btn-success" title="Share"><i class="fas fa-share-alt"></i></a>
+                                <a href="timeline.html?id=${cert._id}" class="btn btn-sm btn-secondary" title="View Timeline"><i class="fas fa-stream"></i></a>
+                                <a href="versions.html?id=${cert._id}" class="btn btn-sm btn-warning" title="Version History"><i class="fas fa-history"></i></a>
+                                <a href="edit-certificate.html?id=${cert._id}" class="btn btn-sm btn-dark" title="Edit Certificate"><i class="fas fa-edit"></i></a>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${e.message}</td></tr>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadHistory);
+    </script>
+</body>
+
+</html>

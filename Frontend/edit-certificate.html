@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Certificate - GenCert</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="darkmode.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3>Gen<span>Cert</span></h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+            <li><a href="generator.html"><i class="fas fa-magic"></i> Generator</a></li>
+            <li><a href="history.html" class="active"><i class="fas fa-history"></i> History</a></li>
+            <li><a href="profile.html"><i class="fas fa-user-cog"></i> Profile</a></li>
+            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="top-navbar">
+            <h4 class="mb-0">Edit Certificate</h4>
+            <div class="user-profile">
+                <span id="userNameDisplay">User</span>
+                <div class="user-avatar" id="userInitial">U</div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+                        <form id="editForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Recipient Name</label>
+                                    <input type="text" class="form-control" id="recipientName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Recipient Email</label>
+                                    <input type="email" class="form-control" id="recipientEmail" required>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Course Name</label>
+                                    <input type="text" class="form-control" id="courseName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="startDate" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="endDate" required>
+                                </div>
+                                <div class="col-12 mb-4">
+                                    <label class="form-label">Reason for change (Summary)</label>
+                                    <input type="text" class="form-control" id="changeSummary"
+                                        placeholder="e.g., Fixed typo in name">
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary px-4 py-2">Update & Create Version</button>
+                                <a href="history.html" class="btn btn-outline-secondary px-4 py-2">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script>
+        const user = checkAuth();
+        const urlParams = new URLSearchParams(window.location.search);
+        const certId = urlParams.get('id');
+
+        async function fetchDetails() {
+            if (!certId) return window.location.href = 'history.html';
+
+            try {
+                const res = await fetch(`http://localhost:5000/api/certificates/${certId}`, {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+                const data = await res.json();
+
+                document.getElementById('recipientName').value = data.recipientName;
+                document.getElementById('recipientEmail').value = data.recipientEmail;
+                document.getElementById('courseName').value = data.courseName;
+                document.getElementById('startDate').value = data.startDate.split('T')[0];
+                document.getElementById('endDate').value = data.endDate.split('T')[0];
+
+                document.getElementById('userNameDisplay').textContent = user?.name || 'User';
+                document.getElementById('userInitial').textContent = (user?.name || 'U').charAt(0).toUpperCase();
+            } catch (err) { console.error(err); }
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const body = {
+                recipientName: document.getElementById('recipientName').value,
+                recipientEmail: document.getElementById('recipientEmail').value,
+                courseName: document.getElementById('courseName').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                changeSummary: document.getElementById('changeSummary').value
+            };
+
+            try {
+                const res = await fetch(`http://localhost:5000/api/certificates/${certId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user.token}`
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (res.ok) {
+                    alert('New version created successfully!');
+                    window.location.href = 'history.html';
+                } else {
+                    const data = await res.json();
+                    alert('Error: ' + data.message);
+                }
+            } catch (err) { console.error(err); }
+        });
+
+        fetchDetails();
+    </script>
+</body>
+
+</html>

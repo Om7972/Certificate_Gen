@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings - CertificateGen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="darkmode.css">
+    <script src="js/auth.js"></script>
+    <script defer src="js/darkmode.js"></script>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3>Cert<span>Gen</span></h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="generator.html"><i class="fas fa-certificate"></i> Generator</a></li>
+            <li><a href="history.html"><i class="fas fa-history"></i> History</a></li>
+            <li><a href="index.html"><i class="fas fa-globe"></i> Landing Page</a></li>
+            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-navbar">
+            <h4 class="mb-0">Settings</h4>
+            <div class="d-flex align-items-center">
+                <div class="user-profile">
+                    <span id="userNameDisplay">Welcome</span>
+                    <div class="user-avatar" id="userInitial">U</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid py-4">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow-sm border-0 rounded-4">
+                        <div class="card-body p-4 p-md-5">
+                            <h2 class="fw-bold mb-4">Profile Settings</h2>
+                            <form id="profileForm">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Full Name</label>
+                                        <input type="text" id="profName" class="form-control" required
+                                            placeholder="Full Name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Email (Read-only)</label>
+                                        <input type="email" id="profEmail" class="form-control" readonly disabled>
+                                    </div>
+                                    <div class="col-12 mt-4">
+                                        <h5 class="fw-bold">Security</h5>
+                                        <hr>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">New Password</label>
+                                        <input type="password" id="profPass" class="form-control"
+                                            placeholder="Leave empty to keep current">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Confirm Password</label>
+                                        <input type="password" id="profPassConfirm" class="form-control"
+                                            placeholder="Confirm new password">
+                                    </div>
+                                    <div class="col-12 mt-5">
+                                        <button type="submit"
+                                            class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">
+                                            <i class="fas fa-save me-2"></i> Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const user = checkAuth();
+        if (!user) window.location.href = 'login.html';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate fields
+            document.getElementById('profName').value = user.name || '';
+            document.getElementById('profEmail').value = user.email || '';
+            document.getElementById('userNameDisplay').textContent = user.name || 'User';
+            document.getElementById('userInitial').textContent = (user.name || 'U').charAt(0).toUpperCase();
+
+            document.getElementById('profileForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const name = document.getElementById('profName').value;
+                const pass = document.getElementById('profPass').value;
+                const confirmPass = document.getElementById('profPassConfirm').value;
+
+                if (pass && pass !== confirmPass) {
+                    return alert('Passwords do not match');
+                }
+
+                try {
+                    const res = await fetch('http://localhost:5000/api/auth/profile', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${user.token}`
+                        },
+                        body: JSON.stringify({ name, password: pass })
+                    });
+
+                    // Check if response is JSON
+                    const contentType = res.headers.get("content-type");
+                    let data;
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        data = await res.json();
+                    }
+
+                    if (res.ok) {
+                        alert('Profile updated successfully!');
+                        // Update local storage
+                        const newUser = { ...user, name: data.name, email: data.email };
+                        localStorage.setItem('user', JSON.stringify(newUser));
+                        location.reload();
+                    } else {
+                        if (res.status === 404) {
+                            alert('Update failed: Server endpoint not found. Please ensure the backend is running and updated (try restarting it).');
+                        } else {
+                            alert(data?.message || 'Update failed');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Profile update error:', error);
+                    alert('An error occurred during update. Check console for details.');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

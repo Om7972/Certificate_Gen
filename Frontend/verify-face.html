@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Verification - CertificateGen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .verification-container {
+            max-width: 800px;
+            margin: 50px auto;
+        }
+
+        #video {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        #storedImage {
+            max-width: 200px;
+            display: none;
+        }
+
+        .status-badge {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container verification-container">
+        <div class="card shadow-lg">
+            <div class="card-header bg-dark text-white text-center">
+                <h3><i class="fas fa-user-check"></i> Biometric Verification</h3>
+            </div>
+            <div class="card-body text-center">
+
+                <!-- Step 1: Enter ID -->
+                <div class="mb-4">
+                    <label>Enter Certificate ID</label>
+                    <div class="input-group justify-content-center">
+                        <input type="text" id="certIdInput" class="form-control" style="max-width: 300px;"
+                            placeholder="CERT-...">
+                        <button class="btn btn-primary" onclick="loadCertificate()">Load Data</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Camera & Comparison -->
+                <div id="verificationSection" style="display: none;">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5>stored Photo</h5>
+                            <img id="storedImage" alt="Recipient" class="img-thumbnail">
+                            <div id="loadingModels" class="text-warning">Loading AI Models...</div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Live Camera</h5>
+                            <video id="video" autoplay muted></video>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <button id="verifyBtn" class="btn btn-success btn-lg" onclick="verifyFace()" disabled>
+                        <i class="fas fa-camera"></i> Scan & Verify
+                    </button>
+
+                    <div id="result" class="mt-4"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden canvas for capture -->
+    <canvas id="canvas"></canvas>
+
+    <script>
+        let storedDescriptor = null;
+        let isModelLoaded = false;
+
+        // Load Models
+        Promise.all([
+            faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
+            faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+            faceapi.nets.faceRecognitionNet.loadFromUri('/models')
+        ]).then(() => {
+            console.log('Models Loaded');
+            document.getElementById('loadingModels').textContent = 'AI Models Ready';
+            document.getElementById('loadingModels').className = 'text-success';
+            isModelLoaded = true;
+            checkReady();
+        }).catch(err => {
+            console.error(err);
+            document.getElementById('loadingModels').textContent = 'Error Loading Models. Ensure /models folder exists inside Frontend.';
+            document.getElementById('loadingModels').className = 'text-danger';
+        });
+
+        async function loadCertificate() {
+            const certId = document.getElementById('certIdInput').value;
+            if (!certId) return alert('Enter ID');
+
+            try {
+                // Use the public verify endpoint which returns certificate details
+                const res = await fetch(`http://localhost:5000/api/certificates/verify/${certId}`);
+                const data = await res.json();
+
+                if (!data.valid) {
+                    alert('Certificate not found');
+                    return;
+                }
+
+                if (!data.certificate.recipientPhoto) {
+                    alert('This certificate does not have a registered photo for biometric verification.');
+                    return;
+                }
+
+                const photoUrl = `http://localhost:5000/${data.certificate.recipientPhoto}`;
+                const img = document.getElementById('storedImage');
+                img.crossOrigin = 'anonymous'; // Important for canvas
+                img.src = photoUrl;
+                img.style.display = 'block';
+
+                document.getElementById('verificationSection').style.display = 'block';
+                startVideo();
+
+                // Pre-calculate descriptor for stored image
+                if (isModelLoaded) computeStoredDescriptor(img);
+                else img.onload = () => { if (isModelLoaded) computeStoredDescriptor(img); };
+
+            } catch (e) {
+                console.error(e);
+                alert('Error fetching data');
+            }
+        }
+
+        function startVideo() {
+            navigator.mediaDevices.getUserMedia({ video: {} })
+                .then(stream => {
+                    document.getElementById('video').srcObject = stream;
+                })
+                .catch(err => console.error("Camera Error:", err));
+        }
+
+        async function computeStoredDescriptor(img) {
+            try {
+                const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+                if (detections) {
+                    storedDescriptor = detections.descriptor;
+                    checkReady();
+                } else {
+                    alert('No face detected in stored photo! Verification impossible.');
+                }
+            } catch (e) {
+                console.error("Stored Image Processing Error", e);
+            }
+        }
+
+        function checkReady() {
+            if (isModelLoaded && storedDescriptor) {
+                document.getElementById('verifyBtn').disabled = false;
+            }
+        }
+
+        async function verifyFace() {
+            const video = document.getElementById('video');
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<span class="text-info">Scanning...</span>';
+
+            try {
+                const detection = await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor();
+
+                if (!detection) {
+                    resultDiv.innerHTML = '<span class="text-warning">No face detected in camera! Adjust position.</span>';
+                    return;
+                }
+
+                const distance = faceapi.euclideanDistance(storedDescriptor, detection.descriptor);
+                // Threshold: usually 0.6. Lower is stricter.
+                const threshold = 0.5;
+                const match = distance < threshold;
+
+                if (match) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <h1><i class="fas fa-check-circle"></i> VERIFIED</h1>
+                            <p>Identity Confirmed (Match Score: ${(1 - distance).toFixed(2)})</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <h1><i class="fas fa-times-circle"></i> FAILED</h1>
+                            <p>Face Does Not Match (Score: ${(1 - distance).toFixed(2)})</p>
+                        </div>
+                    `;
+                }
+
+            } catch (e) {
+                console.error(e);
+                resultDiv.innerHTML = 'Error during verification.';
+            }
+        }
+    </script>
+</body>
+
+</html>

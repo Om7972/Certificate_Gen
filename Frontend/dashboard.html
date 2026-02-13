@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CertificateGen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="darkmode.css">
+    <script src="js/auth.js"></script>
+    <script defer src="js/darkmode.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
+    <script>
+        // Protect Route
+        const currentUser = checkAuth();
+        if (!currentUser) window.location.href = 'login.html';
+    </script>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3>Cert<span>Gen</span></h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="generator.html"><i class="fas fa-certificate"></i> Generator</a></li>
+            <li><a href="history.html"><i class="fas fa-history"></i> History</a></li>
+            <li><a href="naming-engine.html"><i class="fas fa-robot"></i> Smart Naming</a></li>
+            <li><a href="generator.html#watermark"><i class="fas fa-stamp"></i> Watermark Control</a></li>
+            <li><a href="analytics.html"><i class="fas fa-chart-line"></i> Usage Analytics</a></li>
+            <li><a href="notifications.html"><i class="fas fa-bell"></i> Smart Notifications</a></li>
+            <li><a href="history.html"><i class="fas fa-share-alt"></i> Sharing Hub</a></li>
+            <li><a href="sandbox.html"><i class="fas fa-vials"></i> Preview Sandbox</a></li>
+            <li class="admin-only" style="display:none;"><a href="audit-logs.html"><i class="fas fa-shield-alt"></i>
+                    Audit Logs</a></li>
+            <li class="admin-only" style="display:none;"><a href="expiry-rules.html"><i
+                        class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
+            <li class="admin-only" style="display:none;"><a href="fraud-detection.html"><i
+                        class="fas fa-user-shield"></i> Fraud Detection</a></li>
+            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-navbar">
+            <h4 class="mb-0">Dashboard Overview</h4>
+            <div class="d-flex align-items-center">
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch" for="checkbox">
+                        <input type="checkbox" id="checkbox" />
+                        <div class="slider round"></div>
+                    </label>
+                </div>
+                <div class="user-profile">
+                    <span id="userNameDisplay">Welcome, User</span>
+                    <div class="user-avatar" id="userInitial">U</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div>
+                        <h6 class="text-muted">Total Certificates</h6>
+                        <h3 id="totalCerts">0</h3>
+                    </div>
+                    <div class="stats-icon icon-blue">
+                        <i class="fas fa-award"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div>
+                        <h6 class="text-muted">This Month</h6>
+                        <h3 id="monthCerts">0</h3>
+                    </div>
+                    <div class="stats-icon icon-green">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div>
+                        <h6 class="text-muted">Emails Sent</h6>
+                        <h3 id="emailsSent">0</h3>
+                    </div>
+                    <div class="stats-icon icon-purple">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card h-100">
+                    <div class="card-header bg-transparent border-0">
+                        <h5 class="mb-0">Certificate Issuance Trends</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="certChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header bg-transparent border-0">
+                        <h5 class="mb-0">Quick Stats</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="topEventsChart" style="display:none; height: 200px;"></canvas>
+                        <ul class="list-group list-group-flush" id="quickStatsList">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Total Certificates
+                                <span class="badge bg-primary rounded-pill" id="quickTotal">0</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                New This Month
+                                <span class="badge bg-primary rounded-pill" id="quickMonth">0</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="table-container">
+            <h5 class="mb-4">Recent Certificates</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Course</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentTableBody">
+                        <tr>
+                            <td colspan="4" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Logout
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) return; // Exit if not logged in (checkAuth handles redirect)
+
+            document.getElementById('userNameDisplay').textContent = user.name || 'User';
+            document.getElementById('userInitial').textContent = (user.name || 'U').charAt(0).toUpperCase();
+
+            // Fetch Stats based on Role
+            try {
+                const token = user.token;
+                let data;
+
+                if (user.role === 'admin') {
+                    // Admin: Fetch System Stats
+                    const res = await fetch('http://localhost:5000/api/admin/stats', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (res.status === 401 || res.status === 403) {
+                        alert('Session expired. Please login again.');
+                        logout();
+                        return;
+                    }
+
+                    if (res.ok) {
+                        const adminData = await res.json();
+                        // Update Admin specific UI
+                        document.querySelector('#monthCerts').parentElement.querySelector('h6').textContent = 'Active Users';
+                        document.querySelector('#monthCerts').innerText = adminData.counts.activeUsers;
+
+                        document.querySelector('#emailsSent').parentElement.querySelector('h6').textContent = 'Verifications';
+                        document.querySelector('#emailsSent').innerText = adminData.counts.verifications;
+
+                        // Show Top Events Chart
+                        document.getElementById('quickStatsList').style.display = 'none';
+                        const teCanvas = document.getElementById('topEventsChart');
+                        teCanvas.style.display = 'block';
+                        renderTopEventsChart(adminData.charts.topEvents);
+
+                        // Transform for UI
+                        data = {
+                            count: adminData.counts.certificates,
+                            data: adminData.recentLogs,
+                            chartData: adminData.charts.certificatesByMonth
+                        };
+
+                        populateLogsTable(data.data);
+
+                        // Logs already populated above
+                        // const logsRes = await fetch('http://localhost:5000/api/admin/logs', {
+                        //     headers: { 'Authorization': `Bearer ${token}` }
+                        // });
+                    }
+                } else {
+                    // User: Fetch Own Stats
+                    const res = await fetch('http://localhost:5000/api/certificates', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (res.status === 401 || res.status === 403) {
+                        alert('Session expired.');
+                        logout();
+                        return;
+                    }
+
+                    if (res.ok) {
+                        const result = await res.json();
+                        // result structure: { success: true, data: [...] }
+                        const certificates = result.data || [];
+                        data = {
+                            count: result.count || certificates.length,
+                            data: certificates,
+                            chartData: result.pagination ? [{ _id: 'Total', count: result.pagination.total }] : []
+                        };
+                        populateCertTable(data.data);
+                    }
+                }
+
+                if (data) {
+                    // Update Stats Cards
+                    document.getElementById('totalCerts').textContent = data.count || 0;
+                    document.getElementById('quickTotal').textContent = data.count || 0;
+                    document.getElementById('monthCerts').textContent = data.count; // Simplified
+
+                    // Render Chart
+                    renderChart(data.chartData);
+                }
+
+            } catch (e) {
+                console.error("Dashboard Error:", e);
+            }
+        });
+
+        function populateCertTable(certs) {
+            const tableBody = document.getElementById('recentTableBody');
+            tableBody.innerHTML = '';
+
+            if (!certs || certs.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" class="text-center">No certificates found.</td></tr>';
+                return;
+            }
+
+            certs.slice(0, 5).forEach(cert => {
+                const date = new Date(cert.createdAt).toLocaleDateString();
+                const row = `
+                    <tr>
+                        <td>${cert.recipientName}</td>
+                        <td>${cert.courseName}</td>
+                        <td>${date}</td>
+                        <td><span class="badge bg-success">Generated</span></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function populateLogsTable(logs) {
+            const tableBody = document.getElementById('recentTableBody');
+            // Update Headers for Admin view
+            const thead = document.querySelector('.table thead tr');
+            thead.innerHTML = '<th>User</th><th>Action</th><th>Details</th><th>Date</th>';
+
+            tableBody.innerHTML = '';
+
+            if (!logs || logs.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" class="text-center">No logs found.</td></tr>';
+                return;
+            }
+
+            logs.slice(0, 8).forEach(log => {
+                const date = new Date(log.createdAt).toLocaleString();
+                const userEmail = log.user ? log.user.email : 'Unknown';
+                const row = `
+                    <tr>
+                        <td>${userEmail}</td>
+                        <td><span class="badge bg-info text-dark">${log.action}</span></td>
+                        <td><small>${log.details}</small></td>
+                        <td>${date}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function renderChart(chartData) {
+            const ctx = document.getElementById('certChart').getContext('2d');
+
+            // Default data if empty
+            let labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+            let data = [0, 0, 0, 0, 0, 0];
+
+            if (chartData && chartData.length > 0) {
+                labels = chartData.map(d => `Month ${d._id}`);
+                data = chartData.map(d => d.count);
+            }
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Certificates Issued',
+                        data: data,
+                        borderColor: '#2563eb',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                    }
+                }
+            });
+        }
+
+        function renderTopEventsChart(events) {
+            const ctx = document.getElementById('topEventsChart').getContext('2d');
+
+            if (!events || events.length === 0) return;
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: events.map(e => e._id),
+                    datasets: [{
+                        data: events.map(e => e.count),
+                        backgroundColor: [
+                            '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' },
+                        title: { display: true, text: 'Top 5 Events' }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Designer - CertificateGen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Fabric.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <style>
+        body {
+            background-color: #f1f5f9;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .designer-bar {
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+        }
+
+        .designer-workspace {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar-tools {
+            width: 250px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .canvas-container-wrapper {
+            flex: 1;
+            background: #cbd5e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            overflow: auto;
+        }
+
+        .canvas-shadow {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .properties-panel {
+            width: 250px;
+            background: white;
+            border-left: 1px solid #e2e8f0;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .tool-btn {
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Bar -->
+    <div class="designer-bar">
+        <div class="d-flex align-items-center">
+            <a href="dashboard.html" class="btn btn-outline-secondary me-3"><i class="fas fa-arrow-left"></i>
+                Dashboard</a>
+            <h4 class="mb-0">Certificate Designer</h4>
+        </div>
+        <div>
+            <input type="text" id="templateName" class="form-control d-inline-block w-auto me-2"
+                placeholder="Template Name">
+            <button class="btn btn-primary" onclick="saveTemplate()"><i class="fas fa-save"></i> Save Template</button>
+            <button class="btn btn-warning" onclick="loadTemplates()"><i class="fas fa-folder-open"></i> Load</button>
+        </div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="designer-workspace">
+
+        <!-- Tools -->
+        <div class="sidebar-tools">
+            <h6 class="text-uppercase text-muted small mb-3">Add Elements</h6>
+
+            <button class="btn btn-outline-dark tool-btn" onclick="addText('Title')"><i class="fas fa-heading"></i>
+                Heading</button>
+            <button class="btn btn-outline-dark tool-btn" onclick="addText('Subtitle')"><i class="fas fa-font"></i>
+                Subtitle</button>
+            <button class="btn btn-outline-dark tool-btn" onclick="addText('Body Text')"><i
+                    class="fas fa-align-left"></i> Body Text</button>
+
+            <hr>
+            <h6 class="text-uppercase text-muted small mb-3">Placeholders</h6>
+            <button class="btn btn-outline-info tool-btn" onclick="addText('{{Name}}')">Recipient Name</button>
+            <button class="btn btn-outline-info tool-btn" onclick="addText('{{Course}}')">Course Name</button>
+            <button class="btn btn-outline-info tool-btn" onclick="addText('{{Date}}')">Date</button>
+            <button class="btn btn-outline-info tool-btn" onclick="addText('{{ID}}')">Certificate ID</button>
+
+            <hr>
+            <h6 class="text-uppercase text-muted small mb-3">Images</h6>
+            <input type="file" id="imgUpload" accept="image/*" class="form-control mb-2" onchange="addImage(this)">
+            <small class="text-muted">Upload Logo/Signature</small>
+        </div>
+
+        <!-- Canvas -->
+        <div class="canvas-container-wrapper">
+            <div class="canvas-shadow">
+                <canvas id="c" width="800" height="600"></canvas>
+            </div>
+        </div>
+
+        <!-- Properties -->
+        <div class="properties-panel" id="propsPanel" style="display:none;">
+            <h6 class="text-uppercase text-muted small mb-3">Properties</h6>
+
+            <div class="mb-3">
+                <label>Font Size</label>
+                <input type="number" id="fontSize" class="form-control"
+                    onchange="updateProp('fontSize', parseInt(this.value))">
+            </div>
+
+            <div class="mb-3">
+                <label>Color</label>
+                <input type="color" id="fill" class="form-control form-control-color w-100"
+                    onchange="updateProp('fill', this.value)">
+            </div>
+
+            <div class="mb-3">
+                <label>Font Family</label>
+                <select id="fontFamily" class="form-select" onchange="updateProp('fontFamily', this.value)">
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Courier New">Courier New</option>
+                    <option value="Georgia">Georgia</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Opacity</label>
+                <input type="range" id="opacity" class="form-range" min="0" max="1" step="0.1"
+                    onchange="updateProp('opacity', parseFloat(this.value))">
+            </div>
+
+            <hr>
+            <button class="btn btn-danger w-100" onclick="deleteObject()"><i class="fas fa-trash"></i> Delete
+                Selected</button>
+            <button class="btn btn-secondary w-100 mt-2" onclick="sendToBack()"><i class="fas fa-layer-group"></i> Send
+                to Back</button>
+        </div>
+    </div>
+
+    <!-- Load Modal -->
+    <div class="modal fade" id="loadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Load Template</h5><button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group" id="templateList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Init Canvas (Landscape A4ish ratio)
+        const canvas = new fabric.Canvas('c', {
+            backgroundColor: '#fff'
+        });
+
+        // Resize canvas visuals to window? No, keep fixed size for A4 template.
+        // A4 px at 96dpi is roughly 1123x794. Let's set that.
+        canvas.setWidth(1123);
+        canvas.setHeight(794);
+
+        // Zoom handling
+        // For simple MVP we stick to scrolling wrapper.
+
+        // Event Listeners
+        canvas.on('selection:created', onSelection);
+        canvas.on('selection:updated', onSelection);
+        canvas.on('selection:cleared', () => {
+            document.getElementById('propsPanel').style.display = 'none';
+        });
+
+        function onSelection(e) {
+            const obj = e.selected[0];
+            if (!obj) return;
+
+            document.getElementById('propsPanel').style.display = 'block';
+
+            // Populate inputs
+            if (obj.fontSize) document.getElementById('fontSize').value = obj.fontSize;
+            if (obj.fill) document.getElementById('fill').value = obj.fill; // Might be gradient/pattern
+            if (obj.fontFamily) document.getElementById('fontFamily').value = obj.fontFamily;
+            if (obj.opacity) document.getElementById('opacity').value = obj.opacity;
+        }
+
+        // Tools
+        function addText(text) {
+            const t = new fabric.IText(text, {
+                left: 100,
+                top: 100,
+                fontFamily: 'Times New Roman',
+                fontSize: 30,
+                fill: '#000'
+            });
+            canvas.add(t);
+            canvas.setActiveObject(t);
+        }
+
+        function addImage(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (f) {
+                fabric.Image.fromURL(f.target.result, function (img) {
+                    img.scaleToWidth(200);
+                    canvas.add(img);
+                    canvas.centerObject(img);
+                    canvas.setActiveObject(img);
+                });
+            };
+            reader.readAsDataURL(file);
+            input.value = '';
+        }
+
+        function updateProp(prop, value) {
+            const obj = canvas.getActiveObject();
+            if (obj) {
+                obj.set(prop, value);
+                canvas.renderAll();
+            }
+        }
+
+        function deleteObject() {
+            const obj = canvas.getActiveObject();
+            if (obj) canvas.remove(obj);
+        }
+
+        function sendToBack() {
+            const obj = canvas.getActiveObject();
+            if (obj) canvas.sendToBack(obj);
+        }
+
+        // API Interactions
+        async function saveTemplate() {
+            const name = document.getElementById('templateName').value;
+            if (!name) return alert('Enter Template Name');
+
+            const json = JSON.stringify(canvas.toJSON());
+            const preview = canvas.toDataURL({ format: 'png', multiplier: 0.1 }); // Thumbnail
+
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const res = await fetch('http://localhost:5000/api/templates', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user.token}`
+                    },
+                    body: JSON.stringify({
+                        name,
+                        canvasState: JSON.parse(json),
+                        previewImage: preview
+                    })
+                });
+
+                if (res.ok) alert('Template Saved!');
+                else {
+                    if (res.status === 401 || res.status === 403) {
+                        alert('Session expired. Please login again.');
+                        logout();
+                        return;
+                    }
+                    alert('Error Saving Template');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Network Error');
+            }
+        }
+
+        async function loadTemplates() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const res = await fetch('http://localhost:5000/api/templates', {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+
+                if (res.status === 401 || res.status === 403) {
+                    alert('Session expired.');
+                    logout();
+                    return;
+                }
+
+                const templates = await res.json();
+
+                const list = document.getElementById('templateList');
+                list.innerHTML = '';
+                templates.forEach(t => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.innerHTML = `
+                        <span>${t.name}</span>
+                        <button class="btn btn-sm btn-primary" onclick="loadCanvas('${t._id}')">Load</button>
+                    `;
+                    list.appendChild(li);
+                });
+
+                new bootstrap.Modal(document.getElementById('loadModal')).show();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function loadCanvas(id) {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const res = await fetch(`http://localhost:5000/api/templates/${id}`, {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+                const data = await res.json();
+
+                canvas.loadFromJSON(data.canvasState, () => {
+                    canvas.renderAll();
+                    document.getElementById('templateName').value = data.name;
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('loadModal'));
+                    modal.hide();
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    </script>
+</body>
+
+</html>

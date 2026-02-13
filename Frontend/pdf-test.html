@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Quality PDF Test</title>
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Custom Module -->
+    <script src="js/pdfGenerator.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+
+        /* 
+           A4 Ratio Container 
+           A4 is 297mm x 210mm (Aspect Ratio: 1.414)
+           Web Width: 800px -> Height: 565px
+        */
+        .certificate-container {
+            width: 800px;
+            /* Fixed width for consistency */
+            height: 565px;
+            background: #fff;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            box-sizing: border-box;
+            /* Flex center content */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border: 20px solid #1a237e;
+            /* Thick border */
+        }
+
+        /* Sample Styles */
+        h1 {
+            color: #1a237e;
+            font-size: 3rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+
+        .recipient {
+            font-size: 2.5rem;
+            color: #d81b60;
+            margin: 20px 0;
+            font-family: 'Brush Script MT', cursive;
+            border-bottom: 2px solid #333;
+            padding: 0 40px;
+        }
+
+        .text {
+            font-size: 1.2rem;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .logo {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+
+        /* Button */
+        button {
+            margin-top: 30px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HTML Template -->
+    <div id="certificate" class="certificate-container">
+        <!-- Optional Logo -->
+        <!-- <img src="logo.png" class="logo" /> -->
+
+        <p class="text">This certifies that</p>
+
+        <div class="recipient">John Alex Doe</div>
+
+        <p class="text">Has successfully completed the course</p>
+
+        <h2 style="color: #333; margin: 10px 0;">Advanced Database Management</h2>
+
+        <p class="text">Given on this day, October 10, 2025</p>
+
+        <div
+            style="margin-top: 50px; display: flex; justify-content: space-between; width: 80%; border-top: 1px solid #ddd; padding-top: 20px;">
+            <div>
+                <strong>Instructor</strong><br>
+                Jane Smith
+            </div>
+            <div>
+                <strong>Director</strong><br>
+                Robert Brown
+            </div>
+        </div>
+    </div>
+
+    <button onclick="download()">Download PDF</button>
+
+    <script>
+        function download() {
+            const element = document.getElementById('certificate');
+            // Using our new module
+            PDFGenerator.generate(element, 'My_High_Quality_Certificate.pdf');
+        }
+    </script>
+
+</body>
+
+</html>

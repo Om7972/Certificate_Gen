@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CertificateGen - Automated Certificate Generation & Verification</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/modern-landing.css" rel="stylesheet">
+
+  <style>
+    /* Inline critical CSS overrides or specific tweaks */
+    body {
+      padding-top: 70px;
+    }
+
+    /* Navbar height offset */
+  </style>
+</head>
+
+<body>
+
+  <!-- 1. Sticky Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top glass-card mx-3 mt-3 rounded-pill px-4">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold fs-4 text-gradient" href="#">
+        <i class="fas fa-certificate me-2 text-primary"></i>CertGen
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 fw-medium" id="mainNavLinks">
+          <li class="nav-item"><a class="nav-link px-3" href="#home">Home</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link px-3 dropdown-toggle" href="#" id="featuresDropdown" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              Features
+            </a>
+            <ul class="dropdown-menu border-0 shadow-lg mt-2" aria-labelledby="featuresDropdown">
+              <li><a class="dropdown-item py-2" href="naming-engine.html"><i
+                    class="fas fa-robot me-2 text-primary"></i>Smart Naming Engine</a></li>
+              <li><a class="dropdown-item py-2" href="generator.html#watermark"><i
+                    class="fas fa-stamp me-2 text-primary"></i>Watermark Control</a></li>
+              <li><a class="dropdown-item py-2" href="analytics.html"><i
+                    class="fas fa-chart-line me-2 text-primary"></i>Usage Analytics</a></li>
+              <li><a class="dropdown-item py-2" href="notifications.html"><i
+                    class="fas fa-bell me-2 text-primary"></i>Smart Notifications</a></li>
+              <li><a class="dropdown-item py-2" href="history.html"><i
+                    class="fas fa-share-alt me-2 text-primary"></i>Sharing Hub</a></li>
+              <li><a class="dropdown-item py-2" href="audit-logs.html"><i
+                    class="fas fa-shield-alt me-2 text-primary"></i>Audit Logs</a></li>
+              <li><a class="dropdown-item py-2" href="expiry-rules.html"><i
+                    class="fas fa-hourglass-end me-2 text-primary"></i>Expiry Rules</a></li>
+              <li><a class="dropdown-item py-2" href="sandbox.html"><i
+                    class="fas fa-vials me-2 text-primary"></i>Preview Sandbox</a></li>
+              <li><a class="dropdown-item py-2" href="fraud-detection.html"><i
+                    class="fas fa-user-shield me-2 text-primary"></i>Fraud Detection</a></li>
+              <li><a class="dropdown-item py-2" href="#blockchain"><i
+                    class="fas fa-link me-2 text-primary"></i>Blockchain Verification</a></li>
+              <li><a class="dropdown-item py-2" href="#bulk"><i class="fas fa-layer-group me-2 text-primary"></i>Bulk
+                  Generation</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link px-3" href="#templates">Templates</a></li>
+          <li class="nav-item"><a class="nav-link px-3" href="#pricing">Pricing</a></li>
+        </ul>
+        <div class="d-flex gap-2" id="authButtons">
+          <a href="login.html" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">Log In</a>
+          <a href="register.html" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm text-white">Get
+            Started</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 2. Hero Section -->
+  <section id="home" class="hero-section d-flex align-items-center position-relative">
+    <div class="hero-blob blob-1"></div>
+    <div class="hero-blob blob-2"></div>
+
+    <div class="container z-1">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-6 text-center text-lg-start animate-on-scroll">
+          <div class="d-inline-block px-3 py-1 mb-3 rounded-pill bg-white border shadow-sm align-items-center">
+            <span class="badge bg-success rounded-pill me-2">New</span>
+            <small class="fw-bold text-muted">AI-Powered Generation 🚀</small>
+          </div>
+          <h1 class="display-3 fw-bolder mb-3 lh-tight">
+            Generate & Verify <br>
+            <span class="text-gradient">Certificates at Scale</span>
+          </h1>
+          <p class="lead text-muted mb-4 px-lg-0 px-3">
+            Automate issuance, ensure authenticity with blockchain, and delight recipients with premium designs. Trusted
+            by over 10,000 institutions.
+          </p>
+          <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+            <a href="register.html" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg">Generate Now</a>
+            <a href="#demo" class="btn btn-white btn-lg rounded-pill px-5 border shadow-sm"><i
+                class="fas fa-play me-2 text-primary"></i> Watch Demo</a>
+          </div>
+
+          <div class="mt-5 d-flex gap-4 justify-content-center justify-content-lg-start opacity-75 grayscale">
+            <small class="fw-bold text-uppercase text-muted ls-1">Trusted By:</small>
+            <i class="fab fa-google fa-lg"></i>
+            <i class="fab fa-microsoft fa-lg"></i>
+            <i class="fab fa-aws fa-lg"></i>
+            <i class="fab fa-spotify fa-lg"></i>
+          </div>
+        </div>
+
+        <div class="col-lg-6 animate-on-scroll" style="transition-delay: 200ms;">
+          <div class="position-relative">
+            <div class="glass-card p-2 transform-rotate-3">
+              <img src="https://placehold.co/600x400/png?text=Certificate+Preview" alt="Certificate Mockup"
+                class="img-fluid rounded shadow-lg w-100">
+            </div>
+
+            <!-- Floating Badges -->
+            <div
+              class="position-absolute top-0 end-0 translate-middle-y bg-white p-3 rounded-4 shadow-lg border animate-float"
+              style="top: 10% !important; animation: float 6s infinite ease-in-out;">
+              <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary bg-opacity-10 p-2 rounded-circle text-primary">
+                  <i class="fas fa-shield-alt fa-lg"></i>
+                </div>
+                <div>
+                  <p class="mb-0 fw-bold small">Blockchain Verified</p>
+                  <p class="mb-0 x-small text-success"><i class="fas fa-check-circle"></i> Secure</p>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="position-absolute bottom-0 start-0 translate-middle-x bg-white p-3 rounded-4 shadow-lg border animate-float"
+              style="bottom: 15% !important; animation: float 7s infinite ease-in-out 1s;">
+              <div class="d-flex align-items-center gap-3">
+                <div class="bg-warning bg-opacity-10 p-2 rounded-circle text-warning">
+                  <i class="fas fa-magic fa-lg"></i>
+                </div>
+                <div>
+                  <p class="mb-0 fw-bold small">AI Design</p>
+                  <p class="mb-0 x-small text-muted">Auto-Layout</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Features Grid -->
+  <section id="features" class="py-5 bg-white">
+    <div class="container py-5">
+      <div class="text-center mb-5 animate-on-scroll">
+        <h6 class="text-primary fw-bold text-uppercase ls-2">Features</h6>
+        <h2 class="fw-bolder display-5 mb-3">Everything you need</h2>
+        <p class="text-muted w-75 mx-auto">Complete toolkit for managing digital credentials securely and efficiently.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <!-- Feature 1 -->
+        <div class="col-md-4 animate-on-scroll">
+          <div class="glass-card p-4 h-100 border-0 bg-light">
+            <div class="feature-icon shadow-sm mb-4">
+              <i class="fas fa-robot"></i>
+            </div>
+            <h4 class="fw-bold mb-3">AI Certificate Writing</h4>
+            <p class="text-muted">Use AI to generate personalized commendations and optimize layout automatically based
+              on recipient data.</p>
+          </div>
+        </div>
+        <!-- Feature 2 -->
+        <div class="col-md-4 animate-on-scroll" style="transition-delay: 100ms;">
+          <div class="glass-card p-4 h-100 border-0 bg-light">
+            <div class="feature-icon shadow-sm mb-4 bg-success">
+              <i class="fas fa-qrcode"></i>
+            </div>
+            <h4 class="fw-bold mb-3">QR Verification</h4>
+            <p class="text-muted">Instant verification via QR code scan. Prevent forgery and allow employers to validate
+              credentials easily.</p>
+          </div>
+        </div>
+        <!-- Feature 3 -->
+        <div class="col-md-4 animate-on-scroll" style="transition-delay: 200ms;">
+          <div class="glass-card p-4 h-100 border-0 bg-light">
+            <div class="feature-icon shadow-sm mb-4 bg-info">
+              <i class="fab fa-ethereum"></i>
+            </div>
+            <h4 class="fw-bold mb-3">Blockchain Hash</h4>
+            <p class="text-muted">Anchor certificates to the blockchain for immutable proof of issuance and absolute
+              data integrity.</p>
+          </div>
+        </div>
+        <!-- Feature 4 -->
+        <div class="col-md-4 animate-on-scroll">
+          <div class="glass-card p-4 h-100 border-0 bg-light">
+            <div class="feature-icon shadow-sm mb-4 bg-warning">
+              <i class="fas fa-paint-brush"></i>
+            </div>
+            <h4 class="fw-bold mb-3">Drag & Drop Templates</h4>
+            <p class="text-muted">Design beautiful templates with our intuitive editor. No coding required.</p>
+          </div>
+        </div>
+        <!-- Feature 5 -->
+        <div class="col-md-4 animate-on-scroll" style="transition-delay: 100ms;">
+          <div class="glass-card p-4 h-100 border-0 bg-light">
+            <div class="feature-icon shadow-sm mb-4 bg-danger">
+              <i class="fas fa-file-excel"></i>
+            </div>
+            <h4 class="fw-bold mb-3">Bulk Upload</h4>
+            <p class="text-muted">Upload recipient data via Excel/CSV and generate thousands of certificates in one
+              click.</p>
+          </div>
+        </div>
+        <!-- Feature 6 -->
+        <div class="col-md-4 animate-on-scroll" style="transition-delay: 200ms;">
+          <div class="glass-card p-4 h-100 border-0 bg-light">
+            <div class="feature-icon shadow-sm mb-4 bg-primary">
+              <i class="fas fa-paper-plane"></i>
+            </div>
+            <h4 class="fw-bold mb-3">Instant Delivery</h4>
+            <p class="text-muted">Automatically email certificates to recipients as PDF attachments with download links.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. How It Works (Stepper) -->
+  <section class="py-5 bg-light position-relative overflow-hidden">
+    <div class="container py-5">
+      <div class="text-center mb-5 animate-on-scroll">
+        <h2 class="fw-bolder">How It Works</h2>
+      </div>
+
+      <div class="row text-center mt-5">
+        <div class="col-md-3 step-item animate-on-scroll">
+          <div class="step-line d-none d-md-block"></div>
+          <div class="step-number shadow-lg">1</div>
+          <h5 class="fw-bold mt-3">Choose Template</h5>
+          <p class="text-muted small">Select from library or custom design</p>
+        </div>
+        <div class="col-md-3 step-item animate-on-scroll" style="transition-delay: 150ms;">
+          <div class="step-line d-none d-md-block"></div>
+          <div class="step-number shadow-lg">2</div>
+          <h5 class="fw-bold mt-3">Upload Data</h5>
+          <p class="text-muted small">Import names via Excel/CSV</p>
+        </div>
+        <div class="col-md-3 step-item animate-on-scroll" style="transition-delay: 300ms;">
+          <div class="step-line d-none d-md-block"></div>
+          <div class="step-number shadow-lg">3</div>
+          <h5 class="fw-bold mt-3">Generate</h5>
+          <p class="text-muted small">AI processes thousands in seconds</p>
+        </div>
+        <div class="col-md-3 step-item animate-on-scroll" style="transition-delay: 450ms;">
+          <div class="step-number shadow-lg bg-success"><i class="fas fa-check"></i></div>
+          <h5 class="fw-bold mt-3">Send & Verify</h5>
+          <p class="text-muted small">Auto-email and enable verification</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Templates Showcase -->
+  <section id="templates" class="py-5 bg-white">
+    <div class="container py-5">
+      <div class="text-center mb-5 animate-on-scroll">
+        <h6 class="text-primary fw-bold text-uppercase ls-2">Templates</h6>
+        <h2 class="fw-bolder">Professionally Designed</h2>
+      </div>
+
+      <div id="templateCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="row justify-content-center">
+              <div class="col-md-4">
+                <div class="glass-card p-2 border shadow-sm">
+                  <img src="https://placehold.co/400x300?text=Classic" class="img-fluid rounded mb-3 w-100">
+                  <div class="text-center">
+                    <h5 class="fw-bold">Classic Diploma</h5>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 d-none d-md-block">
+                <div class="glass-card p-2 border shadow-sm">
+                  <img src="https://placehold.co/400x300?text=Modern" class="img-fluid rounded mb-3 w-100">
+                  <div class="text-center">
+                    <h5 class="fw-bold">Modern Achievement</h5>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 d-none d-md-block">
+                <div class="glass-card p-2 border shadow-sm">
+                  <img src="https://placehold.co/400x300?text=Tech" class="img-fluid rounded mb-3 w-100">
+                  <div class="text-center">
+                    <h5 class="fw-bold">Tech Certification</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-5">
+        <a href="generator.html" class="btn btn-outline-primary rounded-pill px-5 py-2 fw-bold">View All Templates</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Stats Counter -->
+  <section class="py-5 bg-dark text-white position-relative">
+    <div class="container py-5">
+      <div class="row g-4 text-center">
+        <div class="col-6 col-md-3 animate-on-scroll count-up" data-target="15000">
+          <div class="stat-number h1 fw-bolder text-primary">0</div>
+          <p class="text-white-50">Certificates Generated</p>
+        </div>
+        <div class="col-6 col-md-3 animate-on-scroll count-up" data-target="500">
+          <div class="stat-number h1 fw-bolder text-success">0</div>
+          <p class="text-white-50">Institutions</p>
+        </div>
+        <div class="col-6 col-md-3 animate-on-scroll count-up" data-target="50000">
+          <div class="stat-number h1 fw-bolder text-warning">0</div>
+          <p class="text-white-50">Users</p>
+        </div>
+        <div class="col-6 col-md-3 animate-on-scroll count-up" data-target="100000">
+          <div class="stat-number h1 fw-bolder text-info">0</div>
+          <p class="text-white-50">Verifications</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Testimonials -->
+  <section class="py-5 bg-light position-relative">
+    <div class="container py-5">
+      <div class="text-center mb-5 animate-on-scroll">
+        <h6 class="text-primary fw-bold text-uppercase ls-2">Testimonials</h6>
+        <h2 class="fw-bolder">Trusted by Experts</h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4 animate-on-scroll">
+          <div class="glass-card p-4 h-100 bg-white border-0 shadow-sm text-center">
+            <img src="https://ui-avatars.com/api/?name=Sarah+Polley&background=random"
+              class="rounded-circle mb-3 shadow-sm" width="60" alt="User">
+            <p class="text-muted fst-italic">"Saved us weeks of manual work. The blockchain verification is a game
+              changer for our university."</p>
+            <h6 class="fw-bold mt-3">Dr. Sarah Polley</h6>
+            <small class="text-primary fw-bold">Dean, Tech Institute</small>
+          </div>
+        </div>
+        <div class="col-md-4 animate-on-scroll" style="transition-delay: 100ms;">
+          <div class="glass-card p-4 h-100 bg-white border-0 shadow-sm text-center">
+            <img src="https://ui-avatars.com/api/?name=Mark+Johnson&background=random"
+              class="rounded-circle mb-3 shadow-sm" width="60" alt="User">
+            <p class="text-muted fst-italic">"The AI design feature automatically made our certificates look
+              professional without hiring a designer."</p>
+            <h6 class="fw-bold mt-3">Mark Johnson</h6>
+            <small class="text-primary fw-bold">Event Organizer</small>
+          </div>
+        </div>
+        <div class="col-md-4 animate-on-scroll" style="transition-delay: 200ms;">
+          <div class="glass-card p-4 h-100 bg-white border-0 shadow-sm text-center">
+            <img src="https://ui-avatars.com/api/?name=Emily+Chen&background=random"
+              class="rounded-circle mb-3 shadow-sm" width="60" alt="User">
+            <p class="text-muted fst-italic">"Best platform for bulk generation. We issued 5,000 certificates in under
+              10 minutes."</p>
+            <h6 class="fw-bold mt-3">Emily Chen</h6>
+            <small class="text-primary fw-bold">HR Director</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Pricing -->
+  <section id="pricing" class="py-5">
+    <div class="container py-5">
+      <div class="text-center mb-5 animate-on-scroll">
+        <h6 class="text-primary fw-bold text-uppercase ls-2">Pricing</h6>
+        <h2 class="fw-bolder display-5">Simple plans for everyone</h2>
+      </div>
+
+      <div class="row g-4 align-items-center">
+        <!-- Free -->
+        <div class="col-lg-4 animate-on-scroll">
+          <div class="glass-card p-4 border h-100 bg-white shadow-sm">
+            <h3 class="fw-bold">Free</h3>
+            <div class="my-3"><span class="h1 fw-bolder">$0</span>/mo</div>
+            <ul class="list-unstyled mb-4">
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 100 Certificates/mo</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Basic Templates</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Standard Verification</li>
+            </ul>
+            <a href="register.html" class="btn btn-outline-primary w-100 rounded-pill">Start Free</a>
+          </div>
+        </div>
+        <!-- Pro -->
+        <div class="col-lg-4 animate-on-scroll">
+          <div class="glass-card pricing-card popular p-5 bg-white shadow-lg">
+            <span class="pricing-badge shadow-sm">RECOMMENDED</span>
+            <h3 class="fw-bold text-primary">Pro</h3>
+            <div class="my-3"><span class="h1 fw-bolder">$29</span>/mo</div>
+            <ul class="list-unstyled mb-4">
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Unlimited Certificates</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Premium Templates</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Remove Branding</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Priority Support</li>
+            </ul>
+            <a href="register.html" class="btn btn-primary w-100 btn-lg rounded-pill shadow-lg">Get Started</a>
+          </div>
+        </div>
+        <!-- Enterprise -->
+        <div class="col-lg-4 animate-on-scroll">
+          <div class="glass-card p-4 border h-100 bg-white shadow-sm">
+            <h3 class="fw-bold">Enterprise</h3>
+            <div class="my-3"><span class="h1 fw-bolder">Custom</span></div>
+            <ul class="list-unstyled mb-4">
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Custom Integration (API)</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Dedicated Server</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i> SLA Support</li>
+            </ul>
+            <a href="#" class="btn btn-outline-dark w-100 rounded-pill">Contact Sales</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. CTA Banner -->
+  <section class="cta-section py-5 position-relative overflow-hidden text-center">
+    <!-- Background Patterns -->
+    <div class="cta-overlay"></div>
+    <div class="cta-grid-pattern"></div>
+    <div class="cta-circle cta-circle-1"></div>
+    <div class="cta-circle cta-circle-2"></div>
+
+    <div class="container position-relative z-1 py-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-9 animate-on-scroll">
+          <h2 class="display-4 fw-bolder text-white mb-4">Ready to Issue <span class="fw-bold">Smart
+              Certificates?</span></h2>
+          <p class="lead text-white-50 mb-5 mx-auto fs-4 fw-light" style="max-width: 700px;">
+            Join thousands of organizations using <strong class="text-white">CertGen</strong> to streamline their
+            credentialing process.
+          </p>
+          <div class="d-flex justify-content-center gap-3">
+            <a href="register.html" class="btn btn-cta-glow btn-lg rounded-pill px-5 py-3 fw-bold fs-5">
+              Get Started for Free <i class="fas fa-arrow-right ms-2 small"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. Footer -->
+  <footer class="text-white-50 py-5 bg-dark">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <h4 class="text-white fw-bold mb-3">CertGen</h4>
+          <p>The standard for digital credential verification and issuance. Secure, fast, and globally recognized.</p>
+          <div class="d-flex gap-3 mt-4">
+            <a href="#" class="text-white"><i class="fab fa-twitter fa-lg"></i></a>
+            <a href="#" class="text-white"><i class="fab fa-linkedin fa-lg"></i></a>
+            <a href="#" class="text-white"><i class="fab fa-github fa-lg"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-2">
+          <h6 class="text-white fw-bold mb-3 text-uppercase">Product</h6>
+          <ul class="list-unstyled">
+            <li class="mb-2"><a href="#features" class="footer-link">Features</a></li>
+            <li class="mb-2"><a href="#templates" class="footer-link">Templates</a></li>
+            <li class="mb-2"><a href="#pricing" class="footer-link">Pricing</a></li>
+            <li class="mb-2"><a href="#" class="footer-link">API</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2">
+          <h6 class="text-white fw-bold mb-3 text-uppercase">Company</h6>
+          <ul class="list-unstyled">
+            <li class="mb-2"><a href="#" class="footer-link">About Us</a></li>
+            <li class="mb-2"><a href="#" class="footer-link">Careers</a></li>
+            <li class="mb-2"><a href="#" class="footer-link">Blog</a></li>
+            <li class="mb-2"><a href="#" class="footer-link">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4">
+          <h6 class="text-white fw-bold mb-3 text-uppercase">Newsletter</h6>
+          <p class="small">Subscribe for updates on features and security.</p>
+          <div class="input-group mb-3">
+            <input type="email" class="form-control border-0" placeholder="Enter your email" aria-label="Email">
+            <button class="btn btn-primary" type="button">Subscribe</button>
+          </div>
+        </div>
+      </div>
+      <hr class="border-secondary my-5">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+        <p class="mb-0 small">&copy; 2026 CertGen Inc. All rights reserved.</p>
+        <div class="d-flex gap-3 small">
+          <a href="#" class="footer-link">Privacy Policy</a>
+          <a href="#" class="footer-link">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/landing.js"></script>
+  <script>
+    // Initialize Auth UI
+    document.addEventListener('DOMContentLoaded', updateUI);
+  </script>
+</body>
+
+</html>

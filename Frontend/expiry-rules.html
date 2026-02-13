@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expiry Rules Engine - Admin - CertGen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="darkmode.css">
+    <script src="js/auth.js"></script>
+    <script>
+        const user = checkAuth();
+        if (!user || user.role !== 'admin') {
+            alert('Access Denied');
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3>Cert<span>Gen</span></h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="generator.html"><i class="fas fa-certificate"></i> Generator</a></li>
+            <li><a href="history.html"><i class="fas fa-history"></i> History</a></li>
+            <li><a href="sandbox.html"><i class="fas fa-vials"></i> Preview Sandbox</a></li>
+            <li><a href="expiry-rules.html" class="active"><i class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
+            <li><a href="audit-logs.html"><i class="fas fa-shield-alt"></i> Audit Logs</a></li>
+            <li><a href="fraud-detection.html"><i class="fas fa-user-shield"></i> Fraud Detection</a></li>
+            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-navbar">
+            <h4 class="mb-0">Expiry Rules Engine</h4>
+            <div class="user-profile">
+                <span id="userNameDisplay">Admin</span>
+                <div class="user-avatar" id="userInitial">A</div>
+            </div>
+        </div>
+
+        <div class="container-fluid py-4">
+            <div class="row">
+                <!-- Create Rule -->
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold mb-4">Create New Rule</h5>
+                        <form id="ruleForm">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Rule Name</label>
+                                <input type="text" id="ruleName" class="form-control"
+                                    placeholder="e.g. Annual Student Expiry" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Strategy</label>
+                                <select id="strategy" class="form-select" onchange="toggleInputs()">
+                                    <option value="TIME_BASED">Time-Based (Duration)</option>
+                                    <option value="EVENT_BASED">Event-Based (Fixed Date)</option>
+                                    <option value="MANUAL">Manual</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Target Course</label>
+                                <input type="text" id="targetCourse" class="form-control" value="ALL"
+                                    placeholder="ALL or Course Name">
+                            </div>
+                            <div id="timeInput" class="mb-3">
+                                <label class="form-label small fw-bold">Duration (Days from Issue)</label>
+                                <input type="number" id="durationDays" class="form-control" placeholder="365">
+                            </div>
+                            <div id="eventInput" class="mb-3 d-none">
+                                <label class="form-label small fw-bold">Fixed Expiry Date</label>
+                                <input type="date" id="fixedExpiryDate" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Create Rule</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Active Rules List -->
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+                        <h5 class="fw-bold mb-4">Active System Rules</h5>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Rule Name</th>
+                                        <th>Strategy</th>
+                                        <th>Target</th>
+                                        <th>Details</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rulesTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center">Loading rules...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('userNameDisplay').textContent = user?.name || 'Admin';
+            document.getElementById('userInitial').textContent = (user?.name || 'A').charAt(0).toUpperCase();
+            loadRules();
+        });
+
+        function toggleInputs() {
+            const strategy = document.getElementById('strategy').value;
+            document.getElementById('timeInput').classList.toggle('d-none', strategy !== 'TIME_BASED');
+            document.getElementById('eventInput').classList.toggle('d-none', strategy !== 'EVENT_BASED');
+        }
+
+        async function loadRules() {
+            const tbody = document.getElementById('rulesTableBody');
+            try {
+                const res = await fetch('http://localhost:5000/api/admin/expiry-rules', {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+                const rules = await res.json();
+                tbody.innerHTML = '';
+
+                if (rules.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No rules defined.</td></tr>';
+                    return;
+                }
+
+                rules.forEach(rule => {
+                    const details = rule.strategy === 'TIME_BASED' ? `${rule.durationDays} days` :
+                        rule.strategy === 'EVENT_BASED' ? new Date(rule.fixedExpiryDate).toLocaleDateString() : 'Manual Only';
+
+                    const row = `
+                        <tr>
+                            <td class="fw-bold">${rule.name}</td>
+                            <td><span class="badge bg-light text-primary">${rule.strategy}</span></td>
+                            <td>${rule.targetCourse}</td>
+                            <td><small>${details}</small></td>
+                            <td>
+                                <button onclick="deleteRule('${rule._id}')" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error loading rules</td></tr>';
+            }
+        }
+
+        document.getElementById('ruleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('ruleName').value,
+                strategy: document.getElementById('strategy').value,
+                targetCourse: document.getElementById('targetCourse').value,
+                durationDays: document.getElementById('durationDays').value || null,
+                fixedExpiryDate: document.getElementById('fixedExpiryDate').value || null
+            };
+
+            try {
+                const res = await fetch('http://localhost:5000/api/admin/expiry-rules', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user.token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    alert('Rule created successfully!');
+                    document.getElementById('ruleForm').reset();
+                    loadRules();
+                } else {
+                    const err = await res.json();
+                    alert(err.message || 'Failed to create rule');
+                }
+            } catch (err) {
+                alert('Network error');
+            }
+        });
+
+        async function deleteRule(id) {
+            if (!confirm('Are you sure?')) return;
+            try {
+                await fetch(`http://localhost:5000/api/admin/expiry-rules/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+                loadRules();
+            } catch (err) {
+                alert('Delete failed');
+            }
+        }
+    </script>
+</body>
+
+</html>

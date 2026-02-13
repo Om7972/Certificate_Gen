@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version History - GenCert</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="darkmode.css">
+    <style>
+        .version-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 5px solid #e2e8f0;
+        }
+
+        .version-card:hover {
+            transform: translateX(5px);
+            background-color: #f8fafc;
+        }
+
+        .version-card.active {
+            border-left-color: var(--primary-color);
+            background-color: #eff6ff;
+        }
+
+        .diff-added {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .diff-removed {
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 2px 4px;
+            border-radius: 4px;
+            text-decoration: line-through;
+        }
+
+        .compare-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .compare-view {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3>Gen<span>Cert</span></h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+            <li><a href="generator.html"><i class="fas fa-magic"></i> Generator</a></li>
+            <li><a href="history.html" class="active"><i class="fas fa-history"></i> History</a></li>
+            <li><a href="profile.html"><i class="fas fa-user-cog"></i> Profile</a></li>
+            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="top-navbar">
+            <div class="d-flex align-items-center">
+                <a href="history.html" class="btn btn-sm btn-outline-secondary me-3"><i
+                        class="fas fa-arrow-left"></i></a>
+                <h4 class="mb-0">Version History</h4>
+            </div>
+            <div class="user-profile">
+                <span id="userNameDisplay">User</span>
+                <div class="user-avatar" id="userInitial">U</div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Versions Sidebar -->
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-3">Versions</h5>
+                    <div id="versionsList" class="d-flex flex-column gap-2">
+                        <!-- Current Version -->
+                        <div id="currentVersionBtn" class="card version-card p-3 shadow-sm border-0 active">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-primary rounded-pill">Current</span>
+                                <small class="text-muted" id="currentDate">--</small>
+                            </div>
+                            <div class="fw-bold mt-2">V<span id="currentVerNum">1</span> (Latest)</div>
+                            <div class="small text-muted mt-1">Representing the state as of today.</div>
+                        </div>
+                        <hr>
+                        <!-- Past Versions injected here -->
+                    </div>
+                </div>
+
+                <!-- Comparison/View Area -->
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold mb-0" id="viewTitle">Current Version Details</h5>
+                            <div id="compareActions" class="d-none">
+                                <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="resetView()">Back
+                                    to Latest</button>
+                            </div>
+                        </div>
+
+                        <div id="versionDetails">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="small text-muted fw-bold text-uppercase">Recipient Name</label>
+                                    <p class="fs-5 fw-semibold" id="valName">--</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="small text-muted fw-bold text-uppercase">Recipient Email</label>
+                                    <p class="fs-5" id="valEmail">--</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="small text-muted fw-bold text-uppercase">Course/Event</label>
+                                    <p class="fs-5" id="valCourse">--</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="small text-muted fw-bold text-uppercase">Dates</label>
+                                    <p class="fs-5" id="valDates">--</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="small text-muted fw-bold text-uppercase">Template</label>
+                                    <p class="fs-5 text-capitalize" id="valTemplate">--</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="small text-muted fw-bold text-uppercase">Status</label>
+                                    <div id="valStatus">--</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Diff View Container (Initially Hidden) -->
+                        <div id="diffView" class="d-none mt-4">
+                            <h6 class="fw-bold border-bottom pb-2 mb-3">Comparison with Latest</h6>
+                            <div id="diffContent"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script>
+        const user = checkAuth();
+        const urlParams = new URLSearchParams(window.location.search);
+        const certId = urlParams.get('id');
+
+        let currentCertData = null;
+        let pastVersions = [];
+
+        async function init() {
+            if (!certId) return window.location.href = 'history.html';
+
+            // Populate User info
+            document.getElementById('userNameDisplay').textContent = user?.name || 'User';
+            document.getElementById('userInitial').textContent = (user?.name || 'U').charAt(0).toUpperCase();
+
+            await fetchCurrentState();
+            await fetchHistory();
+        }
+
+        async function fetchCurrentState() {
+            try {
+                const res = await fetch(`http://localhost:5000/api/certificates/${certId}`, {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+                currentCertData = await res.json();
+                displayVersion(currentCertData);
+
+                document.getElementById('currentVerNum').textContent = currentCertData.currentVersion;
+                document.getElementById('currentDate').textContent = new Date(currentCertData.updatedAt).toLocaleDateString();
+            } catch (err) { console.error(err); }
+        }
+
+        async function fetchHistory() {
+            try {
+                const res = await fetch(`http://localhost:5000/api/certificates/${certId}/versions`, {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+                pastVersions = await res.json();
+                renderVersionsList();
+            } catch (err) { console.error(err); }
+        }
+
+        function renderVersionsList() {
+            const list = document.getElementById('versionsList');
+            // Keep current version button, clear others
+            const currentBtn = document.getElementById('currentVersionBtn');
+            list.innerHTML = '';
+            list.appendChild(currentBtn);
+            list.appendChild(document.createElement('hr'));
+
+            pastVersions.forEach(ver => {
+                const div = document.createElement('div');
+                div.className = 'card version-card p-3 shadow-sm border-0 mb-2';
+                div.onclick = () => showPastVersion(ver);
+                div.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-secondary rounded-pill">V${ver.versionNumber}</span>
+                        <small class="text-muted">${new Date(ver.timestamp).toLocaleDateString()}</small>
+                    </div>
+                    <div class="fw-bold mt-2">${ver.changeSummary}</div>
+                    <div class="small text-muted mt-1">By ${ver.updatedBy.name}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function displayVersion(data, isPast = false) {
+            document.getElementById('valName').textContent = data.recipientName;
+            document.getElementById('valEmail').textContent = data.recipientEmail;
+            document.getElementById('valCourse').textContent = data.courseName;
+            document.getElementById('valDates').textContent = `${new Date(data.startDate).toLocaleDateString()} - ${new Date(data.endDate).toLocaleDateString()}`;
+            document.getElementById('valTemplate').textContent = data.templateUsed;
+
+            const status = data.status || 'valid';
+            const badge = status === 'valid' ? 'bg-success' : 'bg-danger';
+            document.getElementById('valStatus').innerHTML = `<span class="badge ${badge}">${status.toUpperCase()}</span>`;
+        }
+
+        function showPastVersion(ver) {
+            // UI Updates
+            document.querySelectorAll('.version-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('viewTitle').textContent = `Version ${ver.versionNumber} Details (Archived)`;
+            document.getElementById('compareActions').classList.remove('d-none');
+
+            // Map version data (it's nested in .data property)
+            const verData = ver.data;
+            displayVersion(verData, true);
+
+            // Show Diff
+            generateDiff(verData);
+        }
+
+        function generateDiff(oldData) {
+            const diffView = document.getElementById('diffView');
+            const diffContent = document.getElementById('diffContent');
+            diffView.classList.remove('d-none');
+
+            let diffHtml = '<div class="list-group list-group-flush">';
+
+            const fields = [
+                { label: 'Name', key: 'recipientName' },
+                { label: 'Email', key: 'recipientEmail' },
+                { label: 'Course', key: 'courseName' },
+                { label: 'Template', key: 'templateUsed' }
+            ];
+
+            fields.forEach(f => {
+                const oldVal = oldData[f.key];
+                const newVal = currentCertData[f.key];
+
+                if (oldVal !== newVal) {
+                    diffHtml += `
+                        <div class="list-group-item border-0 px-0">
+                            <div class="small fw-bold text-primary mb-1">${f.label} Changed</div>
+                            <div>
+                                <span class="diff-removed">${oldVal}</span>
+                                <i class="fas fa-long-arrow-alt-right mx-2 text-muted"></i>
+                                <span class="diff-added">${newVal}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            diffHtml += '</div>';
+            if (diffHtml.includes('list-group-item')) {
+                diffContent.innerHTML = diffHtml;
+            } else {
+                diffContent.innerHTML = '<p class="text-muted small">No visual data changes detected in this version saved spike.</p>';
+            }
+        }
+
+        function resetView() {
+            document.querySelectorAll('.version-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('currentVersionBtn').classList.add('active');
+            document.getElementById('viewTitle').textContent = 'Current Version Details';
+            document.getElementById('compareActions').classList.add('d-none');
+            document.getElementById('diffView').classList.add('d-none');
+            displayVersion(currentCertData);
+        }
+
+        document.getElementById('currentVersionBtn').onclick = resetView;
+
+        init();
+    </script>
+</body>
+
+</html>

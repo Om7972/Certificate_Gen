@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Preview Sandbox - CertGen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="darkmode.css">
+    <script src="js/auth.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .sandbox-container {
+            display: flex;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+        }
+
+        .sandbox-sidebar {
+            width: 400px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            padding: 30px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .sandbox-preview {
+            flex: 1;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            overflow: auto;
+            position: relative;
+        }
+
+        .preview-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .preview-frame {
+            transform-origin: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .template-card {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .template-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .template-card.active {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .template-thumb {
+            height: 80px;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        @media (max-width: 992px) {
+            .sandbox-container {
+                flex-direction: column;
+                height: auto;
+                overflow: visible;
+            }
+
+            .sandbox-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .sandbox-preview {
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Nav -->
+    <div class="top-navbar bg-white border-bottom px-4 py-2 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold"><i class="fas fa-vials text-primary me-2"></i> Preview Sandbox</h5>
+        <div class="d-flex align-items-center gap-3">
+            <a href="dashboard.html" class="btn btn-sm btn-outline-secondary">Exit Sandbox</a>
+            <div class="user-profile">
+                <span id="userNameDisplay">Guest</span>
+                <div class="user-avatar" id="userInitial">G</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sandbox-container">
+        <!-- Controls -->
+        <div class="sandbox-sidebar">
+            <h5 class="fw-bold mb-4">Certificate Data</h5>
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Recipient Name</label>
+                <input type="text" id="nameInput" class="form-control" placeholder="Recipient Name"
+                    oninput="updatePreview()">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Course / Achievement</label>
+                <input type="text" id="courseInput" class="form-control" placeholder="Course Name"
+                    oninput="updatePreview()">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Brief Description</label>
+                <textarea id="descInput" class="form-control" rows="3" placeholder="Description..."
+                    oninput="updatePreview()">For successfully completing the comprehensive professional development program.</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Issue Date</label>
+                <input type="date" id="dateInput" class="form-control" onchange="updatePreview()">
+            </div>
+
+            <h5 class="fw-bold mt-5 mb-3">Templates</h5>
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="template-card active" onclick="setTemplate('classic', this)">
+                        <div class="template-thumb">Classic</div>
+                        <div class="p-2 text-center small">Traditional</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="template-card" onclick="setTemplate('modern', this)">
+                        <div class="template-thumb bg-dark text-white">Modern</div>
+                        <div class="p-2 text-center small">Sleek Dark</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="template-card" onclick="setTemplate('professional', this)">
+                        <div class="template-thumb" style="background: #1e3a8a; color: white;">Professional</div>
+                        <div class="p-2 text-center small">Corporate</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="template-card" onclick="setTemplate('academic', this)">
+                        <div class="template-thumb" style="background: #ef4444; color: white;">Academic</div>
+                        <div class="p-2 text-center small">Formal</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 d-grid gap-2">
+                <button class="btn btn-outline-secondary" onclick="resetSandbox()">
+                    <i class="fas fa-undo me-2"></i> Reset Sandbox
+                </button>
+                <button class="btn btn-primary" onclick="proceedToCreate()">
+                    <i class="fas fa-save me-2"></i> Proceed to Create
+                </button>
+            </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="sandbox-preview">
+            <div class="preview-controls">
+                <button class="btn btn-sm btn-white shadow-sm" onclick="zoom(0.1)"><i class="fas fa-plus"></i></button>
+                <button class="btn btn-sm btn-white shadow-sm" onclick="zoom(-0.1)"><i
+                        class="fas fa-minus"></i></button>
+                <button class="btn btn-sm btn-white shadow-sm" onclick="downloadPreviewPDF()"><i
+                        class="fas fa-download"></i></button>
+            </div>
+
+            <div id="previewFrame" class="preview-frame">
+                <div id="certificateContainer" class="template-classic"
+                    style="width: 800px; height: 600px; position: relative; background: white; pointer-events: none;">
+                    <div class="certificate-content">
+                        <!-- Borders remain the same as in script.js templates -->
+                        <div class="ornate-border ornate-border-top"></div>
+                        <div class="ornate-border ornate-border-bottom"></div>
+                        <div class="ornate-border ornate-border-left"></div>
+                        <div class="ornate-border ornate-border-right"></div>
+
+                        <div class="institute-header">
+                            <div class="institute-details">
+                                <h2 class="institute-name">
+                                    <span>VISHWAKARMA INSTITUTE OF</span><br>
+                                    <span>INFORMATION TECHNOLOGY, PUNE</span>
+                                </h2>
+                                <h3 class="department-name">DEPARTMENT OF COMPUTER ENGINEERING</h3>
+                            </div>
+                        </div>
+
+                        <div class="certificate-header">
+                            <h1>CERTIFICATE</h1>
+                            <div class="subtitle">of Achievement</div>
+                        </div>
+
+                        <div class="certificate-body">
+                            <p>This certificate is proudly presented to:</p>
+                            <div class="recipient-name" id="prevName">RECIPIENT NAME</div>
+                            <p>in recognition of outstanding performance and dedication in</p>
+                            <div class="course-name" id="prevCourse">COURSE NAME</div>
+                            <p id="prevDesc">Description text will appear here...</p>
+                        </div>
+
+                        <div class="signature-section">
+                            <div class="signature-box">
+                                <div class="signature-line"></div>
+                                <p>Authorized Signature</p>
+                            </div>
+                            <div class="signature-box">
+                                <div class="signature-line"></div>
+                                <p class="date-text" id="prevDate">Date</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Init
+        const currentUser = JSON.parse(localStorage.getItem('user'));
+        if (currentUser) {
+            document.getElementById('userNameDisplay').textContent = currentUser.name;
+            document.getElementById('userInitial').textContent = currentUser.name.charAt(0).toUpperCase();
+        }
+
+        let currentScale = 1;
+        let selectedTemplate = 'classic';
+
+        function updatePreview() {
+            const name = document.getElementById('nameInput').value || 'RECIPIENT NAME';
+            const course = document.getElementById('courseInput').value || 'COURSE NAME';
+            const desc = document.getElementById('descInput').value || 'Description text will appear here...';
+            const dateStr = document.getElementById('dateInput').value;
+            const date = dateStr ? new Date(dateStr).toLocaleDateString() : new Date().toLocaleDateString();
+
+            document.getElementById('prevName').innerText = name;
+            document.getElementById('prevCourse').innerText = course;
+            document.getElementById('prevDesc').innerText = desc;
+            document.getElementById('prevDate').innerText = date;
+        }
+
+        function setTemplate(tpl, el) {
+            selectedTemplate = tpl;
+
+            // Remove active class from all
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+
+            // Apply template class
+            const container = document.getElementById('certificateContainer');
+            container.className = `template-${tpl}`;
+
+            // Re-render internal structure if needed for specific templates
+            // For sandbox, we keep it simple for now as templates share structure
+        }
+
+        function zoom(val) {
+            currentScale += val;
+            currentScale = Math.max(0.5, Math.min(1.5, currentScale));
+            document.getElementById('previewFrame').style.transform = `scale(${currentScale})`;
+        }
+
+        function resetSandbox() {
+            if (confirm('Clear all sandbox data?')) {
+                document.getElementById('nameInput').value = '';
+                document.getElementById('courseInput').value = '';
+                document.getElementById('descInput').value = 'For successfully completing the comprehensive professional development program.';
+                document.getElementById('dateInput').value = '';
+                updatePreview();
+            }
+        }
+
+        function proceedToCreate() {
+            const data = {
+                name: document.getElementById('nameInput').value,
+                course: document.getElementById('courseInput').value,
+                desc: document.getElementById('descInput').value,
+                date: document.getElementById('dateInput').value,
+                template: selectedTemplate
+            };
+
+            // Store temporarily and redirect
+            sessionStorage.setItem('sandboxData', JSON.stringify(data));
+            window.location.href = 'generator.html?from=sandbox';
+        }
+
+        async function downloadPreviewPDF() {
+            const { jsPDF } = window.jspdf;
+            const element = document.getElementById('certificateContainer');
+
+            // Ensure scale for capture
+            const originalScale = document.getElementById('previewFrame').style.transform;
+            document.getElementById('previewFrame').style.transform = 'scale(1)';
+
+            const canvas = await html2canvas(element, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+
+            const pdf = new jsPDF('l', 'mm', 'a4');
+            const width = pdf.internal.pageSize.getWidth();
+            const height = pdf.internal.pageSize.getHeight();
+
+            pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+            pdf.save('Sandbox_Preview.pdf');
+
+            // Restore scale
+            document.getElementById('previewFrame').style.transform = originalScale;
+        }
+
+        // Initialize with realistic date
+        document.getElementById('dateInput').valueAsDate = new Date();
+        updatePreview();
+    </script>
+</body>
+
+</html>

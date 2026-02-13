@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Notifications - CertGen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="darkmode.css">
+    <script src="js/auth.js"></script>
+    <script>
+        const user = checkAuth();
+        if (!user) window.location.href = 'login.html';
+    </script>
+    <style>
+        .msg-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary-color);
+            transition: transform 0.2s;
+        }
+
+        .msg-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .msg-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .icon-issued {
+            background: rgba(37, 99, 235, 0.1);
+            color: #2563eb;
+        }
+
+        .icon-reminder {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .icon-expiry {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3>Cert<span>Gen</span></h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="generator.html"><i class="fas fa-certificate"></i> Generator</a></li>
+            <li><a href="history.html"><i class="fas fa-history"></i> History</a></li>
+            <li><a href="notifications.html" class="active"><i class="fas fa-bell"></i> Smart Notifications</a></li>
+            <li><a href="history.html"><i class="fas fa-share-alt"></i> Sharing Hub</a></li>
+            <li><a href="sandbox.html"><i class="fas fa-vials"></i> Preview Sandbox</a></li>
+            <li class="admin-only" style="display:none;"><a href="audit-logs.html"><i class="fas fa-shield-alt"></i>
+                    Audit Logs</a></li>
+            <li class="admin-only" style="display:none;"><a href="expiry-rules.html"><i
+                        class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
+            <li class="admin-only" style="display:none;"><a href="fraud-detection.html"><i
+                        class="fas fa-user-shield"></i> Fraud Detection</a></li>
+            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-navbar">
+            <h4 class="mb-0">Smart Notification Center</h4>
+            <div class="user-profile">
+                <span id="userNameDisplay">User</span>
+                <div class="user-avatar" id="userInitial">U</div>
+            </div>
+        </div>
+
+        <div class="container-fluid py-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Automated Messaging Workflows</h5>
+                    <span class="badge bg-success">System Active</span>
+                </div>
+                <p class="text-muted">CertGen automatically sends follow-up emails based on recipient behavior and
+                    certificate status.</p>
+
+                <div class="row g-4 mt-2">
+                    <div class="col-md-4">
+                        <div class="msg-card">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="msg-icon icon-issued"><i class="fas fa-paper-plane"></i></div>
+                                <h6 class="fw-bold mb-0">Instant Issue</h6>
+                            </div>
+                            <p class="small text-muted mb-0">Sent immediately after a certificate is generated. Includes
+                                high-quality PDF attachment.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="msg-card" style="border-left-color: #f59e0b;">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="msg-icon icon-reminder"><i class="fas fa-clock"></i></div>
+                                <h6 class="fw-bold mb-0">7-Day Reminder</h6>
+                            </div>
+                            <p class="small text-muted mb-0">Sent if the recipient hasn't downloaded their certificate
+                                within 7 days of issuance.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="msg-card" style="border-left-color: #ef4444;">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="msg-icon icon-expiry"><i class="fas fa-hourglass-half"></i></div>
+                                <h6 class="fw-bold mb-0">Expiry Alert</h6>
+                            </div>
+                            <p class="small text-muted mb-0">Sent 30 days before a valid certificate is scheduled to
+                                expire.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h5 class="fw-bold mb-4">Recent Automated Actions</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Recipient</th>
+                                <th>Trigger</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="notificationLogs">
+                            <tr>
+                                <td colspan="4" class="text-center py-4">No recent notification logs found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('userNameDisplay').textContent = user?.name || 'User';
+            document.getElementById('userInitial').textContent = (user?.name || 'U').charAt(0).toUpperCase();
+            loadLogs();
+        });
+
+        async function loadLogs() {
+            // This would normally fetch logs from the AuditLog filtered by notification actions
+            console.log('Fetching notification logs...');
+        }
+    </script>
+</body>
+
+</html>
