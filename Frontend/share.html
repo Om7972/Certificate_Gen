@@ -9,6 +9,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: {
+                preflight: false,
+            }
+        }
+    </script>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -108,7 +116,9 @@
 </head>
 
 <body>
-    <div class="share-card">
+    <a href="index.html" class="position-absolute top-0 start-0 m-4 btn btn-light rounded-pill shadow-sm"><i
+            class="fas fa-arrow-left me-2"></i>Home</a>
+    <div class="share-card shadow-2xl rounded-3xl overflow-hidden border border-gray-100">
         <div class="share-header">
             <h2 class="fw-bold mb-1">Academic Achievement</h2>
             <p class="mb-0 opacity-75">Verified Digital Certificate</p>
@@ -138,7 +148,8 @@
                         class="fas fa-link"></i></button>
 
                 <div class="mt-4">
-                    <button onclick="downloadPDF()" class="btn btn-outline-primary px-4 rounded-pill">
+                    <button onclick="downloadPDF()"
+                        class="btn btn-outline-primary px-5 py-2 rounded-full shadow-lg hover:shadow-xl hover:bg-blue-50 transition-all font-bold">
                         <i class="fas fa-download me-2"></i> Download PDF
                     </button>
                 </div>

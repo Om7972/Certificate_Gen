@@ -14,6 +14,14 @@
         if (!currentUser) window.location.href = 'login.html';
     </script>
 </head>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        corePlugins: {
+            preflight: false,
+        }
+    }
+</script>
 
 <body>
 
@@ -38,6 +46,7 @@
                         class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
             <li class="admin-only" style="display:none;"><a href="fraud-detection.html"><i
                         class="fas fa-user-shield"></i> Fraud Detection</a></li>
+            <li><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a></li>
             <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </nav>
@@ -51,7 +60,7 @@
             </div>
         </div>
 
-        <div class="table-container">
+        <div class="table-container bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-gray-100">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5>All Generated Certificates</h5>
                 <button class="btn btn-sm btn-outline-primary" onclick="loadHistory()">

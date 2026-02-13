@@ -13,6 +13,14 @@
     <script src="js/auth.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: {
+                preflight: false,
+            }
+        }
+    </script>
     <style>
         .sandbox-container {
             display: flex;
@@ -107,7 +115,12 @@
     <div class="top-navbar bg-white border-bottom px-4 py-2 d-flex justify-content-between align-items-center">
         <h5 class="mb-0 fw-bold"><i class="fas fa-vials text-primary me-2"></i> Preview Sandbox</h5>
         <div class="d-flex align-items-center gap-3">
-            <a href="dashboard.html" class="btn btn-sm btn-outline-secondary">Exit Sandbox</a>
+            <a href="index.html"
+                class="btn btn-sm btn-outline-secondary rounded-full px-4 fw-bold hover:bg-gray-100 transition"><i
+                    class="fas fa-home me-2"></i>Home</a>
+            <a href="dashboard.html"
+                class="btn btn-sm btn-outline-secondary rounded-full px-4 fw-bold hover:bg-gray-100 transition">Exit
+                Sandbox</a>
             <div class="user-profile">
                 <span id="userNameDisplay">Guest</span>
                 <div class="user-avatar" id="userInitial">G</div>
@@ -172,10 +185,13 @@
             </div>
 
             <div class="mt-5 d-grid gap-2">
-                <button class="btn btn-outline-secondary" onclick="resetSandbox()">
+                <button class="btn btn-outline-secondary rounded-xl py-2 fw-semibold hover:shadow-md transition"
+                    onclick="resetSandbox()">
                     <i class="fas fa-undo me-2"></i> Reset Sandbox
                 </button>
-                <button class="btn btn-primary" onclick="proceedToCreate()">
+                <button
+                    class="btn btn-primary bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl py-2 fw-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-transform"
+                    onclick="proceedToCreate()">
                     <i class="fas fa-save me-2"></i> Proceed to Create
                 </button>
             </div>

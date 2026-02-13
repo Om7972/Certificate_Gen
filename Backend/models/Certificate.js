@@ -31,6 +31,22 @@ const certificateSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add course/event name']
     },
+    organization: {
+        type: String,
+        default: ''
+    },
+    description: {
+        type: String,
+        default: 'For successfully completing the comprehensive professional development program.'
+    },
+    qrEnabled: {
+        type: Boolean,
+        default: true
+    },
+    watermarkEnabled: {
+        type: Boolean,
+        default: false
+    },
     startDate: {
         type: Date,
         required: [true, 'Please add start date']
@@ -41,7 +57,7 @@ const certificateSchema = new mongoose.Schema({
     },
     templateUsed: {
         type: String,
-        enum: ['classic', 'modern', 'professional', 'creative', 'academic', 'achievement'],
+        enum: ['classic', 'modern', 'minimal', 'dark', 'gold', 'professional', 'creative', 'academic', 'achievement'],
         default: 'classic'
     },
     grade: {

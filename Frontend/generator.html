@@ -4,749 +4,379 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator - CertificateGen</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Premium Certificate Generator</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            100: '#F9F1D8',
+                            300: '#E6C87F',
+                            500: '#C59D45',
+                            700: '#8A6E2F',
+                            900: '#5C481D',
+                        },
+                        navy: '#0A192F',
+                    },
+                    fontFamily: {
+                        playfair: ['"Playfair Display"', 'serif'],
+                        poppins: ['"Poppins"', 'sans-serif'],
+                        cursive: ['"Great Vibes"', 'cursive'],
+                        cinzel: ['"Cinzel"', 'serif'],
+                        alex: ['"Alex Brush"', 'cursive'],
+                    },
+                    boxShadow: {
+                        'paper': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css"> <!-- Import base styles for certificates -->
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="darkmode.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <script src="js/auth.js"></script>
-    <script defer src="js/darkmode.js"></script>
     <script>
         const currentUser = checkAuth();
         if (!currentUser) window.location.href = 'login.html';
     </script>
+
     <style>
-        /* specific overrides for specific page */
-        .preview-pane {
-            transform: scale(0.65);
-            /* Scale down large certificate for preview */
-            transform-origin: top left;
-            width: 140%;
-            /* Compensate for scale */
-            margin-bottom: -30%;
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .main-content {
-            overflow-x: hidden;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
 
-        /* Watermark Styles */
-        .certificate-watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 80px;
-            font-weight: 900;
-            color: rgba(0, 0, 0, 0.1);
-            pointer-events: none;
-            z-index: 100;
-            white-space: nowrap;
-            text-transform: uppercase;
-            letter-spacing: 10px;
-            display: none;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Certificate Base */
+        #certificate-container {
+            width: 1123px;
+            /* A4 Landscape at 96 DPI */
+            height: 794px;
+            position: relative;
+            background-color: #fff;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Print Override */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            #certificate-container,
+            #certificate-container * {
+                visibility: visible;
+            }
+
+            #certificate-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                transform: scale(1);
+            }
+        }
+
+        /* Text Selectability in Preview */
+        .editable-text {
+            cursor: text;
+            border: 1px dashed transparent;
+        }
+
+        .editable-text:hover {
+            border-color: rgba(59, 130, 246, 0.5);
         }
     </style>
 </head>
 
-<body>
+<body class="bg-gray-100 text-gray-800 h-screen overflow-hidden font-poppins">
 
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h3>Cert<span>Gen</span></h3>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="generator.html" class="active"><i class="fas fa-certificate"></i> Generator</a></li>
-            <li><a href="history.html"><i class="fas fa-history"></i> History</a></li>
-            <li><a href="naming-engine.html"><i class="fas fa-robot"></i> Smart Naming</a></li>
-            <li><a href="generator.html#watermark"><i class="fas fa-stamp"></i> Watermark Control</a></li>
-            <li><a href="analytics.html"><i class="fas fa-chart-line"></i> Usage Analytics</a></li>
-            <li><a href="notifications.html"><i class="fas fa-bell"></i> Smart Notifications</a></li>
-            <li><a href="history.html"><i class="fas fa-share-alt"></i> Sharing Hub</a></li>
-            <li><a href="sandbox.html"><i class="fas fa-vials"></i> Preview Sandbox</a></li>
-            <li class="admin-only" style="display:none;"><a href="audit-logs.html"><i class="fas fa-shield-alt"></i>
-                    Audit Logs</a></li>
-            <li class="admin-only" style="display:none;"><a href="expiry-rules.html"><i
-                        class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
-            <li class="admin-only" style="display:none;"><a href="fraud-detection.html"><i
-                        class="fas fa-user-shield"></i> Fraud Detection</a></li>
-            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="top-navbar">
-            <h4 class="mb-0">Certificate Generator</h4>
-            <div class="d-flex align-items-center">
-                <div class="theme-switch-wrapper">
-                    <label class="theme-switch" for="checkbox">
-                        <input type="checkbox" id="checkbox" />
-                        <div class="slider round"></div>
-                    </label>
+    <div class="flex h-full">
+        <!-- SIDEBAR: Controls -->
+        <aside class="w-[400px] bg-white shadow-2xl z-20 flex flex-col h-full border-r border-gray-200">
+            <!-- Header -->
+            <div class="p-5 border-b border-gray-100 bg-white sticky top-0 z-10">
+                <div class="flex justify-between items-center mb-1">
+                    <h1
+                        class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                        <i class="fas fa-certificate mr-2 text-indigo-500"></i>Editor
+                    </h1>
+                    <a href="dashboard.html" class="text-xs text-gray-500 hover:text-blue-600 font-medium"><i
+                            class="fas fa-arrow-left"></i> Exit</a>
                 </div>
-                <div class="user-profile">
-                    <span id="userNameDisplay">User</span>
-                </div>
+                <p class="text-xs text-gray-400">Design premium credentials</p>
             </div>
-        </div>
 
-        <div class="generator-container">
-            <!-- Form Section -->
-            <div class="card p-4 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="mb-0">Certificate Details</h5>
-                    <div class="btn-group" role="group">
-                        <input type="radio" class="btn-check" name="genMode" id="modeSingle" autocomplete="off" checked
-                            onchange="toggleGeneratorMode()">
-                        <label class="btn btn-outline-primary" for="modeSingle">Single</label>
-                        <input type="radio" class="btn-check" name="genMode" id="modeBulk" autocomplete="off"
-                            onchange="toggleGeneratorMode()">
-                        <label class="btn btn-outline-primary" for="modeBulk">Batch Upload</label>
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6">
+
+                <!-- 1. Templates -->
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 block">Select
+                        Template</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- Classic Thumbnail -->
+                        <button onclick="setTemplate('classic')"
+                            class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-blue-500 transition-all overflow-hidden text-center bg-white shadow-sm active-template"
+                            data-template="classic">
+                            <div
+                                class="absolute inset-1 border-2 border-double border-gray-300 group-hover:border-blue-200">
+                            </div>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center p-2 opacity-60">
+                                <div class="w-8 h-8 rounded-full bg-gray-200 mb-1"></div>
+                                <div class="h-1 w-12 bg-gray-300 mb-1"></div>
+                                <div class="h-1 w-16 bg-gray-800 mb-1"></div>
+                            </div>
+                            <span
+                                class="absolute bottom-1 left-0 w-full text-[10px] font-playfair font-bold text-gray-600 z-10">Classic</span>
+                        </button>
+
+                        <!-- Modern Thumbnail -->
+                        <button onclick="setTemplate('modern')"
+                            class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-blue-500 transition-all overflow-hidden bg-white shadow-sm text-left"
+                            data-template="modern">
+                            <div
+                                class="absolute left-0 top-0 h-full w-6 bg-slate-700 group-hover:bg-blue-600 transition-colors">
+                            </div>
+                            <div class="absolute inset-0 pl-8 flex flex-col justify-center opacity-60">
+                                <div class="h-2 w-12 bg-gray-800 mb-1 rounded-sm"></div>
+                                <div class="h-1 w-16 bg-gray-300 mb-1"></div>
+                                <div class="h-1 w-10 bg-gray-300"></div>
+                            </div>
+                            <span
+                                class="absolute bottom-1 right-2 text-[10px] font-poppins font-bold text-gray-600">Modern</span>
+                        </button>
+
+                        <!-- Minimal Thumbnail -->
+                        <button onclick="setTemplate('minimal')"
+                            class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-blue-500 transition-all overflow-hidden bg-white shadow-sm"
+                            data-template="minimal">
+                            <div class="absolute inset-x-4 top-4 flex flex-col items-center opacity-60">
+                                <div class="h-px w-full bg-gray-200 mb-2"></div>
+                                <div class="h-2 w-16 bg-gray-800 mb-1"></div>
+                                <div class="h-px w-10 bg-gray-300"></div>
+                            </div>
+                            <span
+                                class="absolute bottom-1 left-0 w-full text-[10px] text-center font-poppins font-light text-gray-500 uppercase tracking-widest">Minimal</span>
+                        </button>
+
+                        <!-- Dark Thumbnail -->
+                        <button onclick="setTemplate('dark')"
+                            class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-yellow-500 transition-all overflow-hidden bg-slate-900 shadow-sm"
+                            data-template="dark">
+                            <div class="absolute inset-1 border border-yellow-600/30"></div>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center opacity-80">
+                                <div class="h-2 w-16 bg-yellow-500 mb-1"></div>
+                                <div class="h-px w-10 bg-gray-500"></div>
+                            </div>
+                            <span
+                                class="absolute bottom-1 left-0 w-full text-[10px] text-center font-cinzel font-bold text-yellow-500">Dark</span>
+                        </button>
+
+                        <!-- Gold Thumbnail -->
+                        <button onclick="setTemplate('gold')"
+                            class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-yellow-600 transition-all overflow-hidden bg-amber-50 shadow-sm"
+                            data-template="gold">
+                            <div class="absolute inset-1 border border-amber-200 rounded-lg"></div>
+                            <div class="absolute top-2 left-2 text-[8px] text-amber-600"><i
+                                    class="fas fa-certificate"></i></div>
+                            <div class="absolute bottom-2 right-2 text-[8px] text-amber-600"><i
+                                    class="fas fa-certificate"></i></div>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center opacity-60">
+                                <div class="h-2 w-14 bg-gradient-to-r from-amber-300 to-yellow-500 rounded-sm"></div>
+                            </div>
+                            <span
+                                class="absolute bottom-1 left-0 w-full text-[10px] text-center font-playfair font-bold italic text-amber-800">Gold</span>
+                        </button>
                     </div>
                 </div>
 
-                <div id="bulkUploadSection" style="display:none;">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> Upload an Excel/CSV file with columns: <strong>Name, Email,
-                            Course, Date</strong>.
-                        <br>
-                        <span onclick="downloadTemplate()" class="text-primary"
-                            style="cursor:pointer; text-decoration: underline;">Download Template.csv</span>
+                <!-- 2. Content -->
+                <div class="space-y-4">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Certificate
+                        Details</label>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Recipient Name</label>
+                        <input type="text" id="recipientName"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                            placeholder="John Doe" value="Alice Johnson" oninput="updatePreview()">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Upload Excel File</label>
-                        <input type="file" class="form-control" id="bulkFile" accept=".xlsx, .xls, .csv">
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Course / Achievement</label>
+                        <textarea id="courseName" rows="2"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                            placeholder="Course Name" oninput="updatePreview()">Full Stack Web Development</textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Details / Description</label>
+                        <textarea id="description" rows="2"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                            placeholder="For outstanding performance..."
+                            oninput="updatePreview()">For successfully completing the comprehensive professional development program with distinction.</textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">Date</label>
+                            <input type="date" id="issueDate"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"
+                                onchange="updatePreview()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">ID (Ref)</label>
+                            <input type="text" id="certId"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-gray-100"
+                                value="CERT-12345" readonly>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Organization / Department</label>
+                        <input type="text" id="organization"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                            placeholder="Tech Institute" value="Tech Academy of Excellence" oninput="updatePreview()">
                     </div>
                 </div>
 
-                <form id="certificateForm">
-                    <div class="mb-3">
-                        <label class="form-label">Select Template</label>
-                        <select class="form-select" id="templateSelect" onchange="toggleTemplateMode()">
-                            <option value="classic">Classic Elegance</option>
-                            <option value="modern">Modern Minimal</option>
-                            <option value="professional">Professional Grade</option>
-                            <option value="creative">Creative Flair</option>
-                            <option value="academic">Academic Excellence</option>
-                            <option value="achievement">Achievement Award</option>
-                            <option value="custom">Custom Design (Drag & Drop)</option>
-                        </select>
-                    </div>
-                    <div class="mb-3" id="customTemplateSection" style="display:none;">
-                        <label class="form-label">Select Your Design</label>
-                        <select class="form-select" id="customTemplateSelect" onchange="updatePreview()">
-                            <option value="">-- Choose Template --</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Recipient Name</label>
-                        <input type="text" class="form-control" id="recipientName" placeholder="John Doe"
-                            oninput="updatePreview()" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Recipient Email</label>
-                        <input type="email" class="form-control" id="recipientEmail" placeholder="john@example.com"
-                            required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Recipient Photo (For Face Verification)</label>
-                        <input type="file" class="form-control" id="recipientPhoto" accept="image/*">
-                        <div class="form-text">Upload a clear photo of the recipient's face.</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Course / Event Name</label>
-                        <input type="text" class="form-control" id="courseName" placeholder="Web Development Bootcamp"
-                            oninput="updatePreview()" required>
-                    </div>
+                <!-- 3. Styling -->
+                <div class="space-y-4">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Design &
+                        Assets</label>
 
-                    <!-- AI Description Helper -->
-                    <div class="card bg-light mb-3 p-3 border-0">
-                        <h6 class="text-primary"><i class="fas fa-magic"></i> AI Description Generator</h6>
-                        <div class="row g-2">
-                            <div class="col-md-6">
-                                <label class="form-label small">Achievement Level</label>
-                                <select class="form-select form-select-sm" id="achievementLevel">
-                                    <option value="Completion">Participation / Completion</option>
-                                    <option value="Distinction">Distinction / Honors</option>
-                                    <option value="Excellence">Excellence / Outstanding</option>
-                                    <option value="First Place">First Place / Winner</option>
-                                </select>
+                    <div class="flex items-center gap-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">Logo URL</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="logoUrl"
+                                    class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"
+                                    placeholder="https://..." oninput="updatePreview()">
+                                <label
+                                    class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg px-3 py-2 flex items-center justify-center transition-colors">
+                                    <i class="fas fa-upload text-xs"></i>
+                                    <input type="file" class="hidden" accept="image/*"
+                                        onchange="handleLogoUpload(this)">
+                                </label>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label small">Tone</label>
-                                <select class="form-select form-select-sm" id="toneSelect">
-                                    <option value="Professional">Professional</option>
-                                    <option value="Formal">Formal</option>
-                                    <option value="Motivational">Motivational</option>
-                                    <option value="Academic">Academic</option>
-                                </select>
-                            </div>
-                            <div class="col-12 mt-2">
-                                <button type="button" class="btn btn-sm btn-outline-primary w-100"
-                                    onclick="generateAiDescription()">
-                                    <i class="fas fa-robot"></i> Generate Description
-                                </button>
-                            </div>
+                        </div>
+                        <div class="w-16">
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">Color</label>
+                            <input type="color" id="accentColor" class="w-full h-9 rounded cursor-pointer border-0"
+                                value="#C59D45" oninput="updatePreview()">
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Certificate Description</label>
-                        <textarea class="form-control" id="certDescription" rows="2"
-                            oninput="updatePreview()">Your exceptional contributions have significantly advanced our team's success.</textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="startDate" onchange="updatePreview()" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">End Date</label>
-                            <input type="date" class="form-control" id="endDate" onchange="updatePreview()" required>
-                        </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <span class="text-xs font-semibold text-gray-600">Show QR Code</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="qrToggle" class="sr-only peer" checked
+                                onchange="updatePreview()">
+                            <div
+                                class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600">
+                            </div>
+                        </label>
                     </div>
 
-            </div>
-        </div>
-
-        <!-- Watermark Controller -->
-        <div class="card bg-white border shadow-sm p-3 mb-3 rounded-3" id="watermark">
-            <h6 class="fw-bold mb-3 d-flex align-items-center">
-                <i class="fas fa-stamp text-secondary me-2"></i> Watermark Control
-            </h6>
-            <div class="form-check form-switch mb-3">
-                <input class="form-check-input" type="checkbox" id="enableWatermark" onchange="updateWatermark()">
-                <label class="form-check-label" for="enableWatermark">Enable Watermark</label>
-            </div>
-            <div id="watermarkControls" style="display: none;">
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Watermark Text</label>
-                    <select class="form-select form-select-sm" id="watermarkText" onchange="updateWatermark()">
-                        <option value="DRAFT">DRAFT</option>
-                        <option value="PREVIEW">PREVIEW</option>
-                        <option value="CONFIDENTIAL">CONFIDENTIAL</option>
-                        <option value="COPY">COPY</option>
-                        <option value="SAMPLE">SAMPLE</option>
-                    </select>
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <span class="text-xs font-semibold text-gray-600">Watermark</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="watermarkToggle" class="sr-only peer" onchange="updatePreview()">
+                            <div
+                                class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600">
+                            </div>
+                        </label>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Opacity: <span id="opacityVal">0.1</span></label>
-                    <input type="range" class="form-range" id="watermarkOpacity" min="0.05" max="0.5" step="0.05"
-                        value="0.1" oninput="updateWatermark()">
+
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="p-5 border-t border-gray-200 bg-gray-50 z-10 space-y-3">
+                <button onclick="downloadPDF()"
+                    class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transform transition-all active:scale-95 font-semibold flex items-center justify-center gap-2">
+                    <i class="fas fa-download"></i> Download PDF (A4)
+                </button>
+                <button onclick="saveCertificate()"
+                    class="w-full py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-save text-green-600"></i> Save to Cloud
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN PREVIEW -->
+        <main class="flex-1 h-full bg-gray-200 overflow-hidden relative flex flex-col items-center">
+
+            <!-- Toolbar -->
+            <div
+                class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur rounded-full shadow-lg px-4 py-2 flex items-center gap-4 z-30 border border-gray-200">
+                <button onclick="adjustZoom(-0.1)"
+                    class="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 flex items-center justify-center transition"><i
+                        class="fas fa-minus"></i></button>
+                <span id="zoomLevel" class="text-xs font-mono font-bold text-gray-500">100%</span>
+                <button onclick="adjustZoom(0.1)"
+                    class="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 flex items-center justify-center transition"><i
+                        class="fas fa-plus"></i></button>
+                <div class="w-px h-4 bg-gray-300 mx-2"></div>
+                <button onclick="toggleFullScreen()" class="text-gray-500 hover:text-blue-600 text-xs font-medium"><i
+                        class="fas fa-expand mr-1"></i> Full</button>
+            </div>
+
+            <!-- Canvas Wrapper -->
+            <div
+                class="flex-1 overflow-auto w-full flex items-center justify-center p-10 custom-scrollbar bg-slate-200">
+                <div id="preview-wrapper" class="origin-center shadow-paper transition-transform duration-200 ease-out">
+                    <!-- THE CERTIFICATE CONTAINER -->
+                    <div id="certificate-container">
+                        <!-- Content will be injected by JS -->
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <hr>
-        <div class="d-grid gap-2">
-            <button type="button" class="btn btn-primary" onclick="generateAndSave()">
-                <i class="fas fa-save"></i> Save & Generate
-            </button>
-            <button type="button" class="btn btn-outline-dark" onclick="downloadPDF()">
-                <i class="fas fa-download"></i> Download PDF
-            </button>
-        </div>
-        </form>
+        </main>
     </div>
 
-    <!-- Live Preview Section -->
-    <div class="card p-3 shadow-sm bg-light">
-        <h5 class="mb-3">Live Preview</h5>
-        <div class="preview-pane text-center" id="previewContainer">
-            <!-- Certificate Template Inject Here -->
-            <div id="certificate-container" class="preview-certificate template-classic">
-                <!-- Content matches script.js logic -->
-                <div class="certificate-content">
-                    <!-- Borders -->
-                    <div class="ornate-border ornate-border-top"></div>
-                    <div class="ornate-border ornate-border-bottom"></div>
-                    <div class="ornate-border ornate-border-left"></div>
-                    <div class="ornate-border ornate-border-right"></div>
-
-                    <!-- Watermark Layer -->
-                    <div id="watermarkLayer" class="certificate-watermark">DRAFT</div>
-
-                    <div class="institute-header">
-                        <div class="institute-details">
-                            <h2 class="institute-name">
-                                <span>VISHWAKARMA INSTITUTE OF</span><br>
-                                <span>INFORMATION TECHNOLOGY, PUNE</span>
-                            </h2>
-                            <h3 class="department-name">DEPARTMENT OF COMPUTER ENGINEERING</h3>
-                        </div>
-                    </div>
-
-                    <div class="certificate-header">
-                        <h1>CERTIFICATE</h1>
-                        <div class="subtitle">of Achievement</div>
-                    </div>
-
-                    <div class="certificate-body">
-                        <p>This certificate is proudly presented to:</p>
-                        <div class="recipient-name" id="prevName">[Recipient Name]</div>
-                        <p>in recognition of outstanding performance and dedication in</p>
-                        <div class="course-name" id="prevCourse">[Course Name]</div>
-                        <p id="prevDesc">Your exceptional contributions have significantly advanced our team's
-                            success.</p>
-                    </div>
-
-                    <div class="signature-section">
-                        <div class="signature-box">
-                            <div class="signature-line"></div>
-                            <p>Authorized Signature</p>
-                        </div>
-                        <div class="signature-box">
-                            <div class="signature-line"></div>
-                            <p class="date-text" id="prevDate">Date</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Canvas Preview for Custom Templates -->
-            <div id="canvasPreviewContainer" style="display:none; text-align: center;">
-                <canvas id="previewCanvas"></canvas>
-            </div>
-        </div>
-    </div>
-    </div>
+    <!-- NOTIFICATION TOAST -->
+    <div id="toast"
+        class="fixed bottom-5 right-5 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
+        <i class="fas fa-check-circle text-green-400"></i>
+        <span>Action Successful</span>
     </div>
 
     <script src="script.js"></script>
-    <script>
-        // Init User Info
-        const user = JSON.parse(localStorage.getItem('user'));
-        document.getElementById('userNameDisplay').textContent = user?.name || 'User';
-
-        // Custom Logic for this page interacting with script.js functions
-        // Custom Logic for this page interacting with script.js functions
-        // Global Fabric
-        let previewFabricCanvas = null;
-        let customTemplates = [];
-
-        async function toggleTemplateMode() {
-            const mode = document.getElementById('templateSelect').value;
-            const container = document.getElementById('certificate-container');
-            const customSection = document.getElementById('customTemplateSection');
-            const canvasContainer = document.getElementById('canvasPreviewContainer');
-
-            if (mode === 'custom') {
-                container.style.display = 'none';
-                if (canvasContainer) canvasContainer.style.display = 'block';
-                customSection.style.display = 'block';
-                if (customTemplates.length === 0) await fetchCustomTemplates();
-                if (!previewFabricCanvas) {
-                    previewFabricCanvas = new fabric.Canvas('previewCanvas');
-                    previewFabricCanvas.setWidth(800);
-                    previewFabricCanvas.setHeight(600);
-                }
-            } else {
-                container.style.display = 'block';
-                if (canvasContainer) canvasContainer.style.display = 'none';
-                customSection.style.display = 'none';
-                updatePreview();
-            }
-        }
-
-        async function fetchCustomTemplates() {
-            try {
-                const user = JSON.parse(localStorage.getItem('user'));
-                const res = await fetch('http://localhost:5000/api/templates', {
-                    headers: { 'Authorization': `Bearer ${user.token}` }
-                });
-                customTemplates = await res.json();
-                const select = document.getElementById('customTemplateSelect');
-                select.innerHTML = '<option value="">-- Choose Template --</option>';
-                customTemplates.forEach(t => {
-                    const opt = document.createElement('option');
-                    opt.value = t._id;
-                    opt.innerText = t.name;
-                    select.appendChild(opt);
-                });
-            } catch (e) { console.error(e); }
-        }
-
-        function updatePreview() {
-            const mode = document.getElementById('templateSelect').value;
-            const name = document.getElementById('recipientName').value || '[Recipient Name]';
-            const course = document.getElementById('courseName').value || '[Course Name]';
-            const dateStr = document.getElementById('endDate').value;
-            const date = dateStr ? new Date(dateStr).toLocaleDateString() : new Date().toLocaleDateString();
-
-            if (mode === 'custom') {
-                const templateId = document.getElementById('customTemplateSelect').value;
-                if (!templateId || !previewFabricCanvas) return;
-
-                const template = customTemplates.find(t => t._id === templateId);
-                if (template) {
-                    previewFabricCanvas.loadFromJSON(template.canvasState, () => {
-                        previewFabricCanvas.getObjects().forEach(obj => {
-                            if (obj.type === 'i-text' || obj.type === 'text') {
-                                // Match both {{Name}} and {Name} styles
-                                if (obj.text.includes('Name')) obj.set('text', name);
-                                if (obj.text.includes('Course')) obj.set('text', course);
-                                if (obj.text.includes('Date')) obj.set('text', date);
-                            }
-                        });
-                        previewFabricCanvas.renderAll();
-                    });
-                }
-                return;
-            }
-
-            // Standard Logic
-            const start = document.getElementById('startDate').value;
-            const end = document.getElementById('endDate').value;
-            const description = document.getElementById('certDescription').value;
-
-            document.getElementById('prevName').innerText = name;
-            document.getElementById('prevCourse').innerText = course;
-
-            const descEl = document.getElementById('prevDesc');
-            if (descEl) descEl.innerText = description;
-
-            if (start && end) {
-                document.getElementById('prevDate').innerText = `${new Date(start).toLocaleDateString()} - ${new Date(end).toLocaleDateString()}`;
-            }
-
-            document.getElementById('certificate-container').className = `preview-certificate template-${mode}`;
-        }
-
-        async function generateAiDescription() {
-            const eventName = document.getElementById('courseName').value;
-            const achievementLevel = document.getElementById('achievementLevel').value;
-            const tone = document.getElementById('toneSelect').value;
-            const btn = document.querySelector('button[onclick="generateAiDescription()"]');
-
-            if (!eventName) {
-                alert('Please enter Course / Event Name first.');
-                return;
-            }
-
-            try {
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-                btn.disabled = true;
-
-                const token = JSON.parse(localStorage.getItem('user')).token;
-                const response = await fetch('http://localhost:5000/api/ai/generate-description', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ eventName, achievementLevel, tone })
-                });
-
-                const data = await response.json();
-
-                if (data.description) {
-                    document.getElementById('certDescription').value = data.description;
-                    updatePreview();
-                } else if (data.warning) {
-                    alert(data.warning);
-                    if (data.description) {
-                        document.getElementById('certDescription').value = data.description;
-                        updatePreview();
-                    }
-                } else {
-                    alert('Failed to generate description.');
-                }
-
-            } catch (error) {
-                console.error(error);
-                alert('Error connecting to AI service.');
-            } finally {
-                btn.innerHTML = '<i class="fas fa-robot"></i> Generate Description';
-                btn.disabled = false;
-            }
-        }
-
-        async function generateAndSave() {
-            const isBulk = document.getElementById('modeBulk') && document.getElementById('modeBulk').checked;
-            const btn = document.querySelector('.btn-primary');
-
-            if (isBulk) {
-                await uploadBulk(btn);
-                return;
-            }
-
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            btn.disabled = true;
-
-            const name = document.getElementById('recipientName').value;
-            const email = document.getElementById('recipientEmail').value;
-            const course = document.getElementById('courseName').value;
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            let template = document.getElementById('templateSelect').value;
-            if (template === 'custom') {
-                const customId = document.getElementById('customTemplateSelect').value;
-                if (!customId) {
-                    alert('Please select a custom design');
-                    btn.innerHTML = '<i class="fas fa-save"></i> Save & Generate';
-                    btn.disabled = false;
-                    return;
-                }
-                template = 'custom:' + customId;
-            }
-            const photo = document.getElementById('recipientPhoto').files[0];
-
-            if (!name || !email) {
-                alert('Please fill details');
-                btn.innerHTML = '<i class="fas fa-save"></i> Save & Generate';
-                btn.disabled = false;
-                return;
-            }
-
-            try {
-                const user = JSON.parse(localStorage.getItem('user'));
-                const token = user?.token;
-
-                if (!token) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                const formData = new FormData();
-                formData.append('recipientName', name);
-                formData.append('recipientEmail', email);
-                formData.append('courseName', course);
-                formData.append('startDate', startDate);
-                formData.append('endDate', endDate);
-                formData.append('templateUsed', template);
-                if (photo) {
-                    formData.append('recipientPhoto', photo);
-                }
-
-                const res = await fetch('http://localhost:5000/api/certificates', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: formData
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    alert('Certificate Saved successfully!');
-                    window.location.href = 'history.html';
-                } else {
-                    if (res.status === 401 || res.status === 403) {
-                        alert('Session expired. Please login again.');
-                        logout();
-                        return;
-                    }
-                    alert('Error saving: ' + (data.message || 'Unknown error'));
-                }
-            } catch (e) {
-                console.error('Error in generateAndSave:', e);
-                alert('Network or Server Error');
-            }
-
-            btn.innerHTML = '<i class="fas fa-save"></i> Save & Generate';
-            btn.disabled = false;
-        }
-
-        async function downloadPDF() {
-            const mode = document.getElementById('templateSelect').value;
-            const { jsPDF } = window.jspdf;
-
-            if (mode === 'custom') {
-                if (!previewFabricCanvas) return;
-                try {
-                    // High quality export
-                    const dataURL = previewFabricCanvas.toDataURL({ format: 'png', multiplier: 2 });
-                    const pdf = new jsPDF({
-                        orientation: 'landscape',
-                        unit: 'px',
-                        format: [previewFabricCanvas.width, previewFabricCanvas.height] // Match canvas size logic
-                    });
-                    // If canvas is huge (multiplier), pdf format should match or scale
-                    // Ideally use A4 ratio. 
-                    // Let's use standard A4
-                    const a4w = 842; const a4h = 595; // px at 72dpi approx
-                    const pdfA4 = new jsPDF('l', 'pt', 'a4');
-                    pdfA4.addImage(dataURL, 'PNG', 0, 0, 842, 595);
-                    pdfA4.save("certificate-custom.pdf");
-                } catch (e) { console.error(e); }
-                return;
-            }
-
-            const element = document.getElementById('certificate-container');
-            const previewPane = document.getElementById('previewContainer');
-
-            // Save current style
-            const originTransform = previewPane.style.transform;
-            const originWidth = previewPane.style.width;
-            const originMargin = previewPane.style.marginBottom;
-
-            // Remove scaling for capture
-            previewPane.style.transform = 'none';
-            previewPane.style.width = '1123px'; // Force A4 width
-            previewPane.style.marginBottom = '0';
-            previewPane.style.overflow = 'visible'; // Ensure borders captured
-
-            try {
-                const canvas = await html2canvas(element, {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    windowWidth: 1200
-                });
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('landscape');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = pdf.internal.pageSize.getHeight();
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save('certificate.pdf');
-
-                // Track Download (optional: if we have a way to identify it)
-                const certName = document.getElementById('prevName').innerText;
-                recordCertificateAction(certName, 'DOWNLOADED', `Downloaded PDF for ${certName}`);
-            } catch (e) {
-                console.error(e);
-            }
-
-            // Restore scaling
-            previewPane.style.transform = originTransform;
-            previewPane.style.width = originWidth;
-            previewPane.style.marginBottom = originMargin;
-        }
-
-        function toggleGeneratorMode() {
-            const isBulk = document.getElementById('modeBulk').checked;
-            const form = document.getElementById('certificateForm');
-            const bulkSection = document.getElementById('bulkUploadSection');
-
-            if (isBulk) {
-                form.style.display = 'none';
-                bulkSection.style.display = 'block';
-            } else {
-                form.style.display = 'block';
-                bulkSection.style.display = 'none';
-            }
-        }
-
-        function downloadTemplate() {
-            const csvContent = "data:text/csv;charset=utf-8,Name,Email,Course,Date\nJohn Doe,john@example.com,Web Dev,2023-12-31";
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "template.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        async function uploadBulk(btn) {
-            const fileInput = document.getElementById('bulkFile');
-            const file = fileInput.files[0];
-            if (!file) {
-                alert('Please select a file');
-                return;
-            }
-
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-            btn.disabled = true;
-
-            try {
-                const user = JSON.parse(localStorage.getItem('user'));
-                const token = user?.token;
-
-                if (!token) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                const formData = new FormData();
-                formData.append('bulkFile', file);
-
-                const res = await fetch('http://localhost:5000/api/certificates/bulk-upload', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: formData
-                });
-
-                const data = await res.json();
-                if (res.ok) {
-                    alert(`Success! Created ${data.count} certificates.`);
-                    if (data.errors && data.errors.length > 0) {
-                        alert('Warnings:\n' + data.errors.join('\n'));
-                    }
-                    window.location.href = 'history.html';
-                } else {
-                    if (res.status === 401 || res.status === 403) {
-                        alert('Session expired. Please login again.');
-                        logout();
-                        return;
-                    }
-                    alert('Error: ' + (data.message || 'Upload failed'));
-                }
-            } catch (e) {
-                console.error('Error in uploadBulk:', e);
-                alert('Network Error');
-            } finally {
-                btn.innerHTML = '<i class="fas fa-save"></i> Save & Generate';
-                btn.disabled = false;
-            }
-        }
-
-        function updateWatermark() {
-            const enabled = document.getElementById('enableWatermark').checked;
-            const text = document.getElementById('watermarkText').value;
-            const opacity = document.getElementById('watermarkOpacity').value;
-            const controls = document.getElementById('watermarkControls');
-            const layer = document.getElementById('watermarkLayer');
-            const opacityDisplay = document.getElementById('opacityVal');
-
-            if (enabled) {
-                controls.style.display = 'block';
-                layer.style.display = 'block';
-                layer.textContent = text;
-                layer.style.color = `rgba(0, 0, 0, ${opacity})`;
-                opacityDisplay.textContent = opacity;
-            } else {
-                controls.style.display = 'none';
-                layer.style.display = 'none';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('userNameDisplay').textContent = currentUser?.name || 'User';
-            // Check if hashtag for watermark exists
-            if (window.location.hash === '#watermark') {
-                const enableBtn = document.getElementById('enableWatermark');
-                if (enableBtn) {
-                    enableBtn.checked = true;
-                    // Scroll to it
-                    enableBtn.scrollIntoView({ behavior: 'smooth' });
-                }
-            }
-            updateWatermark();
-
-            // Handle Sandbox Data
-            const sandboxData = sessionStorage.getItem('sandboxData');
-            if (sandboxData) {
-                const data = JSON.parse(sandboxData);
-                if (data.name) document.getElementById('recipientName').value = data.name;
-                if (data.course) document.getElementById('courseName').value = data.course;
-                if (data.desc) document.getElementById('certDescription').value = data.desc;
-                if (data.date) document.getElementById('endDate').value = data.date;
-                if (data.template) {
-                    document.getElementById('templateSelect').value = data.template;
-                }
-                updatePreview();
-                sessionStorage.removeItem('sandboxData'); // Clear after use
-            }
-        });
-    </script>
 </body>
 
 </html>

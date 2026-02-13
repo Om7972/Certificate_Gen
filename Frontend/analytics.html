@@ -15,6 +15,14 @@
         const user = checkAuth();
         if (!user) window.location.href = 'login.html';
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: {
+                preflight: false,
+            }
+        }
+    </script>
     <style>
         .heatmap-container {
             position: relative;
@@ -52,6 +60,7 @@
                         class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
             <li class="admin-only" style="display:none;"><a href="fraud-detection.html"><i
                         class="fas fa-user-shield"></i> Fraud Detection</a></li>
+            <li><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a></li>
             <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </nav>
@@ -69,7 +78,8 @@
         <div class="container-fluid py-4">
             <div class="row mb-4">
                 <div class="col-md-4">
-                    <div class="stats-card-mini d-flex justify-content-between align-items-center">
+                    <div
+                        class="stats-card-mini d-flex justify-content-between align-items-center bg-white shadow-xl rounded-2xl hover:-translate-y-1 transition-transform p-6 border-l-4 border-blue-500">
                         <div>
                             <div class="small text-muted fw-bold text-uppercase">Peak Viewing Hour</div>
                             <h2 class="mb-0 fw-bold" id="peakHour">--</h2>
@@ -78,7 +88,8 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="stats-card-mini d-flex justify-content-between align-items-center">
+                    <div
+                        class="stats-card-mini d-flex justify-content-between align-items-center bg-white shadow-xl rounded-2xl hover:-translate-y-1 transition-transform p-6 border-l-4 border-emerald-500">
                         <div>
                             <div class="small text-muted fw-bold text-uppercase">Busiest Day</div>
                             <h2 class="mb-0 fw-bold" id="peakDay">--</h2>
@@ -87,7 +98,8 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="stats-card-mini d-flex justify-content-between align-items-center">
+                    <div
+                        class="stats-card-mini d-flex justify-content-between align-items-center bg-white shadow-xl rounded-2xl hover:-translate-y-1 transition-transform p-6 border-l-4 border-purple-500">
                         <div>
                             <div class="small text-muted fw-bold text-uppercase">Total Interactions</div>
                             <h2 class="mb-0 fw-bold" id="totalInteractions">0</h2>
@@ -97,7 +109,7 @@
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4 p-4">
+            <div class="card border-0 shadow-2xl rounded-2xl p-6 bg-white/90 backdrop-blur-md">
                 <h5 class="fw-bold mb-4">Verification Activity Heatmap (Week vs Hour)</h5>
                 <div class="heatmap-container">
                     <canvas id="usageHeatmap"></canvas>

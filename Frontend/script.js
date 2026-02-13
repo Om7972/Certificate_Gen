@@ -1,933 +1,610 @@
-document.addEventListener('DOMContentLoaded', function () {
-  // DOM Elements
-  const form = document.getElementById('certificateForm');
-  const preview = document.getElementById('certificatePreview');
-  const actions = document.getElementById('actions');
-  const bulkGenerateBtn = document.getElementById('bulkGenerate');
-  const downloadBtn = document.getElementById("download-pdf-btn");
-  const certificate = document.getElementById("certificate-container");
 
-  // Initialize
-  if (actions) {
-    actions.style.display = 'none';
-  }
+// ==========================================
+// STATE MANAGEMENT
+// ==========================================
+const state = {
+  template: 'classic',
+  recipientName: 'Alice Johnson',
+  courseName: 'Full Stack Web Development',
+  description: 'For successfully completing the comprehensive professional development program with distinction.',
+  date: new Date().toISOString().split('T')[0],
+  certId: 'CERT-' + Math.floor(Math.random() * 1000000),
+  organization: 'Tech Academy of Excellence',
+  logoUrl: 'https://cdn-icons-png.flaticon.com/512/2436/2436874.png', // Placeholder
+  accentColor: '#C59D45', // Gold default
+  qrEnabled: true,
+  watermarkEnabled: false,
+  zoom: 1
+};
 
-  // Single Certificate Generation
-  if (form) {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      generateCertificateFromForm();
-    });
-  }
+// ==========================================
+// TEMPLATE DEFINITIONS
+// ==========================================
+const templates = {
+  classic: (data) => `
+        <div class="w-full h-full relative bg-white p-12 flex flex-col items-center text-center font-playfair border-[20px] border-double border-[${data.accentColor}]/20">
+            <!-- Corner Ornaments -->
+            <div class="absolute top-4 left-4 w-24 h-24 border-t-4 border-l-4 border-[${data.accentColor}] opacity-50"></div>
+            <div class="absolute top-4 right-4 w-24 h-24 border-t-4 border-r-4 border-[${data.accentColor}] opacity-50"></div>
+            <div class="absolute bottom-4 left-4 w-24 h-24 border-b-4 border-l-4 border-[${data.accentColor}] opacity-50"></div>
+            <div class="absolute bottom-4 right-4 w-24 h-24 border-b-4 border-r-4 border-[${data.accentColor}] opacity-50"></div>
 
-  // Bulk Certificate Generation
-  if (bulkGenerateBtn) {
-    bulkGenerateBtn.addEventListener('click', handleBulkGeneration);
-  }
+            <!-- Header -->
+            <div class="mt-8 max-w-3xl mx-auto z-10 w-full">
+                ${data.logoUrl ? `<img src="${data.logoUrl}" class="h-20 mx-auto mb-4 object-contain opacity-90" alt="Logo">` : ''}
+                <div class="text-xl font-bold uppercase tracking-widest text-gray-600 font-poppins mb-1">${data.organization}</div>
+                <div class="text-xs uppercase tracking-[0.3em] text-gray-400 font-poppins mb-6">Officially Presents This</div>
+                
+                <h1 class="text-7xl font-cinzel text-gray-800 font-bold mb-2">Certificate</h1>
+                <div class="text-4xl font-alex text-[${data.accentColor}] mb-8">of Achievement</div>
+            </div>
 
-  // Core Functions
-  async function generateCertificateFromForm() {
-    const data = {
-      name: document.getElementById('recipientName').value,
-      email: document.getElementById('recipientEmail').value,
-      course: document.getElementById('courseName').value,
-      startDate: document.getElementById('startDate').value,
-      endDate: document.getElementById('endDate').value,
-      signature: document.getElementById('signatureUpload').files[0]
-    };
+            <!-- Body -->
+            <div class="flex-1 flex flex-col justify-center w-full z-10">
+                <p class="text-lg text-gray-500 italic font-poppins mb-2">This certificate is proudly awarded to</p>
+                <div class="text-6xl font-bold text-gray-800 mb-6 border-b-2 border-gray-200 pb-4 mx-auto min-w-[500px] inline-block font-playfair tracking-wide leading-tight">
+                    ${data.recipientName}
+                </div>
+                
+                <div class="mt-4 max-w-4xl mx-auto">
+                    <p class="text-gray-500 font-poppins text-sm uppercase tracking-wider mb-2">For outstanding performance in</p>
+                    <h2 class="text-4xl font-bold text-[${data.accentColor}] font-playfair mb-6">${data.courseName}</h2>
+                    <p class="text-gray-600 leading-relaxed font-poppins text-base px-10 italic">${data.description}</p>
+                </div>
+            </div>
 
-    await generateCertificate(data);
-    if (actions) {
-      actions.style.display = 'block';
+            <!-- Footer -->
+            <div class="w-full flex justify-between items-end px-16 pb-8 z-10 mt-auto">
+                <div class="text-center">
+                    <div class="w-48 border-b border-gray-400 mb-2 h-10"></div>
+                    <p class="text-xs font-bold uppercase tracking-widest text-gray-400 font-poppins">Director Signature</p>
+                </div>
+                
+                <div class="flex flex-col items-center justify-center">
+                    ${data.qrEnabled ? `
+                    <div class="bg-white p-2 border border-gray-200 shadow-sm mb-2">
+                        <div id="qrcode" class="w-20 h-20"></div>
+                    </div>` : `<div class="w-20 h-20 rounded-full border-4 border-double border-gray-200 flex items-center justify-center mb-2"><i class="fas fa-certificate text-3xl text-gray-300"></i></div>`}
+                    <div class="text-[10px] text-gray-400 font-poppins tracking-widest">ID: ${data.certId}</div>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-48 border-b border-gray-400 mb-2 font-playfair text-xl text-gray-600 h-10 flex items-end justify-center">${data.date}</div>
+                    <p class="text-xs font-bold uppercase tracking-widest text-gray-400 font-poppins">Date Issued</p>
+                </div>
+            </div>
+
+            <!-- Watermark -->
+            ${data.watermarkEnabled ? `
+            <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none z-0">
+                <img src="${data.logoUrl || 'https://via.placeholder.com/500'}" class="w-[600px] h-[600px] object-contain grayscale">
+            </div>` : ''}
+        </div>
+    `,
+
+  modern: (data) => `
+        <div class="w-full h-full relative bg-slate-50 flex overflow-hidden font-poppins">
+            <!-- Sidebar -->
+            <div class="w-[30%] h-full bg-[${data.accentColor}] text-white p-12 flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-full bg-black/10 z-0"></div>
+                <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-white/10 rounded-full z-0"></div>
+                
+                <div class="z-10 relative">
+                    ${data.logoUrl ? `<img src="${data.logoUrl}" class="h-24 w-24 object-contain bg-white p-3 rounded-xl shadow-lg mb-8" alt="Logo">` : ''}
+                    <div class="h-1 w-16 bg-white/50 mb-6"></div>
+                    <h2 class="text-3xl font-bold leading-tight mb-2">${data.organization}</h2>
+                    <p class="text-white/70 text-sm font-medium tracking-wide">Excellence in Education</p>
+                </div>
+
+                <div class="text-center z-10 relative mt-auto">
+                    ${data.qrEnabled ? `<div id="qrcode" class="bg-white p-3 rounded-xl shadow-lg mb-6 mx-auto w-32 h-32"></div>` : ''}
+                    <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                        <p class="text-[10px] text-white/80 tracking-widest uppercase mb-1">Certificate ID</p>
+                        <p class="text-sm font-mono font-bold">${data.certId}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 p-20 flex flex-col justify-center relative bg-white">
+                <div class="absolute top-10 right-10 opacity-5">
+                    <i class="fas fa-certificate text-9xl"></i>
+                </div>
+
+                <div class="mb-16">
+                    <h1 class="text-5xl font-bold text-gray-800 mb-4 tracking-tight">Certificate of Completion</h1>
+                    <div class="h-2 w-32 bg-[${data.accentColor}]"></div>
+                </div>
+
+                <div class="space-y-10">
+                    <div>
+                        <p class="text-gray-500 uppercase tracking-wider text-sm font-bold mb-3 flex items-center gap-2"><div class="w-4 h-px bg-gray-400"></div> Awarded To</p>
+                        <h2 class="text-6xl font-bold text-gray-900 leading-tight">${data.recipientName}</h2>
+                    </div>
+
+                    <div>
+                        <p class="text-gray-500 uppercase tracking-wider text-sm font-bold mb-3 flex items-center gap-2"><div class="w-4 h-px bg-gray-400"></div> For The Course</p>
+                        <h3 class="text-4xl font-bold text-[${data.accentColor}]">${data.courseName}</h3>
+                    </div>
+
+                    <div class="bg-gray-50 p-6 rounded-l-xl border-l-4 border-[${data.accentColor}]">
+                        <p class="text-gray-600 leading-relaxed text-lg">
+                            ${data.description}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-auto flex gap-16 pt-16 border-t border-gray-100">
+                    <div class="flex-1">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Signature_sample.svg/1200px-Signature_sample.svg.png" class="h-12 object-contain mb-3 opacity-60">
+                        <p class="text-xs font-bold uppercase text-gray-400 tracking-wider">Director Signature</p>
+                    </div>
+                    <div>
+                        <p class="h-12 flex items-end font-mono text-xl text-gray-700 mb-3">${data.date}</p>
+                        <p class="text-xs font-bold uppercase text-gray-400 tracking-wider">Date Issued</p>
+                    </div>
+                </div>
+            </div>
+            
+             ${data.watermarkEnabled ? `
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-[0.03] pointer-events-none z-0">
+                 <span class="text-[12rem] font-bold uppercase tracking-widest -rotate-45 border-4 border-gray-900 p-10 rounded-[4rem]">verified</span>
+            </div>` : ''}
+        </div>
+    `,
+
+  minimal: (data) => `
+        <div class="w-full h-full bg-white p-24 flex flex-col items-center text-center font-poppins relative border border-gray-200">
+            
+            <div class="flex-1 flex flex-col items-center w-full max-w-5xl mx-auto z-10">
+                <div class="mb-12 flex flex-col items-center">
+                    ${data.logoUrl ? `<img src="${data.logoUrl}" class="h-16 opacity-80 mb-6 grayscale" alt="Logo">` : ''}
+                    <h3 class="text-sm font-semibold tracking-[0.2em] uppercase text-gray-900">${data.organization}</h3>
+                </div>
+                
+                <div class="space-y-6 w-full mb-12">
+                    <h1 class="text-xs font-bold tracking-[0.6em] uppercase text-gray-400">Certificate of Completion</h1>
+                    <div class="w-full border-t border-gray-200"></div>
+                </div>
+
+                <div class="mb-10 w-full">
+                    <h2 class="text-7xl font-light text-gray-900 mb-6 tracking-wide">${data.recipientName}</h2>
+                    <p class="text-gray-500 font-light text-lg">has successfully completed the requirements for</p>
+                </div>
+
+                <div class="mb-12 w-full">
+                    <h3 class="text-4xl font-medium text-gray-800 mb-6">${data.courseName}</h3>
+                    <p class="text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">${data.description}</p>
+                </div>
+                
+                 ${data.qrEnabled ? `<div id="qrcode" class="mb-8 opacity-80"></div>` : ''}
+
+                <div class="flex justify-between items-center w-full max-w-2xl border-t border-gray-100 pt-10 mt-auto">
+                     <div class="text-left w-1/3">
+                        <p class="text-lg text-gray-900 font-manual">John Doe</p>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Instructor</p>
+                    </div>
+                    <div class="text-center w-1/3">
+                        <p class="text-xs font-mono text-gray-400">ID: ${data.certId}</p>
+                    </div>
+                    <div class="text-right w-1/3">
+                        <p class="text-lg text-gray-900 font-medium">${data.date}</p>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Date</p>
+                    </div>
+                </div>
+            </div>
+
+             ${data.watermarkEnabled ? `
+            <div class="absolute bottom-0 right-0 opacity-[0.03]">
+                 <i class="fas fa-award text-[30rem]"></i>
+            </div>` : ''}
+        </div>
+    `,
+
+  dark: (data) => `
+        <div class="w-full h-full bg-[#0F172A] relative p-16 flex flex-col font-cinzel text-gray-100 overflow-hidden border-[16px] border-[#1E293B]">
+            <!-- Background Elements -->
+            <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-yellow-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+
+            <div class="relative z-10 h-full flex flex-col justify-between border border-white/10 p-12 bg-white/5 backdrop-blur-sm shadow-2xl">
+                
+                <!-- Header -->
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-4">
+                        ${data.logoUrl ? `<img src="${data.logoUrl}" class="h-16 invert opacity-90" alt="Logo">` : ''}
+                        <div class="text-left">
+                            <h2 class="text-yellow-500 text-sm tracking-[0.2em] uppercase font-bold">${data.organization}</h2>
+                            <p class="text-gray-400 text-[10px] tracking-wider uppercase">Official Certification</p>
+                        </div>
+                    </div>
+                    ${data.qrEnabled ? `<div id="qrcode" class="bg-white p-2 rounded shadow-lg"></div>` : ''}
+                </div>
+
+                <!-- Main Content -->
+                <div class="text-center space-y-10 my-auto">
+                    <h1 class="text-7xl text-white font-bold tracking-tight drop-shadow-2xl">Certificate</h1>
+                    
+                    <div class="py-6 relative">
+                        <!-- Decorative Lines -->
+                        <div class="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-yellow-600/50 to-transparent"></div>
+                        
+                        <div class="relative bg-[#0F172A]/80 inline-block px-10 py-2">
+                            <p class="text-gray-400 font-poppins text-sm tracking-[0.3em] uppercase">This Honor is Bestowed Upon</p>
+                        </div>
+                    </div>
+
+                    <div class="text-6xl text-yellow-100 py-4 font-playfair italic drop-shadow-md text-glow">${data.recipientName}</div>
+
+                    <div class="space-y-4">
+                        <p class="text-gray-400 font-poppins text-sm tracking-wide">In Recognition of Mastery In</p>
+                        <h3 class="text-4xl text-yellow-500 font-bold tracking-wide">${data.courseName}</h3>
+                        <p class="text-gray-400 text-sm max-w-2xl mx-auto font-poppins leading-relaxed opacity-80 border-t border-yellow-600/20 pt-4 mt-4">${data.description}</p>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex justify-between items-end border-t border-white/10 pt-8 mt-4">
+                     <div>
+                        <div class="h-12 border-b border-gray-600 w-56 mb-2 flex items-end pb-1 overflow-hidden">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Signature_sample.svg/1200px-Signature_sample.svg.png" class="h-10 invert opacity-50">
+                        </div>
+                        <p class="text-[10px] text-yellow-600 uppercase tracking-widest font-bold">Authorized Signature</p>
+                     </div>
+                     
+                     <div class="text-center">
+                        <p class="text-xs text-gray-500 mb-1 font-mono tracking-widest">ID: ${data.certId}</p>
+                        <i class="fas fa-shield-alt text-2xl text-yellow-600/50"></i>
+                     </div>
+
+                     <div class="text-right">
+                        <p class="text-xl text-white font-mono mb-2">${data.date}</p>
+                        <p class="text-[10px] text-yellow-600 uppercase tracking-widest font-bold">Date of Issue</p>
+                     </div>
+                </div>
+            </div>
+             ${data.watermarkEnabled ? `
+            <div class="absolute inset-0 flex items-center justify-center opacity-[0.02] pointer-events-none">
+                 <i class="fas fa-shield-alt text-[24rem] text-yellow-400"></i>
+            </div>` : ''}
+        </div>
+    `,
+
+  gold: (data) => `
+        <div class="w-full h-full bg-gradient-to-br from-[#FFFDF5] to-[#FFFFFF] p-12 flex flex-col relative font-playfair text-[#5C481D]">
+            <!-- Gold Frame -->
+            <div class="absolute inset-4 border-[3px] border-[#C59D45] z-0 pointer-events-none"></div>
+            <div class="absolute inset-6 border border-[#E6C87F] z-0 pointer-events-none"></div>
+            
+            <!-- Corner Accents -->
+            <div class="absolute top-4 left-4 text-5xl text-[#C59D45]"><i class="fab fa-ethereum"></i></div>
+            <div class="absolute top-4 right-4 text-5xl text-[#C59D45]"><i class="fab fa-ethereum"></i></div>
+            <div class="absolute bottom-4 left-4 text-5xl text-[#C59D45] rotate-180"><i class="fab fa-ethereum"></i></div>
+            <div class="absolute bottom-4 right-4 text-5xl text-[#C59D45] rotate-180"><i class="fab fa-ethereum"></i></div>
+
+            <div class="relative z-10 h-full flex flex-col items-center justify-center text-center px-16 space-y-8">
+                
+                <div class="w-full flex justify-between items-start absolute top-16 left-0 px-20">
+                    <div class="text-left">
+                        <h2 class="font-bold text-lg text-[#8A6E2F] uppercase tracking-widest">${data.organization}</h2>
+                    </div>
+                </div>
+
+                ${data.logoUrl ? `<img src="${data.logoUrl}" class="h-24 mb-4 drop-shadow-md mt-10" alt="Logo">` : '<div class="h-24"></div>'}
+                
+                <div>
+                    <h1 class="text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-[#b8860b] to-[#ffd700] mb-2 drop-shadow-sm filter" style="-webkit-text-stroke: 1px #8A6E2F;">Certificate</h1>
+                    <p class="text-3xl italic text-[#8A6E2F] opacity-90 font-alex">of Appreciation</p>
+                </div>
+
+                <div class="w-full max-w-4xl space-y-4 py-8 border-y border-[#E6C87F]/30">
+                    <p class="text-sm uppercase tracking-[0.3em] text-[#8A6E2F] font-bold">This is Presented To</p>
+                    <div class="text-7xl font-bold text-[#3d2f12] py-2">${data.recipientName}</div>
+                </div>
+
+                <div class="mb-4 max-w-3xl">
+                    <p class="text-base text-[#8A6E2F] mb-4 italic">For outstanding achievement in</p>
+                    <h2 class="text-5xl font-bold text-[#C59D45] mb-6">${data.courseName}</h2>
+                    <p class="text-sm text-[#8A6E2F] leading-relaxed font-poppins">${data.description}</p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-12 w-full max-w-5xl pt-10 mt-auto items-end">
+                    <div class="text-center">
+                        <div class="font-alex text-4xl mb-2 text-[#5C481D]">Director</div>
+                        <div class="h-px bg-[#C59D45] w-full mb-2"></div>
+                        <p class="text-[10px] uppercase tracking-widest text-[#8A6E2F]">Signature</p>
+                    </div>
+                    <div class="flex flex-col items-center justify-center">
+                        ${data.qrEnabled ? `<div id="qrcode" class="border-4 border-white shadow-xl p-1 bg-white mb-2"></div>` :
+      `<div class="w-24 h-24 rounded-full border-4 border-[#C59D45] flex items-center justify-center shadow-inner bg-[#fff9c4]/20 mb-2">
+                            <i class="fas fa-award text-[#C59D45] text-4xl"></i>
+                        </div>`}
+                        <div class="text-[9px] font-mono text-[#8A6E2F]">${data.certId}</div>
+                    </div>
+                     <div class="text-center">
+                        <div class="font-poppins text-xl mb-2 font-bold text-[#5C481D]">${data.date}</div>
+                        <div class="h-px bg-[#C59D45] w-full mb-2"></div>
+                        <p class="text-[10px] uppercase tracking-widest text-[#8A6E2F]">Date</p>
+                    </div>
+                </div>
+            </div>
+            
+             ${data.watermarkEnabled ? `
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border-[20px] rounded-full border-[#C59D45] opacity-[0.03] flex items-center justify-center pointer-events-none">
+                 <div class="w-[400px] h-[400px] border-[10px] rounded-full border-[#C59D45] flex items-center justify-center">
+                    <span class="text-6xl font-bold uppercase tracking-widest rotate-[-30deg] text-[#C59D45]">Premium</span>
+                 </div>
+            </div>` : ''}
+        </div>
+    `
+};
+
+// ==========================================
+// RENDER LOGIC
+// ==========================================
+function updatePreview() {
+  // 1. Update State
+  state.recipientName = document.getElementById('recipientName').value || 'Recipient Name';
+  state.courseName = document.getElementById('courseName').value || 'Course Name';
+  state.description = document.getElementById('description').value;
+  state.date = document.getElementById('issueDate').value || new Date().toISOString().split('T')[0];
+  state.organization = document.getElementById('organization').value;
+  state.logoUrl = document.getElementById('logoUrl').value;
+  state.accentColor = document.getElementById('accentColor').value;
+  state.qrEnabled = document.getElementById('qrToggle').checked;
+  state.watermarkEnabled = document.getElementById('watermarkToggle').checked;
+
+  // 2. Render Template
+  const container = document.getElementById('certificate-container');
+  const renderFn = templates[state.template] || templates['classic'];
+  container.innerHTML = renderFn(state);
+
+  // 3. Render QR Code if enabled
+  if (state.qrEnabled) {
+    // Find the QR div container injected by the template
+    const qrDiv = document.getElementById('qrcode');
+    if (qrDiv) {
+      qrDiv.innerHTML = ''; // Clear previous
+      try {
+        // Use qrcode.js library
+        new QRCode(qrDiv, {
+          text: `https://certgen.com/verify/${state.certId}`, // Mock Verification URL
+          width: 80,
+          height: 80,
+          colorDark: state.template === 'dark' ? "#000000" : state.accentColor,
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } catch (e) { console.error("QR Render Error", e); }
     }
   }
 
-  async function handleBulkGeneration() {
-    const file = document.getElementById('excelUpload').files[0];
-    if (!file) {
-      alert('Please upload an Excel/CSV file first');
+  // 4. Highlight Selected Template in Sidebar
+  document.querySelectorAll('.template-btn').forEach(btn => {
+    if (btn.dataset.template === state.template) {
+      btn.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50');
+      btn.classList.remove('border-transparent');
+    } else {
+      btn.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50');
+      btn.classList.add('border-transparent');
+    }
+  });
+
+  // Update Cert ID Display
+  document.getElementById('certId').value = state.certId;
+}
+
+// ==========================================
+// CONTROLS
+// ==========================================
+function setTemplate(name) {
+  state.template = name;
+  updatePreview();
+}
+
+function handleLogoUpload(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      document.getElementById('logoUrl').value = e.target.result; // Set data URL to input
+      updatePreview();
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function adjustZoom(delta) {
+  state.zoom += delta;
+  state.zoom = Math.max(0.3, Math.min(2.0, state.zoom)); // Clamp
+
+  // Apply zoom to the wrapper (scaling logic)
+  // We scale the WRAPPER, not the container itself to keep px resolution high
+  const wrapper = document.getElementById('preview-wrapper');
+  wrapper.style.transform = `scale(${state.zoom})`;
+
+  // Update label
+  document.getElementById('zoomLevel').innerText = Math.round(state.zoom * 100) + '%';
+}
+
+function toggleFullScreen() {
+  const section = document.querySelector('main');
+  if (!document.fullscreenElement) {
+    section.requestFullscreen().catch(err => {
+      alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+    });
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+// ==========================================
+// EXPORT & SAVE
+// ==========================================
+async function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+
+  const container = document.getElementById('certificate-container');
+  const wrapper = document.getElementById('preview-wrapper');
+
+  // 1. Temporarily reset transform/scale to ensure clean capture
+  const originalTransform = wrapper.style.transform;
+  wrapper.style.transform = 'scale(1)';
+
+  // 2. Show loading (optional: change button text)
+  const btn = document.querySelector('button[onclick="downloadPDF()"]');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  btn.disabled = true;
+
+  try {
+    // 3. HTML2Canvas Capture
+    const canvas = await html2canvas(container, {
+      scale: 2, // High resolution (2x)
+      useCORS: true, // Allow cross-origin images
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+
+    // 4. Create PDF
+    const imgData = canvas.toDataURL('image/png');
+
+    // A4 Landscape Dimensions
+    const pdf = new jsPDF('l', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`Certificate_${state.recipientName.replace(/\s+/g, '_')}.pdf`);
+
+    showToast("Certificate Downloaded!");
+
+    // Record Action in Backend (if certId exists/saved)
+    if (state.certId) {
+      recordCertificateAction(state.certId, 'DOWNLOADED', `Downloaded PDF for ${state.recipientName}`);
+    }
+
+  } catch (err) {
+    console.error("PDF Generate Error", err);
+    alert("Failed to generate PDF. check console.");
+  } finally {
+    // Restore UI
+    wrapper.style.transform = originalTransform;
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+async function saveCertificate() {
+  const btn = document.querySelector('button[onclick="saveCertificate()"]');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+  try {
+    const formData = {
+      recipientName: state.recipientName,
+      recipientEmail: 'generated@temp.com', // To be filled real or temp
+      courseName: state.courseName,
+      organization: state.organization,
+      description: state.description,
+      startDate: state.date,
+      endDate: state.date,
+      templateUsed: state.template,
+      qrEnabled: state.qrEnabled,
+      watermarkEnabled: state.watermarkEnabled,
+      certificateId: state.certId
+    };
+
+    // Since logic might be reused, allow passing explicit email if user provided (not in UI currently)
+    // For now, use dummy or prompt
+    const email = prompt("Enter recipient email to save record:", "student@example.com");
+    if (!email) {
+      btn.innerHTML = '<i class="fas fa-save text-green-600"></i> Save to Cloud';
       return;
     }
-
-    try {
-      const data = await parseExcel(file);
-      if (!data || data.length === 0) {
-        throw new Error('No valid data found in the file');
-      }
-
-      // Generate IDs for each item to ensure QR codes match database records
-      data.forEach(item => {
-        if (!item.id) {
-          item.id = `CERT-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-        }
-      });
-
-      // Generate and download the list of names
-      downloadNamesList(data);
-
-      // Clear the previous preview
-      const previewSection = document.getElementById('certificatePreview');
-      previewSection.innerHTML = '';
-
-      // Create a container for all certificates
-      const certificatesContainer = document.createElement('div');
-      certificatesContainer.className = 'certificates-container';
-      previewSection.appendChild(certificatesContainer);
-
-      // Process each row and display certificates
-      for (const item of data) {
-        // Create certificate element by calling the helper function
-        // This ensures consistent design and adds features like QR codes
-        const certificateDiv = await generateBulkCertificate(item);
-        certificateDiv.className = 'preview-certificate';
-        // Note: innerHTML is already set by generateBulkCertificate
-
-        // Add the certificate to the container
-        certificatesContainer.appendChild(certificateDiv);
-
-        // Add a download button for this certificate
-        const downloadButton = document.createElement('button');
-        downloadButton.className = 'btn-action';
-        downloadButton.innerHTML = `<span class="material-icons">download</span> Download Certificate`;
-        downloadButton.onclick = () => {
-          const filename = `${item.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_certificate.pdf`;
-          generatePDF(filename, certificateDiv);
-        };
-        certificatesContainer.appendChild(downloadButton);
-
-        // Add some spacing between certificates
-        const spacer = document.createElement('div');
-        spacer.style.height = '30px';
-        certificatesContainer.appendChild(spacer);
-      }
-
-      // Add a "Save All to Database" button after all certificates are generated
-      const saveAllButton = document.createElement('button');
-      saveAllButton.className = 'btn-action save-all-btn';
-      saveAllButton.innerHTML = `<span class="material-icons">save</span> Save All to Database`;
-      saveAllButton.onclick = async () => {
-        try {
-          saveAllButton.disabled = true;
-          saveAllButton.innerHTML = `<span class="material-icons">hourglass_empty</span> Saving...`;
-
-          // Save all certificates to database (Bulk)
-          const user = JSON.parse(localStorage.getItem('user'));
-          const token = user ? user.token : '';
-
-          if (!token) {
-            alert('Please login to save certificates.');
-            window.location.href = 'login.html';
-            return;
-          }
-
-          // Transform data to match schema if necessary
-          const bulkData = data.map(item => ({
-            recipientName: item.name,
-            recipientEmail: item.email,
-            courseName: item.course,
-            startDate: item.startDate,
-            endDate: item.endDate,
-            certificateId: item.id || undefined
-          }));
-
-          const response = await fetch('http://localhost:5000/api/certificates/bulk', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(bulkData)
-          });
-
-          if (response.ok) {
-            showToast(`Successfully saved ${data.length} certificates to database!`);
-            saveAllButton.innerHTML = `<span class="material-icons">check_circle</span> Saved to Database`;
-            saveAllButton.disabled = true;
-            saveAllButton.style.backgroundColor = '#4CAF50';
-          } else {
-            throw new Error('Failed to save bulk data');
-          }
-
-        } catch (error) {
-          console.error('Error saving to database:', error);
-          showToast('Error saving certificates to database. Please try again.');
-          saveAllButton.innerHTML = `<span class="material-icons">save</span> Save All to Database`;
-          saveAllButton.disabled = false;
-        }
-      };
-
-      // Add the save all button to the preview section
-      const actionsContainer = document.createElement('div');
-      actionsContainer.className = 'bulk-actions';
-      actionsContainer.appendChild(saveAllButton);
-      previewSection.appendChild(actionsContainer);
-
-      alert(`Successfully generated ${data.length} certificates! Scroll down to view and download them.`);
-
-    } catch (error) {
-      alert('Error during bulk generation: ' + error.message);
-      console.error('Bulk generation error:', error);
-    }
-  }
-
-  // Helper function to format dates
-  function formatDate(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  }
-
-  async function parseExcel(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = function (e) {
-        try {
-          const data = e.target.result;
-          const workbook = XLSX.read(data, { type: 'binary' });
-          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-          const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-
-          // Map Excel columns to our certificate data structure
-          const mappedData = jsonData.map(row => ({
-            name: row['Name'] || row['Recipient Name'] || row['Student Name'] || '',
-            email: row['Email'] || row['Email Address'] || row['Contact'] || '',
-            course: row['Course'] || row['Course Name'] || row['Program'] || '',
-            startDate: row['Start Date'] || row['Course Start'] || '',
-            endDate: row['End Date'] || row['Course End'] || '',
-            grade: row['Grade'] || row['Score'] || '',
-            id: row['ID'] || row['Student ID'] || ''
-          }));
-
-          resolve(mappedData);
-        } catch (error) {
-          reject(new Error('Error parsing Excel file: ' + error.message));
-        }
-      };
-
-      reader.onerror = function (error) {
-        reject(new Error('Error reading file: ' + error.message));
-      };
-
-      reader.readAsBinaryString(file);
-    });
-  }
-
-  async function generateBulkCertificate(data) {
-    const certificate = document.createElement('div');
-    certificate.className = 'certificate pdf-export';
-
-    certificate.innerHTML = `
-        <div class="certificate-content">
-            <div class="ornate-border ornate-border-top"></div>
-            <div class="ornate-border ornate-border-bottom"></div>
-            <div class="ornate-border ornate-border-left"></div>
-            <div class="ornate-border ornate-border-right"></div>
-            <div class="corner-decoration top-left"></div>
-            <div class="corner-decoration top-right"></div>
-            <div class="corner-decoration bottom-left"></div>
-            <div class="corner-decoration bottom-right"></div>
-            
-            <div class="institute-header">
-                <div class="logo-container">
-                    <img src="logo.png" alt="VIIT Logo" class="viit-logo" crossorigin="anonymous">
-                </div>
-                <div class="institute-details">
-                    <h2 class="institute-name">
-                        <span>VISHWAKARMA INSTITUTE OF</span>
-                        <span>INFORMATION TECHNOLOGY, PUNE</span>
-                    </h2>
-                    <h3 class="department-name">DEPARTMENT OF COMPUTER ENGINEERING</h3>
-                    <div class="institute-address">(An Autonomous Institute Affiliated to Savitribai Phule Pune University), Pune</div>
-                </div>
-            </div>
-            
-            <div class="certificate-header">
-                <h1>CERTIFICATE</h1>
-                <div class="subtitle">of Achievement</div>
-            </div>
-            
-            <div class="certificate-body">
-                <p>This certificate is proudly presented to:</p>
-                <div class="recipient-name">${data.name}</div>
-                <p>in recognition of outstanding performance and dedication in</p>
-                <div class="course-name">${data.course}</div>
-                <p>Your exceptional contributions and commitment to excellence have significantly advanced our team's success.</p>
-            </div>
-            
-            <div class="signature-section">
-                <div class="signature-box">
-                    <img src="sign.jpg" alt="Authorized Signature" class="signature-img">
-                    <div class="signature-line"></div>
-                    <p>Authorized Signature</p>
-                </div>
-                <div class="signature-box">
-                    <div class="signature-line"></div>
-                    <p class="date-text">${formatDate(data.startDate)} - ${formatDate(data.endDate)}</p>
-                </div>
-            </div>
-        </div>
-    `;
-
-
-
-    // Generate QR Code Link
-    // In production, this would be your actual deployed URL
-    const verifyUrl = `http://localhost:5000/verify.html?id=${data.id || ''}`;
-
-    // QR Code Container
-    const qrDiv = document.createElement('div');
-    qrDiv.className = "qrcode-container";
-    qrDiv.style.position = "absolute";
-    qrDiv.style.bottom = "40px";
-    qrDiv.style.right = "40px";
-    qrDiv.style.width = "70px";
-    qrDiv.style.height = "70px";
-
-    // We append the QR Logic to the element after it's created
-    certificate.querySelector('.certificate-content').appendChild(qrDiv);
-
-    // Create QR Code (Requires qrcodejs library)
-    if (window.QRCode) {
-      new QRCode(qrDiv, {
-        text: verifyUrl,
-        width: 70,
-        height: 70
-      });
-    }
-
-    return certificate;
-  }
-
-  function generateCertificate({ name, course, startDate, endDate }) {
-    const preview = document.getElementById('certificatePreview');
-    preview.innerHTML = '';
-
-    const formatDate = (dateString) => {
-      if (!dateString) return '';
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric'
-      });
-    };
-
-    const formattedStartDate = startDate ? formatDate(startDate) : '';
-    const formattedEndDate = endDate ? formatDate(endDate) : '';
-    const dateRange = formattedStartDate && formattedEndDate
-      ? `${formattedStartDate} - ${formattedEndDate}`
-      : (formattedStartDate ? `Date: ${formattedStartDate}` : 'Date of Issue: ' + formatDate(new Date()));
-
-    const certificate = document.createElement('div');
-    certificate.className = 'certificate';
-    certificate.id = 'certificate-container';
-    certificate.innerHTML = `
-        <div class="certificate-content">
-            <div class="ornate-border ornate-border-top"></div>
-            <div class="ornate-border ornate-border-bottom"></div>
-            <div class="ornate-border ornate-border-left"></div>
-            <div class="ornate-border ornate-border-right"></div>
-            <div class="corner-decoration top-left"></div>
-            <div class="corner-decoration top-right"></div>
-            <div class="corner-decoration bottom-left"></div>
-            <div class="corner-decoration bottom-right"></div>
-            
-            <div class="institute-header">
-                <div class="logo-container">
-                    <img src="logo.png" alt="VIIT Logo" class="viit-logo" crossorigin="anonymous">
-                </div>
-                <div class="institute-details">
-                    <h2 class="institute-name">
-                        <span>VISHWAKARMA INSTITUTE OF</span>
-                        <span>INFORMATION TECHNOLOGY, PUNE</span>
-                    </h2>
-                    <h3 class="department-name">DEPARTMENT OF COMPUTER ENGINEERING</h3>
-                    <div class="institute-address">(An Autonomous Institute Affiliated to Savitribai Phule Pune University), Pune</div>
-                </div>
-            </div>
-            
-            <div class="certificate-header">
-                <h1>CERTIFICATE</h1>
-                <div class="subtitle">of Achievement</div>
-            </div>
-            
-            <div class="certificate-body">
-                <p>This certificate is proudly presented to:</p>
-                <div class="recipient-name">${name}</div>
-                <p>in recognition of outstanding performance and dedication in</p>
-                <div class="course-name">${course}</div>
-                <p>Your exceptional contributions and commitment to excellence have significantly advanced our team's success.</p>
-            </div>
-            
-            <div class="signature-section">
-                <div class="signature-box">
-                    <img src="sign.jpg" alt="Authorized Signature" class="signature-img">
-                    <div class="signature-line"></div>
-        <p>Authorized Signature</p>
-                </div>
-                <div class="signature-box">
-                    <div class="signature-line"></div>
-                    <p class="date-text">${dateRange}</p>
-                </div>
-            </div>
-      </div>
-    `;
-
-    preview.appendChild(certificate);
-  }
-
-  // UPDATED PDF GENERATION FUNCTION
-  async function generatePDF(filename = 'certificate.pdf', certificateElement) {
-    try {
-      // Add PDF export class for special styling
-      certificateElement.classList.add('pdf-export');
-
-      // Ensure all images are fully loaded before proceeding
-      const images = certificateElement.querySelectorAll('img');
-      const imagePromises = Array.from(images).map(img => {
-        return new Promise((resolve) => {
-          if (img.complete) {
-            resolve();
-            return;
-          }
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        });
-      });
-
-      // Wait for all images to load
-      await Promise.all(imagePromises);
-
-      // Improved html2canvas options
-      const canvas = await html2canvas(certificateElement, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        imageTimeout: 15000,
-        backgroundColor: '#ffffff',
-        onclone: function (clonedDoc) {
-          const clonedElement = clonedDoc.getElementById('certificate-container');
-          // Ensure borders are visible in the cloned element
-          if (clonedElement) {
-            clonedElement.style.border = '2px solid #1a4b8c';
-            clonedElement.style.padding = '20px';
-            clonedElement.style.margin = '0';
-            clonedElement.style.boxSizing = 'border-box';
-          }
-        }
-      });
-
-      // Create PDF with proper dimensions
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('landscape');
-
-      // Get PDF dimensions
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-
-      // Calculate proper scaling to maintain aspect ratio
-      const imgData = canvas.toDataURL('image/png', 1.0);
-
-      // Add the image with proper scaling
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-      // Save the PDF
-      pdf.save(filename);
-
-      // Remove PDF export class after generation
-      certificateElement.classList.remove('pdf-export');
-
-      return true;
-    } catch (error) {
-      console.error('PDF generation error:', error);
-      throw error;
-    }
-  }
-
-  async function saveToDatabase(data) {
-    try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const token = user ? user.token : '';
-
-      if (!token) {
-        alert('Please login to save certificates.');
-        window.location.href = 'login.html';
-        return;
-      }
-
-      const response = await fetch('http://localhost:5000/api/certificates', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(data)
-      });
-      return await response.json();
-    } catch (error) {
-      console.error('Database save error:', error);
-    }
-  }
-  document.getElementById('saveToDb').addEventListener('click', async () => {
-    const name = document.getElementById('recipientName').value;
-    const email = document.getElementById('recipientEmail').value;
-    const course = document.getElementById('courseName').value;
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-
-    try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const token = user ? user.token : '';
-
-      if (!token) {
-        alert('Please login to save certificates.');
-        window.location.href = 'login.html';
-        return;
-      }
-
-      const response = await fetch('http://localhost:5000/api/certificates', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          recipientName: name,
-          recipientEmail: email,
-          courseName: course,
-          startDate,
-          endDate
-        })
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        alert('Saved to database!');
-      } else {
-        throw new Error(result.error);
-      }
-    } catch (error) {
-      console.error('Save error:', error);
-      alert('Failed to save to database.');
-    }
-  });
-  document.getElementById('download-pdf-btn').addEventListener('click', async () => {
-    try {
-      // Get recipient name for filename
-      const recipientName = document.getElementById('recipientName').value || 'certificate';
-      const filename = `${recipientName.replace(/\s+/g, '_')}_certificate.pdf`;
-
-      // Get the certificate element
-      const certificateElement = document.getElementById('certificate-container');
-      if (!certificateElement) {
-        throw new Error('Certificate element not found');
-      }
-
-      // Generate and download the PDF
-      await generatePDF(filename, certificateElement);
-
-      // Show success message
-      showToast('Certificate downloaded successfully!');
-    } catch (error) {
-      console.error('Download error:', error);
-      showToast('Failed to download certificate. Please try again.');
-    }
-  });
-  document.getElementById('sendEmailBtn').addEventListener('click', async () => {
-    try {
-      // Get form data
-      const name = document.getElementById('recipientName').value;
-      const email = document.getElementById('recipientEmail').value;
-      const course = document.getElementById('courseName').value;
-      const startDate = document.getElementById('startDate').value;
-      const endDate = document.getElementById('endDate').value;
-
-      // Validate required fields
-      if (!name || !email || !course) {
-        showToast('Please fill in all required fields');
-        return;
-      }
-
-      // Show loading state
-      const emailBtn = document.getElementById('sendEmailBtn');
-      emailBtn.disabled = true;
-      emailBtn.innerHTML = '<span class="material-icons">hourglass_empty</span> Sending...';
-
-      // Get the certificate element
-      const certificateElement = document.getElementById('certificate-container');
-      if (!certificateElement) {
-        throw new Error('Certificate element not found');
-      }
-
-      // Wait for all images to be loaded
-      const images = certificateElement.querySelectorAll('img');
-      await Promise.all(Array.from(images).map(img => {
-        if (img.complete) return Promise.resolve();
-        return new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve;
-        });
-      }));
-
-      // Generate PDF data
-      const canvas = await html2canvas(certificateElement, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
-      const pdfData = canvas.toDataURL('image/png').split(',')[1]; // base64
-
-      // Send email request
-      const user = JSON.parse(localStorage.getItem('user'));
-      const token = user ? user.token : '';
-
-      if (!token) {
-        alert('Please login to send emails.');
-        window.location.href = 'login.html';
-        return;
-      }
-
-      const response = await fetch('http://localhost:5000/api/send-certificate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          email,
-          name,
-          course,
-          startDate,
-          endDate,
-          pdfData,
-          certificateId: generateCertificateId()
-        })
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        showToast('Certificate sent successfully!');
-
-        // Add success status indicator
-        const statusDiv = document.createElement('div');
-        statusDiv.className = 'email-status success';
-        statusDiv.innerHTML = `
-          <span class="material-icons">check_circle</span>
-          Certificate sent to ${email}
-        `;
-        emailBtn.parentNode.appendChild(statusDiv);
-
-        // Remove status after 5 seconds
-        setTimeout(() => statusDiv.remove(), 5000);
-      } else {
-        throw new Error(result.error || 'Failed to send certificate');
-      }
-    } catch (error) {
-      console.error('Email send error:', error);
-      showToast('Failed to send certificate. Please try again.');
-
-      // Add error status indicator
-      const statusDiv = document.createElement('div');
-      statusDiv.className = 'email-status error';
-      statusDiv.innerHTML = `
-        <span class="material-icons">error</span>
-        ${error.message}
-      `;
-      document.getElementById('sendEmailBtn').parentNode.appendChild(statusDiv);
-
-      // Remove status after 5 seconds
-      setTimeout(() => statusDiv.remove(), 5000);
-    } finally {
-      // Reset button state
-      const emailBtn = document.getElementById('sendEmailBtn');
-      emailBtn.disabled = false;
-      emailBtn.innerHTML = '<span class="material-icons">email</span> Send via Email';
-    }
-  });
-
-  // Helper function to generate unique certificate ID
-  function generateCertificateId() {
-    const timestamp = new Date().getTime();
-    const random = Math.floor(Math.random() * 1000);
-    return `CERT-${timestamp}-${random}`;
-  }
-
-  // Template Selection and Navigation
-  function scrollToTemplates() {
-    const templatesSection = document.getElementById('templates');
-    if (templatesSection) {
-      templatesSection.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  }
-
-  function scrollToGenerator() {
-    const generatorSection = document.getElementById('generator');
-    if (generatorSection) {
-      generatorSection.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  }
-
-  function selectTemplate(templateType) {
-    // Remove active class from all templates
-    document.querySelectorAll('.template-card').forEach(card => {
-      card.classList.remove('active');
+    formData.recipientEmail = email;
+
+    const res = await fetch('http://localhost:5000/api/certificates', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentUser.token}`
+      },
+      body: JSON.stringify(formData)
     });
 
-    // Add active class to selected template
-    const selectedCard = document.querySelector(`.template-card[onclick*="${templateType}"]`);
-    if (selectedCard) {
-      selectedCard.classList.add('active');
+    if (res.ok) {
+      showToast("Saved to Database!");
+    } else {
+      const err = await res.json();
+      alert("Error: " + err.message);
     }
-
-    // Store selected template type
-    localStorage.setItem('selectedTemplate', templateType);
-
-    // Scroll to generator section
-    setTimeout(() => {
-      scrollToGenerator();
-    }, 500);
-
-    // Update preview with selected template
-    updateCertificatePreview(templateType);
+  } catch (e) {
+    console.error(e);
+    alert("Network Error");
+  } finally {
+    btn.innerHTML = '<i class="fas fa-save text-green-600"></i> Save to Cloud';
   }
+}
 
-  function updateCertificatePreview(templateType) {
-    const preview = document.querySelector('.preview-certificate');
-    if (!preview) return;
+// ==========================================
+// LOGGING
+// ==========================================
+// recordCertificateAction is available globally from js/auth.js
 
-    // Remove all previous template classes
-    preview.className = 'preview-certificate';
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.querySelector('span').innerText = msg;
+  toast.classList.remove('translate-y-20', 'opacity-0');
+  setTimeout(() => {
+    toast.classList.add('translate-y-20', 'opacity-0');
+  }, 3000);
+}
 
-    // Add new template class
-    preview.classList.add(`template-${templateType}`);
+// ==========================================
+// INIT
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Parse URL params for "Edit" mode
+  const urlParams = new URLSearchParams(window.location.search);
+  const fromSandbox = urlParams.get('from');
 
-    // Apply template-specific styles
-    switch (templateType) {
-      case 'classic':
-        preview.style.background = '#fdfbf7';
-        preview.style.border = '35px solid transparent';
-        preview.style.borderImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Cpath fill=\'none\' stroke=\'%234169E1\' stroke-width=\'2\' d=\'M0,0 L100,0 L100,100 L0,100 Z\'/%3E%3Cpath fill=\'none\' stroke=\'%234169E1\' stroke-width=\'1\' d=\'M10,10 L90,10 L90,90 L10,90 Z\'/%3E%3C/svg%3E") 35';
-        break;
+  // Check if loading from sandbox data
+  if (fromSandbox) {
+    const sbData = sessionStorage.getItem('sandboxData');
+    if (sbData) {
+      try {
+        const d = JSON.parse(sbData);
+        if (d.name) document.getElementById('recipientName').value = d.name;
+        if (d.course) document.getElementById('courseName').value = d.course;
+        if (d.desc) document.getElementById('description').value = d.desc;
+        if (d.date) document.getElementById('issueDate').value = d.date;
 
-      case 'modern':
-        preview.style.background = '#ffffff';
-        preview.style.boxShadow = '0 0 30px rgba(0,0,0,0.1)';
-        preview.style.border = '5px solid #2563eb';
-        break;
-
-      case 'professional':
-        preview.style.background = 'linear-gradient(45deg, #fdfbf7 0%, #ffffff 100%)';
-        preview.style.border = '15px solid #1a237e';
-        break;
-
-      case 'creative':
-        preview.style.background = '#ffffff';
-        preview.style.borderRadius = '20px';
-        preview.style.border = '10px solid';
-        preview.style.borderImage = 'linear-gradient(45deg, #2563eb, #7c3aed) 1';
-        break;
-
-      case 'academic':
-        preview.style.background = '#fdfbf7';
-        preview.style.border = '40px solid transparent';
-        preview.style.borderImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Cpath fill=\'none\' stroke=\'%231a237e\' stroke-width=\'2\' d=\'M0,0 C30,20 70,20 100,0 M0,100 C30,80 70,80 100,100\'/%3E%3C/svg%3E") 40';
-        break;
-
-      case 'achievement':
-        preview.style.background = 'linear-gradient(135deg, #fdfbf7 0%, #ffffff 100%)';
-        preview.style.border = '20px solid #2563eb';
-        preview.style.borderRadius = '10px';
-        break;
+        // Map Sandbox templates to Editor templates
+        if (d.template) {
+          const templateMap = {
+            'professional': 'classic',
+            'academic': 'minimal'
+          };
+          state.template = templateMap[d.template] || (templates[d.template] ? d.template : 'classic');
+        }
+      } catch (e) {
+        console.error("Error parsing sandbox data", e);
+      }
+      showToast("Loaded Playground Data");
     }
   }
 
-  function applyCustomization() {
-    const colorOption = document.querySelector('.color-option:checked');
-    const borderStyle = document.querySelector('.style-select[name="border"]').value;
-    const fontStyle = document.querySelector('.style-select[name="font"]').value;
-
-    const preview = document.getElementById('certificatePreview');
-    if (!preview) return;
-
-    const certificate = preview.querySelector('.preview-certificate');
-    if (!certificate) return;
-
-    // Apply color
-    if (colorOption) {
-      const color = colorOption.style.background;
-      certificate.style.setProperty('--primary-color', color);
-    }
-
-    // Apply border style
-    certificate.dataset.borderStyle = borderStyle;
-
-    // Apply font style
-    certificate.dataset.fontStyle = fontStyle;
-
-    // Show success message
-    showToast('Changes applied successfully!');
+  // Set Date Default if empty
+  const dateInput = document.getElementById('issueDate');
+  if (!dateInput.value) {
+    dateInput.valueAsDate = new Date();
   }
 
-  function resetCustomization() {
-    const preview = document.getElementById('certificatePreview');
-    if (!preview) return;
+  // Set Font Size Controller (if needed) but we rely on tailwind classes in templates
 
-    // Reset to default template styles
-    const templateType = preview.className.replace('preview-certificate template-', '');
-    updateCertificatePreview(templateType);
+  // Render
+  updatePreview();
 
-    // Reset form selections
-    document.querySelectorAll('.color-option').forEach(option => option.checked = false);
-    document.querySelectorAll('.style-select').forEach(select => select.selectedIndex = 0);
-
-    // Show reset message
-    showToast('Customization reset to default!');
-  }
-
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * Displays a temporary toast message on the screen.
- * The toast fades in, stays visible for a few seconds, and then fades out.
- * 
-
-/*******  e2407e52-2973-4fea-8013-ebc51aae77ee  *******/  function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = message;
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-      toast.classList.add('show');
-      setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
-    }, 100);
-  }
-
-  // Add these styles to ensure proper signature and border display
-  const style = document.createElement('style');
-  style.textContent = `
-      .signature-img {
-          max-width: 150px;
-          max-height: 60px;
-          margin-bottom: 10px;
-          object-fit: contain;
-      }
-
-      .certificate-content {
-          position: relative;
-          border: 2px solid #1a4b8c;
-          padding: 40px;
-          margin: 20px;
-          background: #fff;
-      }
-
-      .ornate-border {
-          position: absolute;
-          background: #1a4b8c;
-      }
-
-      .ornate-border-top, .ornate-border-bottom {
-          height: 2px;
-          left: 10px;
-          right: 10px;
-      }
-
-      .ornate-border-left, .ornate-border-right {
-          width: 2px;
-          top: 10px;
-          bottom: 10px;
-      }
-
-      .ornate-border-top { top: 5px; }
-      .ornate-border-bottom { bottom: 5px; }
-      .ornate-border-left { left: 5px; }
-      .ornate-border-right { right: 5px; }
-
-      .corner-decoration {
-          position: absolute;
-          width: 20px;
-          height: 20px;
-          border: 2px solid #1a4b8c;
-      }
-
-      .top-left {
-          top: 5px;
-          left: 5px;
-          border-right: none;
-          border-bottom: none;
-      }
-
-      .top-right {
-          top: 5px;
-          right: 5px;
-          border-left: none;
-          border-bottom: none;
-      }
-
-      .bottom-left {
-          bottom: 5px;
-          left: 5px;
-          border-right: none;
-          border-top: none;
-      }
-
-      .bottom-right {
-          bottom: 5px;
-          right: 5px;
-          border-left: none;
-          border-top: none;
-      }
-  `;
-  document.head.appendChild(style);
-
-  // Function to generate and download the list of names
-  function downloadNamesList(data) {
-    // Create a CSV string with headers
-    let csvContent = "Recipient Name\n";
-
-    // Add each name to the CSV
-    data.forEach(item => {
-      // Properly escape the name field
-      const name = `"${item.name.replace(/"/g, '""')}"`;
-      csvContent += name + "\n";
-    });
-
-    // Create a Blob with the CSV content
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-
-    // Create a download link
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-
-    // Set the link properties
-    link.setAttribute("href", url);
-    link.setAttribute("download", "certificate_recipients.csv");
-    link.style.visibility = 'hidden';
-
-    // Add the link to the document, click it, and remove it
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // Show a toast message
-    showToast(`Downloaded list of ${data.length} recipients`);
-  }
+  // Initial Zoom Fit (approx 0.6 for standard screens)
+  state.zoom = 0.7;
+  adjustZoom(0);
 });

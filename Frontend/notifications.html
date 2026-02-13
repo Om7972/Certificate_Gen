@@ -14,6 +14,14 @@
         const user = checkAuth();
         if (!user) window.location.href = 'login.html';
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: {
+                preflight: false,
+            }
+        }
+    </script>
     <style>
         .msg-card {
             background: white;
@@ -75,6 +83,7 @@
                         class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
             <li class="admin-only" style="display:none;"><a href="fraud-detection.html"><i
                         class="fas fa-user-shield"></i> Fraud Detection</a></li>
+            <li><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a></li>
             <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </nav>
@@ -90,7 +99,7 @@
         </div>
 
         <div class="container-fluid py-4">
-            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <div class="card border-0 shadow-xl rounded-2xl p-6 mb-4 bg-white/95 backdrop-blur-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0">Automated Messaging Workflows</h5>
                     <span class="badge bg-success">System Active</span>
@@ -100,7 +109,8 @@
 
                 <div class="row g-4 mt-2">
                     <div class="col-md-4">
-                        <div class="msg-card">
+                        <div
+                            class="msg-card bg-blue-50/50 border-l-4 border-blue-500 shadow-md hover:shadow-xl transition-all rounded-xl p-6">
                             <div class="d-flex align-items-center mb-3">
                                 <div class="msg-icon icon-issued"><i class="fas fa-paper-plane"></i></div>
                                 <h6 class="fw-bold mb-0">Instant Issue</h6>
@@ -110,7 +120,8 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="msg-card" style="border-left-color: #f59e0b;">
+                        <div
+                            class="msg-card bg-amber-50/50 border-l-4 border-amber-500 shadow-md hover:shadow-xl transition-all rounded-xl p-6">
                             <div class="d-flex align-items-center mb-3">
                                 <div class="msg-icon icon-reminder"><i class="fas fa-clock"></i></div>
                                 <h6 class="fw-bold mb-0">7-Day Reminder</h6>
@@ -120,7 +131,8 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="msg-card" style="border-left-color: #ef4444;">
+                        <div
+                            class="msg-card bg-red-50/50 border-l-4 border-red-500 shadow-md hover:shadow-xl transition-all rounded-xl p-6">
                             <div class="d-flex align-items-center mb-3">
                                 <div class="msg-icon icon-expiry"><i class="fas fa-hourglass-half"></i></div>
                                 <h6 class="fw-bold mb-0">Expiry Alert</h6>
@@ -132,7 +144,7 @@
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4 p-4">
+            <div class="card border-0 shadow-xl rounded-2xl p-6 bg-white/95 backdrop-blur-sm">
                 <h5 class="fw-bold mb-4">Recent Automated Actions</h5>
                 <div class="table-responsive">
                     <table class="table align-middle">

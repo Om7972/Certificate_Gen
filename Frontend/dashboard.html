@@ -17,6 +17,14 @@
         const currentUser = checkAuth();
         if (!currentUser) window.location.href = 'login.html';
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: {
+                preflight: false,
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -42,6 +50,7 @@
                         class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
             <li class="admin-only" style="display:none;"><a href="fraud-detection.html"><i
                         class="fas fa-user-shield"></i> Fraud Detection</a></li>
+            <li><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a></li>
             <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </nav>
@@ -67,7 +76,8 @@
         <!-- Stats Cards -->
         <div class="row g-4 mb-4">
             <div class="col-md-4">
-                <div class="stats-card">
+                <div
+                    class="stats-card bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl hover:scale-105 transition-all duration-300 p-6">
                     <div>
                         <h6 class="text-muted">Total Certificates</h6>
                         <h3 id="totalCerts">0</h3>
@@ -78,7 +88,8 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="stats-card">
+                <div
+                    class="stats-card bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl hover:scale-105 transition-all duration-300 p-6">
                     <div>
                         <h6 class="text-muted">This Month</h6>
                         <h3 id="monthCerts">0</h3>
@@ -89,7 +100,8 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="stats-card">
+                <div
+                    class="stats-card bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl hover:scale-105 transition-all duration-300 p-6">
                     <div>
                         <h6 class="text-muted">Emails Sent</h6>
                         <h3 id="emailsSent">0</h3>
@@ -104,7 +116,7 @@
         <!-- Charts Section -->
         <div class="row mb-4">
             <div class="col-md-8">
-                <div class="card h-100">
+                <div class="card h-100 border-0 shadow-xl rounded-2xl overflow-hidden">
                     <div class="card-header bg-transparent border-0">
                         <h5 class="mb-0">Certificate Issuance Trends</h5>
                     </div>
@@ -114,7 +126,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card h-100">
+                <div class="card h-100 border-0 shadow-xl rounded-2xl overflow-hidden">
                     <div class="card-header bg-transparent border-0">
                         <h5 class="mb-0">Quick Stats</h5>
                     </div>

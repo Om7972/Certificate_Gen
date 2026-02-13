@@ -73,7 +73,7 @@ const getCertificate = async (req, res) => {
 // @access  Private
 const createCertificate = async (req, res) => {
     try {
-        const { recipientName, recipientEmail, courseName, startDate, endDate, certificateId, templateUsed } = req.body;
+        const { recipientName, recipientEmail, courseName, organization, description, startDate, endDate, certificateId, templateUsed, qrEnabled, watermarkEnabled } = req.body;
 
         if (!recipientName || !recipientEmail || !courseName || !startDate || !endDate) {
             return res.status(400).json({ message: 'Please add all fields' });
@@ -91,9 +91,13 @@ const createCertificate = async (req, res) => {
             recipientName,
             recipientEmail,
             courseName,
+            organization: organization || '',
+            description: description || 'For successfully completing the comprehensive professional development program.',
             startDate,
             endDate,
             templateUsed: templateUsed || 'classic',
+            qrEnabled: qrEnabled !== undefined ? qrEnabled : true,
+            watermarkEnabled: watermarkEnabled !== undefined ? watermarkEnabled : false,
             expiresAt: req.body.expiresAt || null,
             recipientPhoto
         });
