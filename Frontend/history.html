@@ -4,158 +4,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>History - CertificateGen</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="dashboard.css">
+    <title>Activity History - CertGen Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/auth.js"></script>
     <script>
         const currentUser = checkAuth();
         if (!currentUser) window.location.href = 'login.html';
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
     </script>
 </head>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-    tailwind.config = {
-        corePlugins: {
-            preflight: false,
-        }
-    }
-</script>
 
-<body>
+<body class="bg-slate-50 font-sans text-slate-800">
 
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h3>Cert<span>Gen</span></h3>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="generator.html"><i class="fas fa-certificate"></i> Generator</a></li>
-            <li><a href="history.html" class="active"><i class="fas fa-history"></i> History</a></li>
-            <li><a href="naming-engine.html"><i class="fas fa-robot"></i> Smart Naming</a></li>
-            <li><a href="generator.html#watermark"><i class="fas fa-stamp"></i> Watermark Control</a></li>
-            <li><a href="analytics.html"><i class="fas fa-chart-line"></i> Usage Analytics</a></li>
-            <li><a href="notifications.html"><i class="fas fa-bell"></i> Smart Notifications</a></li>
-            <li><a href="history.html" class="active"><i class="fas fa-share-alt"></i> Sharing Hub</a></li>
-            <li><a href="sandbox.html"><i class="fas fa-vials"></i> Preview Sandbox</a></li>
-            <li class="admin-only" style="display:none;"><a href="audit-logs.html"><i class="fas fa-shield-alt"></i>
-                    Audit Logs</a></li>
-            <li class="admin-only" style="display:none;"><a href="expiry-rules.html"><i
-                        class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
-            <li class="admin-only" style="display:none;"><a href="fraud-detection.html"><i
-                        class="fas fa-user-shield"></i> Fraud Detection</a></li>
-            <li><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a></li>
-            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </nav>
+    <div class="flex h-screen overflow-hidden">
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="top-navbar">
-            <h4 class="mb-0">Certificate History</h4>
-            <div class="user-profile">
-                <span id="userNameDisplay">User</span>
+        <!-- Sidebar (Reused) -->
+        <aside class="hidden md:flex w-64 flex-col bg-slate-900 text-white transition-all duration-300">
+            <div class="flex items-center justify-center h-16 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <span>Cert<span class="text-blue-400">Gen</span></span>
+                </a>
             </div>
-        </div>
 
-        <div class="table-container bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-gray-100">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5>All Generated Certificates</h5>
-                <button class="btn btn-sm btn-outline-primary" onclick="loadHistory()">
-                    <i class="fas fa-sync-alt"></i> Refresh
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav class="space-y-1 px-2">
+                    <a href="dashboard.html"
+                        class="flex items-center px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white group transition-colors">
+                        <i class="fas fa-home w-6 text-center mr-2 text-slate-500 group-hover:text-blue-400"></i>
+                        Dashboard
+                    </a>
+
+                    <div class="pt-4 pb-2 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        Management
+                    </div>
+
+                    <a href="generator.html"
+                        class="flex items-center px-4 py-2.5 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white group transition-colors">
+                        <i class="fas fa-plus-circle w-6 text-center mr-2 text-slate-500 group-hover:text-blue-400"></i>
+                        Generate New
+                    </a>
+                    <a href="history.html"
+                        class="flex items-center px-4 py-2.5 text-sm font-medium bg-blue-600 rounded-lg text-white group transition-colors">
+                        <i class="fas fa-history w-6 text-center mr-2"></i>
+                        History & Logs
+                    </a>
+                    <a href="analytics.html"
+                        class="flex items-center px-4 py-2.5 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white group transition-colors">
+                        <i class="fas fa-chart-pie w-6 text-center mr-2 text-slate-500 group-hover:text-blue-400"></i>
+                        Analytics
+                    </a>
+
+                    <div class="pt-4 pb-2 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        System
+                    </div>
+
+                    <a href="verify.html"
+                        class="flex items-center px-4 py-2.5 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white group transition-colors">
+                        <i class="fas fa-shield-alt w-6 text-center mr-2 text-slate-500 group-hover:text-blue-400"></i>
+                        Verify Portal
+                    </a>
+                    <a href="notifications.html"
+                        class="flex items-center px-4 py-2.5 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white group transition-colors">
+                        <i class="fas fa-bell w-6 text-center mr-2 text-slate-500 group-hover:text-blue-400"></i>
+                        Notifications
+                    </a>
+                    <a href="profile.html"
+                        class="flex items-center px-4 py-2.5 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white group transition-colors">
+                        <i class="fas fa-cog w-6 text-center mr-2 text-slate-500 group-hover:text-blue-400"></i>
+                        Settings
+                    </a>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()"
+                    class="flex w-full items-center px-4 py-2 text-sm font-medium text-red-400 rounded-lg hover:bg-slate-800 transition-colors">
+                    <i class="fas fa-sign-out-alt w-6 text-center mr-2"></i>
+                    Sign Out
                 </button>
             </div>
+        </aside>
 
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Recipient Name</th>
-                            <th>Email</th>
-                            <th>Course</th>
-                            <th>Created Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyTableBody">
-                        <!-- Filled by JS -->
-                    </tbody>
-                </table>
-            </div>
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+
+            <!-- Topbar (Reused) -->
+            <header
+                class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm z-10">
+                <div class="flex items-center gap-4">
+                    <button class="md:hidden text-slate-500 hover:text-slate-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-lg font-semibold text-slate-800">History</h1>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" placeholder="Search by ID, name..."
+                            class="pl-9 pr-4 py-2 bg-slate-100 border-none rounded-full text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all w-64 hidden sm:block">
+                    </div>
+                    <div class="h-8 w-px bg-slate-200"></div>
+                    <div class="flex items-center gap-3 cursor-pointer group">
+                        <div class="text-right hidden sm:block">
+                            <p id="userNameDisplay"
+                                class="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition-colors">
+                                User</p>
+                        </div>
+                        <div id="userInitial"
+                            class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-lg">
+                            U</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6 bg-slate-50">
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+
+                    <!-- Toolbar -->
+                    <div
+                        class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <h2 class="text-lg font-bold text-slate-800">Certificate Log</h2>
+
+                        <div class="flex items-center gap-3">
+                            <select
+                                class="text-sm border-slate-200 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                <option>All Status</option>
+                                <option>Issued</option>
+                                <option>Pending</option>
+                                <option>Revoked</option>
+                            </select>
+                            <button
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                                <i class="fas fa-download mr-1"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-semibold">
+                                <tr>
+                                    <th class="px-6 py-4">Certificate ID</th>
+                                    <th class="px-6 py-4">Recipient</th>
+                                    <th class="px-6 py-4">Course / Event</th>
+                                    <th class="px-6 py-4">Date</th>
+                                    <th class="px-6 py-4 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody" class="divide-y divide-slate-50 text-sm text-slate-700">
+                                <!-- JS Populated -->
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-slate-400">Loading records...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-sm text-slate-500">Showing <span class="font-medium">1</span> to <span
+                                class="font-medium">10</span> of <span class="font-medium">24</span> results</span>
+                        <div class="flex gap-2">
+                            <button
+                                class="px-3 py-1 border border-slate-200 rounded hover:bg-slate-50 text-slate-600 disabled:opacity-50"><i
+                                    class="fas fa-chevron-left"></i></button>
+                            <button
+                                class="px-3 py-1 border border-slate-200 rounded hover:bg-slate-50 text-slate-600"><i
+                                    class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </main>
         </div>
     </div>
 
     <script>
-        const user = JSON.parse(localStorage.getItem('user'));
-        document.getElementById('userNameDisplay').textContent = user?.name || 'User';
-
-        async function loadHistory() {
-            const tbody = document.getElementById('historyTableBody');
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center">Loading...</td></tr>';
-
-            try {
-                const token = user?.token;
-                if (!token) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                const res = await fetch('http://localhost:5000/api/certificates', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const result = await res.json();
-
-                if (!res.ok) {
-                    if (res.status === 401) {
-                        alert('Session expired. Please login again.');
-                        logout();
-                        return;
-                    }
-                    throw new Error(result.message || 'Failed to fetch');
-                }
-
-                // Backend returns { success: true, data: [...] }
-                const certificates = result.data || [];
-
-                tbody.innerHTML = '';
-                if (certificates.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No certificates found.</td></tr>';
-                    return;
-                }
-
-                certificates.forEach(cert => {
-                    const date = new Date(cert.createdAt).toLocaleDateString();
-                    const row = `
-                        <tr>
-                            <td><small class="text-muted">${cert._id.substring(0, 8)}...</small></td>
-                            <td>${cert.recipientName}</td>
-                            <td>${cert.recipientEmail}</td>
-                            <td>${cert.courseName}</td>
-                            <td>${date}</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary" title="Download"><i class="fas fa-download"></i></button>
-                                <button class="btn btn-sm btn-info text-white" title="Email"><i class="fas fa-envelope"></i></button>
-                                <a href="share.html?id=${cert.certificateId}" class="btn btn-sm btn-success" title="Share"><i class="fas fa-share-alt"></i></a>
-                                <a href="timeline.html?id=${cert._id}" class="btn btn-sm btn-secondary" title="View Timeline"><i class="fas fa-stream"></i></a>
-                                <a href="versions.html?id=${cert._id}" class="btn btn-sm btn-warning" title="Version History"><i class="fas fa-history"></i></a>
-                                <a href="edit-certificate.html?id=${cert._id}" class="btn btn-sm btn-dark" title="Edit Certificate"><i class="fas fa-edit"></i></a>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-
-            } catch (e) {
-                console.error(e);
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${e.message}</td></tr>`;
-            }
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
         }
 
-        document.addEventListener('DOMContentLoaded', loadHistory);
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                document.getElementById('userNameDisplay').innerText = user.name;
+                document.getElementById('userInitial').innerText = user.name.charAt(0).toUpperCase();
+            }
+
+            // Load Data
+            try {
+                // Mock Fetch
+                const res = await fetch('http://localhost:5000/api/certificates', {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+                if (res.ok) {
+                    const result = await res.json();
+                    renderTable(result.data || []);
+                } else {
+                    // Check auth
+                    if (res.status === 401) logout();
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        });
+
+        function renderTable(data) {
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400">No records found.</td></tr>';
+                return;
+            }
+
+            data.forEach(item => {
+                const date = new Date(item.createdAt).toLocaleDateString();
+                const row = `
+                    <tr class="hover:bg-slate-50 transition-colors group">
+                        <td class="px-6 py-4 font-mono text-slate-500">${item.certificateId}</td>
+                        <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
+                             <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">
+                                ${item.recipientName.charAt(0)}
+                             </div>
+                             ${item.recipientName}
+                        </td>
+                        <td class="px-6 py-4 text-blue-600 font-medium">${item.courseName}</td>
+                        <td class="px-6 py-4 text-slate-500">${date}</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all" title="View"><i class="fas fa-eye"></i></button>
+                                <button class="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-full transition-all" title="Download"><i class="fas fa-download"></i></button>
+                                <button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all" title="Delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
     </script>
 </body>
 

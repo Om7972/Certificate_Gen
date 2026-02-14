@@ -4,108 +4,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Settings - CertificateGen</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="darkmode.css">
+    <title>Account Settings - CertGen Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/auth.js"></script>
-    <script defer src="js/darkmode.js"></script>
+    <script>
+        const currentUser = checkAuth();
+        if (!currentUser) window.location.href = 'login.html';
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#2563eb',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 
-<body>
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h3>Cert<span>Gen</span></h3>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="generator.html"><i class="fas fa-certificate"></i> Generator</a></li>
-            <li><a href="history.html"><i class="fas fa-history"></i> History</a></li>
-            <li><a href="index.html"><i class="fas fa-globe"></i> Landing Page</a></li>
-            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </nav>
+<body class="bg-slate-50 font-sans text-slate-800">
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="top-navbar">
-            <h4 class="mb-0">Settings</h4>
-            <div class="d-flex align-items-center">
-                <div class="user-profile">
-                    <span id="userNameDisplay">Welcome</span>
-                    <div class="user-avatar" id="userInitial">U</div>
-                </div>
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Sidebar (Reused) -->
+        <aside class="hidden md:flex w-64 flex-col bg-slate-900 text-white transition-all duration-300">
+            <div class="flex items-center justify-center h-16 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <span>Cert<span class="text-blue-400">Gen</span></span>
+                </a>
             </div>
-        </div>
 
-        <div class="container-fluid py-4">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <div class="card shadow-sm border-0 rounded-4">
-                        <div class="card-body p-4 p-md-5">
-                            <h2 class="fw-bold mb-4">Profile Settings</h2>
-                            <form id="profileForm">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Full Name</label>
-                                        <input type="text" id="profName" class="form-control" required
-                                            placeholder="Full Name">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Email (Read-only)</label>
-                                        <input type="email" id="profEmail" class="form-control" readonly disabled>
-                                    </div>
-                                    <div class="col-12 mt-4">
-                                        <h5 class="fw-bold">Security</h5>
-                                        <hr>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">New Password</label>
-                                        <input type="password" id="profPass" class="form-control"
-                                            placeholder="Leave empty to keep current">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Confirm Password</label>
-                                        <input type="password" id="profPassConfirm" class="form-control"
-                                            placeholder="Confirm new password">
-                                    </div>
-                                    <div class="col-12 mt-5">
-                                        <button type="submit"
-                                            class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">
-                                            <i class="fas fa-save me-2"></i> Save Changes
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav class="space-y-1 px-2">
+                    <a href="dashboard.html"
+                        class="flex items-center px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white group transition-colors">
+                        <i class="fas fa-home w-6 text-center mr-2 text-slate-500 group-hover:text-blue-400"></i>
+                        Dashboard
+                    </a>
+
+                    <div class="pt-4 pb-2 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        Management
+                    </div>
+
+                    <a href="generator.html"
+                        class="flex items-center px-4 py-2.5 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white group transition-colors">
+                        <i class="fas fa-plus-circle w-6 text-center mr-2 text-slate-500 group-hover:text-blue-400"></i>
+                        Generate New
+                    </a>
+                    <a href="history.html"
+                        class="flex items-center px-4 py-2.5 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white group transition-colors">
+                        <i class="fas fa-history w-6 text-center mr-2 text-slate-500 group-hover:text-blue-400"></i>
+                        History & Logs
+                    </a>
+
+                    <div class="pt-4 pb-2 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        System
+                    </div>
+
+                    <a href="verify.html"
+                        class="flex items-center px-4 py-2.5 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800 hover:text-white group transition-colors">
+                        <i class="fas fa-shield-alt w-6 text-center mr-2 text-slate-500 group-hover:text-blue-400"></i>
+                        Verify Portal
+                    </a>
+                    <a href="profile.html"
+                        class="flex items-center px-4 py-2.5 text-sm font-medium bg-blue-600 rounded-lg text-white group transition-colors">
+                        <i class="fas fa-cog w-6 text-center mr-2"></i>
+                        Settings
+                    </a>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()"
+                    class="flex w-full items-center px-4 py-2 text-sm font-medium text-red-400 rounded-lg hover:bg-slate-800 transition-colors">
+                    <i class="fas fa-sign-out-alt w-6 text-center mr-2"></i>
+                    Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+
+            <!-- Topbar (Reused) -->
+            <header
+                class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm z-10">
+                <div class="flex items-center gap-4">
+                    <button class="md:hidden text-slate-500 hover:text-slate-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-lg font-semibold text-slate-800">Account Settings</h1>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-3 cursor-pointer group">
+                        <div class="text-right hidden sm:block">
+                            <p id="userNameDisplay"
+                                class="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition-colors">
+                                User</p>
                         </div>
+                        <div id="userInitial"
+                            class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-lg">
+                            U</div>
                     </div>
                 </div>
-            </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6 bg-slate-50">
+
+                <div class="max-w-3xl mx-auto">
+
+                    <!-- Profile Card -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 mb-6">
+                        <h2 class="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Personal
+                            Information</h2>
+
+                        <form id="profileForm" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                                    <input type="text" id="profName"
+                                        class="w-full rounded-lg border-slate-200 focus:ring-2 focus:ring-blue-500 px-4 py-2.5 text-sm transition-all"
+                                        placeholder="Your Name">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                                    <input type="email" id="profEmail"
+                                        class="w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-500 cursor-not-allowed"
+                                        readonly>
+                                </div>
+                            </div>
+
+                            <h2 class="text-xl font-bold text-slate-800 pt-6 mb-2 border-b border-slate-100 pb-4">
+                                Security</h2>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">New Password</label>
+                                    <input type="password" id="profPass"
+                                        class="w-full rounded-lg border-slate-200 focus:ring-2 focus:ring-blue-500 px-4 py-2.5 text-sm transition-all"
+                                        placeholder="********">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Confirm
+                                        Password</label>
+                                    <input type="password" id="profPassConfirm"
+                                        class="w-full rounded-lg border-slate-200 focus:ring-2 focus:ring-blue-500 px-4 py-2.5 text-sm transition-all"
+                                        placeholder="********">
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end pt-4">
+                                <button type="submit"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Preferences (Mock) -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+                        <h2 class="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Preferences
+                        </h2>
+                        <div class="flex items-center justify-between py-3">
+                            <div>
+                                <h3 class="text-sm font-medium text-slate-800">Email Notifications</h3>
+                                <p class="text-xs text-slate-500">Receive updates about your certificates.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div
+                                    class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+            </main>
         </div>
     </div>
 
     <script>
-        const user = checkAuth();
-        if (!user) window.location.href = 'login.html';
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Populate fields
-            document.getElementById('profName').value = user.name || '';
-            document.getElementById('profEmail').value = user.email || '';
-            document.getElementById('userNameDisplay').textContent = user.name || 'User';
-            document.getElementById('userInitial').textContent = (user.name || 'U').charAt(0).toUpperCase();
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                document.getElementById('userNameDisplay').textContent = user.name || 'User';
+                document.getElementById('userInitial').textContent = (user.name || 'U').charAt(0).toUpperCase();
+
+                document.getElementById('profName').value = user.name || '';
+                document.getElementById('profEmail').value = user.email || '';
+            }
 
             document.getElementById('profileForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
+                const btn = e.target.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+
+                // Loading
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+                btn.disabled = true;
 
                 const name = document.getElementById('profName').value;
                 const pass = document.getElementById('profPass').value;
                 const confirmPass = document.getElementById('profPassConfirm').value;
 
                 if (pass && pass !== confirmPass) {
-                    return alert('Passwords do not match');
+                    alert('Passwords do not match');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    return;
                 }
 
                 try {
@@ -118,29 +241,22 @@
                         body: JSON.stringify({ name, password: pass })
                     });
 
-                    // Check if response is JSON
-                    const contentType = res.headers.get("content-type");
-                    let data;
-                    if (contentType && contentType.indexOf("application/json") !== -1) {
-                        data = await res.json();
-                    }
+                    const data = await res.json();
 
                     if (res.ok) {
                         alert('Profile updated successfully!');
-                        // Update local storage
-                        const newUser = { ...user, name: data.name, email: data.email };
+                        const newUser = { ...user, name: name }; // Update local simple
                         localStorage.setItem('user', JSON.stringify(newUser));
                         location.reload();
                     } else {
-                        if (res.status === 404) {
-                            alert('Update failed: Server endpoint not found. Please ensure the backend is running and updated (try restarting it).');
-                        } else {
-                            alert(data?.message || 'Update failed');
-                        }
+                        throw new Error(data.message || 'Update failed');
                     }
-                } catch (error) {
-                    console.error('Profile update error:', error);
-                    alert('An error occurred during update. Check console for details.');
+                } catch (err) {
+                    console.error(err);
+                    alert('Error: ' + err.message);
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
                 }
             });
         });

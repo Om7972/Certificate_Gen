@@ -4,302 +4,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Certificate Timeline - GenCert</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="darkmode.css">
-    <style>
-        .timeline {
-            position: relative;
-            padding: 20px 0;
-            list-style: none;
+    <title>Certificate Timeline - CertGen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#2563eb',
+                    }
+                }
+            }
         }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 40px;
-            width: 2px;
-            background: #e2e8f0;
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 30px;
-            padding-left: 80px;
-        }
-
-        .timeline-marker {
-            position: absolute;
-            left: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: white;
-            border: 2px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            z-index: 1;
-            transition: all 0.3s ease;
-        }
-
-        .timeline-item:hover .timeline-marker {
-            transform: scale(1.1);
-            border-color: var(--primary-color);
-        }
-
-        .timeline-content {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #f1f5f9;
-        }
-
-        .timeline-date {
-            font-size: 0.85rem;
-            color: #64748b;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .timeline-title {
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 5px;
-            display: block;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .timeline-details {
-            font-size: 0.95rem;
-            color: #475569;
-        }
-
-        .timeline-user {
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* Action specific colors */
-        .marker-created {
-            color: #10b981;
-            border-color: #d1fae5;
-            background: #ecfdf5;
-        }
-
-        .marker-viewed {
-            color: #3b82f6;
-            border-color: #dbeafe;
-            background: #eff6ff;
-        }
-
-        .marker-downloaded {
-            color: #8b5cf6;
-            border-color: #ede9fe;
-            background: #f5f3ff;
-        }
-
-        .marker-verified {
-            color: #f59e0b;
-            border-color: #fef3c7;
-            background: #fffbeb;
-        }
-
-        .marker-revoked {
-            color: #ef4444;
-            border-color: #fee2e2;
-            background: #fef2f2;
-        }
-    </style>
+    </script>
 </head>
 
-<body>
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h3>Gen<span>Cert</span></h3>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="dashboard.html"
+                        class="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                        <span class="font-medium text-sm">Back to Dashboard</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <span class="font-bold text-lg tracking-tight">Certificate Lifecycle</span>
+                </div>
+                <div class="w-20"></div> <!-- Spacer -->
+            </div>
         </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
-            <li><a href="generator.html"><i class="fas fa-magic"></i> Generator</a></li>
-            <li><a href="history.html" class="active"><i class="fas fa-history"></i> History</a></li>
-            <li><a href="profile.html"><i class="fas fa-user-cog"></i> Profile</a></li>
-            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
     </nav>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="top-navbar">
-            <h4 class="mb-0">Certificate Timeline</h4>
-            <div class="user-profile">
-                <span id="userNameDisplay">User</span>
-                <div class="user-avatar" id="userInitial">U</div>
+    <main class="max-w-4xl mx-auto p-8">
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div class="text-center mb-10">
+                <h1 class="text-2xl font-bold text-gray-900">Certificate Timeline</h1>
+                <p class="text-gray-500">Tracking history for ID: <span
+                        class="font-mono text-gray-700 bg-gray-100 px-2 py-1 rounded">CERT-SAMPLE-123</span></p>
             </div>
-        </div>
 
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-10 mx-auto">
-                    <!-- Certificate Summary Card -->
-                    <div id="certSummary" class="card border-0 shadow-sm rounded-4 mb-4 p-4 d-none">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h3 id="summaryName" class="fw-bold mb-1">...</h3>
-                                <p id="summaryDetails" class="text-muted mb-0">...</p>
+            <!-- Timeline -->
+            <div class="relative">
+                <!-- Vertical Line -->
+                <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+
+                <div class="space-y-12 relative z-10">
+
+                    <!-- Event 1 -->
+                    <div class="flex items-start gap-6">
+                        <div
+                            class="w-16 h-16 rounded-full bg-blue-100 border-4 border-white shadow-sm flex items-center justify-center text-blue-600 shrink-0">
+                            <i class="fas fa-plus text-xl"></i>
+                        </div>
+                        <div
+                            class="bg-gray-50 rounded-xl p-5 flex-1 border border-gray-100 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-lg text-gray-900">Certificate Created</h3>
+                                <span
+                                    class="text-xs text-gray-500 font-medium bg-white px-2 py-1 rounded border border-gray-200">Oct
+                                    24, 2026, 10:30 AM</span>
                             </div>
-                            <div id="summaryBadge"></div>
-                        </div>
-                    </div>
-
-                    <!-- Timeline Section -->
-                    <div class="card border-0 shadow-sm rounded-4 p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="fw-bold mb-0">Activity History</h5>
-                            <button onclick="window.location.reload()"
-                                class="btn btn-sm btn-outline-primary rounded-pill">
-                                <i class="fas fa-sync-alt me-1"></i> Refresh
-                            </button>
-                        </div>
-
-                        <div id="timelineContainer">
-                            <div class="text-center py-5">
-                                <div class="spinner-border text-primary" role="status"></div>
-                                <p class="mt-2 text-muted">Loading timeline...</p>
+                            <p class="text-gray-600 text-sm">Certificate draft initialized for <span
+                                    class="font-semibold">Alice Johnson</span>.</p>
+                            <div class="mt-3 flex items-center gap-2 text-xs text-gray-500">
+                                <img src="https://ui-avatars.com/api/?name=Admin&background=random"
+                                    class="w-5 h-5 rounded-full">
+                                <span>by Admin User</span>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Event 2 -->
+                    <div class="flex items-start gap-6">
+                        <div
+                            class="w-16 h-16 rounded-full bg-purple-100 border-4 border-white shadow-sm flex items-center justify-center text-purple-600 shrink-0">
+                            <i class="fas fa-pen-nib text-xl"></i>
+                        </div>
+                        <div
+                            class="bg-gray-50 rounded-xl p-5 flex-1 border border-gray-100 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-lg text-gray-900">Digitally Signed</h3>
+                                <span
+                                    class="text-xs text-gray-500 font-medium bg-white px-2 py-1 rounded border border-gray-200">Oct
+                                    24, 2026, 10:35 AM</span>
+                            </div>
+                            <p class="text-gray-600 text-sm">Authorized signature applied by Department Head.</p>
+                        </div>
+                    </div>
+
+                    <!-- Event 3 -->
+                    <div class="flex items-start gap-6">
+                        <div
+                            class="w-16 h-16 rounded-full bg-green-100 border-4 border-white shadow-sm flex items-center justify-center text-green-600 shrink-0">
+                            <i class="fas fa-envelope text-xl"></i>
+                        </div>
+                        <div
+                            class="bg-gray-50 rounded-xl p-5 flex-1 border border-gray-100 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-lg text-gray-900">Issued & Sent</h3>
+                                <span
+                                    class="text-xs text-gray-500 font-medium bg-white px-2 py-1 rounded border border-gray-200">Oct
+                                    24, 2026, 10:45 AM</span>
+                            </div>
+                            <p class="text-gray-600 text-sm">Email sent to <span
+                                    class="text-blue-600">alice@example.com</span></p>
+                            <div class="mt-3">
+                                <span
+                                    class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full font-bold">Delivered</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event 4 -->
+                    <div class="flex items-start gap-6 opacity-50">
+                        <div
+                            class="w-16 h-16 rounded-full bg-gray-100 border-4 border-white shadow-sm flex items-center justify-center text-gray-400 shrink-0">
+                            <i class="fas fa-eye text-xl"></i>
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-5 flex-1 border border-gray-100 border-dashed">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-lg text-gray-500">First Verification</h3>
+                                <span
+                                    class="text-xs text-gray-400 font-medium bg-white px-2 py-1 rounded border border-gray-200">Pending</span>
+                            </div>
+                            <p class="text-gray-500 text-sm">Waiting for the certificate to be viewed or verified by a
+                                third party.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
+
         </div>
+
     </main>
 
-    <script src="js/auth.js"></script>
-    <script>
-        const user = checkAuth();
-        if (!user) window.location.href = 'login.html';
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const certId = urlParams.get('id');
-
-        if (!certId) {
-            alert('No certificate ID provided');
-            window.location.href = 'history.html';
-        }
-
-        async function fetchTimeline() {
-            try {
-                // Fetch Certificate Info first
-                const certRes = await fetch(`http://localhost:5000/api/certificates/${certId}`, {
-                    headers: { 'Authorization': `Bearer ${user.token}` }
-                });
-                const certData = await certRes.json();
-
-                if (certRes.ok) {
-                    displaySummary(certData);
-                }
-
-                // Fetch Timeline logs
-                const res = await fetch(`http://localhost:5000/api/certificates/${certId}/timeline`, {
-                    headers: { 'Authorization': `Bearer ${user.token}` }
-                });
-
-                if (!res.ok) throw new Error('Failed to fetch timeline');
-                const logs = await res.json();
-
-                renderTimeline(logs);
-            } catch (err) {
-                console.error(err);
-                document.getElementById('timelineContainer').innerHTML = `
-                    <div class="alert alert-danger">Error loading timeline: ${err.message}</div>
-                `;
-            }
-        }
-
-        function displaySummary(cert) {
-            const summary = document.getElementById('certSummary');
-            summary.classList.remove('d-none');
-            document.getElementById('summaryName').textContent = cert.recipientName;
-            document.getElementById('summaryDetails').textContent = `${cert.courseName} • ID: ${cert.certificateId}`;
-
-            const status = cert.status || 'active';
-            const badgeClass = status === 'active' ? 'bg-success' : (status === 'revoked' ? 'bg-danger' : 'bg-warning');
-            document.getElementById('summaryBadge').innerHTML = `<span class="badge ${badgeClass} fs-6 rounded-pill px-3">${status.toUpperCase()}</span>`;
-        }
-
-        function renderTimeline(logs) {
-            const container = document.getElementById('timelineContainer');
-            if (!logs || logs.length === 0) {
-                container.innerHTML = '<p class="text-center py-5 text-muted">No activities recorded for this certificate.</p>';
-                return;
-            }
-
-            let html = '<ul class="timeline">';
-            logs.forEach(log => {
-                const markerClass = getMarkerClass(log.action);
-                const icon = getActionIcon(log.action);
-                const dateString = new Date(log.timestamp).toLocaleString();
-                const userName = log.user ? log.user.name : (log.action === 'VERIFIED' ? 'Public Visitor' : 'System');
-
-                html += `
-                    <li class="timeline-item">
-                        <div class="timeline-marker ${markerClass}">
-                            <i class="fas ${icon}"></i>
-                        </div>
-                        <div class="timeline-content">
-                            <span class="timeline-date">${dateString}</span>
-                            <span class="timeline-title">${log.action.replace('_', ' ')}</span>
-                            <p class="timeline-details mb-0">${log.details}</p>
-                            <div class="timeline-user">
-                                <i class="fas fa-user-circle"></i> ${userName} • <small class="text-muted">IP: ${log.ipAddress || 'unknown'}</small>
-                            </div>
-                        </div>
-                    </li>
-                `;
-            });
-            html += '</ul>';
-            container.innerHTML = html;
-        }
-
-        function getMarkerClass(action) {
-            switch (action) {
-                case 'CREATED': return 'marker-created';
-                case 'VIEWED': return 'marker-viewed';
-                case 'DOWNLOADED': return 'marker-downloaded';
-                case 'VERIFIED': return 'marker-verified';
-                case 'REVOKED': return 'marker-revoked';
-                default: return '';
-            }
-        }
-
-        function getActionIcon(action) {
-            switch (action) {
-                case 'CREATED': return 'fa-plus-circle';
-                case 'VIEWED': return 'fa-eye';
-                case 'DOWNLOADED': return 'fa-file-download';
-                case 'VERIFIED': return 'fa-check-double';
-                case 'REVOKED': return 'fa-ban';
-                default: return 'fa-info-circle';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('userNameDisplay').textContent = user?.name || 'User';
-            document.getElementById('userInitial').textContent = (user?.name || 'U').charAt(0).toUpperCase();
-            fetchTimeline();
-        });
-    </script>
 </body>
 
 </html>
