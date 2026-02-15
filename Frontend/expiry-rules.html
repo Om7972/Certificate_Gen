@@ -4,209 +4,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expiry Rules Engine - Admin - CertGen</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="darkmode.css">
+    <title>Expiry Rules - CertGen Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
     <script>
-        const user = checkAuth();
-        if (!user || user.role !== 'admin') {
-            alert('Access Denied');
-            window.location.href = 'dashboard.html';
-        }
+        const currentUser = checkAuth();
+        if (!currentUser) window.location.href = 'login.html';
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
     </script>
 </head>
 
-<body>
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h3>Cert<span>Gen</span></h3>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="generator.html"><i class="fas fa-certificate"></i> Generator</a></li>
-            <li><a href="history.html"><i class="fas fa-history"></i> History</a></li>
-            <li><a href="sandbox.html"><i class="fas fa-vials"></i> Preview Sandbox</a></li>
-            <li><a href="expiry-rules.html" class="active"><i class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
-            <li><a href="audit-logs.html"><i class="fas fa-shield-alt"></i> Audit Logs</a></li>
-            <li><a href="fraud-detection.html"><i class="fas fa-user-shield"></i> Fraud Detection</a></li>
-            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </nav>
+<body class="bg-slate-50 font-sans text-slate-800">
+    <div class="flex h-screen overflow-hidden">
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="top-navbar">
-            <h4 class="mb-0">Expiry Rules Engine</h4>
-            <div class="user-profile">
-                <span id="userNameDisplay">Admin</span>
-                <div class="user-avatar" id="userInitial">A</div>
-            </div>
-        </div>
-
-        <div class="container-fluid py-4">
-            <div class="row">
-                <!-- Create Rule -->
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                        <h5 class="fw-bold mb-4">Create New Rule</h5>
-                        <form id="ruleForm">
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Rule Name</label>
-                                <input type="text" id="ruleName" class="form-control"
-                                    placeholder="e.g. Annual Student Expiry" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Strategy</label>
-                                <select id="strategy" class="form-select" onchange="toggleInputs()">
-                                    <option value="TIME_BASED">Time-Based (Duration)</option>
-                                    <option value="EVENT_BASED">Event-Based (Fixed Date)</option>
-                                    <option value="MANUAL">Manual</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Target Course</label>
-                                <input type="text" id="targetCourse" class="form-control" value="ALL"
-                                    placeholder="ALL or Course Name">
-                            </div>
-                            <div id="timeInput" class="mb-3">
-                                <label class="form-label small fw-bold">Duration (Days from Issue)</label>
-                                <input type="number" id="durationDays" class="form-control" placeholder="365">
-                            </div>
-                            <div id="eventInput" class="mb-3 d-none">
-                                <label class="form-label small fw-bold">Fixed Expiry Date</label>
-                                <input type="date" id="fixedExpiryDate" class="form-control">
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Create Rule</button>
-                        </form>
+        <aside class="hidden md:flex w-64 flex-col bg-slate-900 text-white transition-all duration-300 relative z-20">
+            <div class="flex items-center justify-center h-16 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white">
+                        <i class="fas fa-certificate"></i>
                     </div>
-                </div>
+                    <span>Cert<span class="text-blue-400">Gen</span></span>
+                </a>
+            </div>
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav class="space-y-1 px-2"></nav>
+            </div>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()"
+                    class="flex w-full items-center px-4 py-2 text-sm font-medium text-red-400 rounded-lg hover:bg-slate-800 transition-colors">
+                    <i class="fas fa-sign-out-alt w-6 text-center mr-2"></i>
+                    Sign Out
+                </button>
+            </div>
+        </aside>
 
-                <!-- Active Rules List -->
-                <div class="col-md-8">
-                    <div class="card border-0 shadow-sm rounded-4 p-4">
-                        <h5 class="fw-bold mb-4">Active System Rules</h5>
-                        <div class="table-responsive">
-                            <table class="table align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>Rule Name</th>
-                                        <th>Strategy</th>
-                                        <th>Target</th>
-                                        <th>Details</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="rulesTableBody">
-                                    <tr>
-                                        <td colspan="5" class="text-center">Loading rules...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <header
+                class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm z-10">
+                <h1 class="text-lg font-semibold text-slate-800">Expiry Automation</h1>
+                <div class="flex items-center gap-4">
+                    <p id="userNameDisplay" class="text-sm font-semibold text-slate-700 hidden sm:block">User</p>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-8 bg-slate-50">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+                        <h2 class="text-xl font-bold text-slate-800 mb-6">Automated Lifecycle Rules</h2>
+
+                        <div class="space-y-4">
+                            <!-- Rule 1 -->
+                            <div
+                                class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+                                <div>
+                                    <h3 class="font-bold text-slate-700">Expire After Duration</h3>
+                                    <p class="text-xs text-slate-500">Automatically mark certificates as expired after a
+                                        set period.</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" class="w-16 border rounded px-2 py-1 text-sm text-center"
+                                        value="365">
+                                    <span class="text-sm text-slate-600">Days</span>
+                                    <input type="checkbox" checked class="toggle ml-2">
+                                </div>
+                            </div>
+
+                            <!-- Rule 2 -->
+                            <div
+                                class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+                                <div>
+                                    <h3 class="font-bold text-slate-700">Pre-Expiry Notification</h3>
+                                    <p class="text-xs text-slate-500">Send reminder email to recipient before
+                                        expiration.</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" class="w-16 border rounded px-2 py-1 text-sm text-center"
+                                        value="30">
+                                    <span class="text-sm text-slate-600">Days Before</span>
+                                    <input type="checkbox" checked class="toggle ml-2">
+                                </div>
+                            </div>
+
+                            <!-- Rule 3 -->
+                            <div
+                                class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+                                <div>
+                                    <h3 class="font-bold text-slate-700">Auto-Revoke on Fraud Alert</h3>
+                                    <p class="text-xs text-slate-500">Immediately revoke if fraud confidence > 90%.</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" class="toggle ml-2">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-end">
+                            <button
+                                class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20">Apply
+                                Rules</button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('userNameDisplay').textContent = user?.name || 'Admin';
-            document.getElementById('userInitial').textContent = (user?.name || 'A').charAt(0).toUpperCase();
-            loadRules();
-        });
-
-        function toggleInputs() {
-            const strategy = document.getElementById('strategy').value;
-            document.getElementById('timeInput').classList.toggle('d-none', strategy !== 'TIME_BASED');
-            document.getElementById('eventInput').classList.toggle('d-none', strategy !== 'EVENT_BASED');
-        }
-
-        async function loadRules() {
-            const tbody = document.getElementById('rulesTableBody');
-            try {
-                const res = await fetch('http://localhost:5000/api/admin/expiry-rules', {
-                    headers: { 'Authorization': `Bearer ${user.token}` }
-                });
-                const rules = await res.json();
-                tbody.innerHTML = '';
-
-                if (rules.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No rules defined.</td></tr>';
-                    return;
-                }
-
-                rules.forEach(rule => {
-                    const details = rule.strategy === 'TIME_BASED' ? `${rule.durationDays} days` :
-                        rule.strategy === 'EVENT_BASED' ? new Date(rule.fixedExpiryDate).toLocaleDateString() : 'Manual Only';
-
-                    const row = `
-                        <tr>
-                            <td class="fw-bold">${rule.name}</td>
-                            <td><span class="badge bg-light text-primary">${rule.strategy}</span></td>
-                            <td>${rule.targetCourse}</td>
-                            <td><small>${details}</small></td>
-                            <td>
-                                <button onclick="deleteRule('${rule._id}')" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            } catch (err) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error loading rules</td></tr>';
-            }
-        }
-
-        document.getElementById('ruleForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = {
-                name: document.getElementById('ruleName').value,
-                strategy: document.getElementById('strategy').value,
-                targetCourse: document.getElementById('targetCourse').value,
-                durationDays: document.getElementById('durationDays').value || null,
-                fixedExpiryDate: document.getElementById('fixedExpiryDate').value || null
-            };
-
-            try {
-                const res = await fetch('http://localhost:5000/api/admin/expiry-rules', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${user.token}`
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (res.ok) {
-                    alert('Rule created successfully!');
-                    document.getElementById('ruleForm').reset();
-                    loadRules();
-                } else {
-                    const err = await res.json();
-                    alert(err.message || 'Failed to create rule');
-                }
-            } catch (err) {
-                alert('Network error');
-            }
-        });
-
-        async function deleteRule(id) {
-            if (!confirm('Are you sure?')) return;
-            try {
-                await fetch(`http://localhost:5000/api/admin/expiry-rules/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${user.token}` }
-                });
-                loadRules();
-            } catch (err) {
-                alert('Delete failed');
-            }
-        }
+        const u = JSON.parse(localStorage.getItem('user'));
+        if (u) document.getElementById('userNameDisplay').textContent = u.name;
     </script>
 </body>
 

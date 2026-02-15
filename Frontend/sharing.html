@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preview Sandbox - CertGen Platform</title>
+    <title>Sharing Hub - CertGen Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -45,38 +45,55 @@
         <div class="flex-1 flex flex-col overflow-hidden relative">
             <header
                 class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm z-10">
-                <h1 class="text-lg font-semibold text-slate-800">Developer Sandbox</h1>
+                <h1 class="text-lg font-semibold text-slate-800">Social Sharing Hub</h1>
                 <div class="flex items-center gap-4">
                     <p id="userNameDisplay" class="text-sm font-semibold text-slate-700 hidden sm:block">User</p>
                 </div>
             </header>
 
             <main class="flex-1 overflow-y-auto p-8 bg-slate-50">
-                <div class="max-w-4xl mx-auto space-y-6">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <h2 class="text-xl font-bold text-slate-800 mb-2">API Playground</h2>
-                        <p class="text-slate-500 mb-6 text-sm">Test API endpoints directly from your browser.</p>
+                <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                        <div class="bg-slate-900 rounded-lg p-4 font-mono text-xs text-green-400 overflow-x-auto mb-4">
-                            <span class="text-purple-400">POST</span> /api/generate <br>
-                            {<br>
-                            &nbsp;&nbsp;"recipient": "Test User",<br>
-                            &nbsp;&nbsp;"template": "modern"<br>
-                            }
-                        </div>
-                        <button
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-lg shadow-blue-500/20">Send
-                            Request</button>
-                    </div>
-
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <h2 class="text-xl font-bold text-slate-800 mb-2">Dynamic Template Preview</h2>
+                    <div
+                        class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col items-center text-center">
                         <div
-                            class="h-64 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-400 flex-col">
-                            <i class="fas fa-code text-4xl mb-2"></i>
-                            <p>Live Code Editor Integration Coming Soon</p>
+                            class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl mb-4">
+                            <i class="fab fa-linkedin-in"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-2">LinkedIn Integration</h2>
+                        <p class="text-slate-500 mb-6 text-sm">Automatically prompt recipients to add certificates to
+                            their LinkedIn profile.</p>
+                        <button
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg w-full font-medium transition-colors">Configure
+                            API</button>
+                    </div>
+
+                    <div
+                        class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col items-center text-center">
+                        <div
+                            class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 text-2xl mb-4">
+                            <i class="fas fa-envelope-open-text"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-2">Email Templates</h2>
+                        <p class="text-slate-500 mb-6 text-sm">Customize the email recipients receive with their
+                            certificate attached.</p>
+                        <button
+                            class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-6 py-2 rounded-lg w-full font-medium transition-colors">Edit
+                            Templates</button>
+                    </div>
+
+                    <div
+                        class="md:col-span-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-8 text-white flex flex-col items-center text-center">
+                        <h3 class="text-2xl font-bold mb-2">Public Verification Badge</h3>
+                        <p class="opacity-90 max-w-lg mb-6 text-sm">Embed a trust badge on your organization's website
+                            to let visitors verify any certificate instantly.</p>
+                        <div
+                            class="bg-black/20 p-4 rounded-lg font-mono text-xs w-full max-w-xl text-left overflow-x-auto select-all cursor-pointer hover:bg-black/30 transition-colors">
+                            &lt;iframe src="https://certgen.com/verify-widget" width="300"
+                            height="200"&gt;&lt;/iframe&gt;
                         </div>
                     </div>
+
                 </div>
             </main>
         </div>

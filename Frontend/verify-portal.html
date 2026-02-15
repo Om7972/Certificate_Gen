@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Portal - CertGen Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script>
+        const currentUser = checkAuth();
+        if (!currentUser) window.location.href = 'login.html';
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+    </script>
+    <style>
+        .scanner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 50;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 font-sans text-slate-800">
+    <div class="flex h-screen overflow-hidden">
+
+        <aside class="hidden md:flex w-64 flex-col bg-slate-900 text-white transition-all duration-300 relative z-20">
+            <div class="flex items-center justify-center h-16 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <span>Cert<span class="text-blue-400">Gen</span></span>
+                </a>
+            </div>
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav class="space-y-1 px-2"></nav>
+            </div>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()"
+                    class="flex w-full items-center px-4 py-2 text-sm font-medium text-red-400 rounded-lg hover:bg-slate-800 transition-colors">
+                    <i class="fas fa-sign-out-alt w-6 text-center mr-2"></i>
+                    Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <header
+                class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm z-10">
+                <h1 class="text-lg font-semibold text-slate-800">Verify Portal</h1>
+                <div class="flex items-center gap-4">
+                    <p id="userNameDisplay" class="text-sm font-semibold text-slate-700 hidden sm:block">User</p>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-8 bg-slate-50">
+                <div class="max-w-3xl mx-auto">
+                    <!-- Verification Card -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+
+                        <!-- Search State -->
+                        <div id="searchState" class="p-10 text-center">
+                            <h2 class="text-2xl font-bold text-slate-800 mb-6">Internal Verification</h2>
+                            <div class="flex max-w-lg mx-auto gap-2">
+                                <input type="text" id="certIdInput"
+                                    class="flex-1 border border-slate-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                                    placeholder="Enter Certificate ID...">
+                                <button onclick="verifyCertificate()"
+                                    class="bg-blue-600 text-white px-6 rounded-lg font-medium hover:bg-blue-700">Verify</button>
+                            </div>
+                            <div class="mt-8">
+                                <button onclick="startScanner()"
+                                    class="text-blue-600 hover:text-blue-700 font-medium flex items-center justify-center gap-2 mx-auto">
+                                    <i class="fas fa-qrcode"></i> Scan QR Code
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Loading -->
+                        <div id="loadingState" class="hidden p-16 text-center">
+                            <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                            <p class="text-slate-500">Checking records...</p>
+                        </div>
+
+                        <!-- Result -->
+                        <div id="resultState" class="hidden">
+                            <div id="resultHeader" class="p-6 bg-slate-50 border-b text-center"></div>
+
+                            <div class="p-8 space-y-6">
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <label
+                                            class="text-xs font-bold text-slate-500 uppercase tracking-wider">Recipient
+                                            Name</label>
+                                        <p id="resName" class="text-lg font-bold text-slate-800 mt-1">Name</p>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Date
+                                            Issued</label>
+                                        <p id="resDate" class="text-lg font-medium text-slate-800 mt-1">Date</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Course /
+                                        Achievement</label>
+                                    <p id="resCourse" class="text-xl font-bold text-blue-600 mt-1">Course Name</p>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Certificate
+                                        ID</label>
+                                    <p id="resId" class="text-sm font-mono bg-slate-100 p-2 rounded mt-1 select-all">
+                                        ID-123</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-slate-50 border-t text-center">
+                                <button onclick="resetVerify()"
+                                    class="text-sm font-medium text-slate-600 hover:text-blue-600">Verify Another
+                                    Certificate</button>
+                            </div>
+                        </div>
+
+                        <!-- Error -->
+                        <div id="errorState" class="hidden p-12 text-center">
+                            <div
+                                class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center text-red-500 mb-4 mx-auto text-3xl">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-2">Not Found</h3>
+                            <p class="text-slate-500 mb-6">We could not find a valid certificate with that ID.</p>
+                            <button onclick="resetVerify()" class="text-blue-600 font-medium">Try Again</button>
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- QR Scanner Overlay -->
+    <div id="scannerOverlay" class="scanner-overlay backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full mx-4 relative">
+            <button onclick="stopScanner()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i
+                    class="fas fa-times"></i></button>
+            <h3 class="font-bold text-lg mb-4 text-center">Scan QR Code</h3>
+            <div id="reader" style="width: 100%"></div>
+        </div>
+    </div>
+
+    <script>
+        const u = JSON.parse(localStorage.getItem('user'));
+        if (u) document.getElementById('userNameDisplay').textContent = u.name;
+
+        let html5QrCode;
+
+        function startScanner() {
+            document.getElementById('scannerOverlay').style.display = 'flex';
+            html5QrCode = new Html5Qrcode("reader");
+            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+        }
+
+        function stopScanner() {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    html5QrCode.clear();
+                    document.getElementById('scannerOverlay').style.display = 'none';
+                }).catch(err => console.log(err));
+            } else {
+                document.getElementById('scannerOverlay').style.display = 'none';
+            }
+        }
+
+        function onScanSuccess(decodedText) {
+            stopScanner();
+            let id = decodedText;
+            try {
+                const url = new URL(decodedText);
+                const params = new URLSearchParams(url.search);
+                if (params.has('id')) id = params.get('id');
+            } catch (e) { }
+            document.getElementById('certIdInput').value = id;
+            verifyCertificate();
+        }
+
+        async function verifyCertificate() {
+            const id = document.getElementById('certIdInput').value.trim();
+            if (!id) return;
+
+            document.getElementById('searchState').classList.add('hidden');
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('resultState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+
+            try {
+                const res = await fetch(`http://localhost:5000/api/certificates/${id}`);
+                if (!res.ok) throw new Error("Not found");
+                const json = await res.json();
+                const data = json.data || json;
+
+                document.getElementById('resName').textContent = data.recipientName;
+                document.getElementById('resCourse').textContent = data.courseName;
+                document.getElementById('resDate').textContent = new Date(data.createdAt).toLocaleDateString();
+                document.getElementById('resId').textContent = data.certificateId;
+
+                const header = document.getElementById('resultHeader');
+                if (data.status !== 'revoked' && data.status !== 'expired') {
+                    header.innerHTML = `
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-3 mx-auto text-3xl">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-green-800">Valid Certificate</h2>
+                     `;
+                    header.className = 'p-6 bg-green-50 border-b border-green-100 text-center';
+                } else {
+                    header.innerHTML = `
+                         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-3 mx-auto text-3xl">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-red-800">Invalid: ${data.status.toUpperCase()}</h2>
+                     `;
+                    header.className = 'p-6 bg-red-50 border-b border-red-100 text-center';
+                }
+
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('resultState').classList.remove('hidden');
+
+            } catch (e) {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('errorState').classList.remove('hidden');
+            }
+        }
+
+        function resetVerify() {
+            document.getElementById('searchState').classList.remove('hidden');
+            document.getElementById('resultState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+            document.getElementById('certIdInput').value = '';
+        }
+    </script>
+</body>
+
+</html>

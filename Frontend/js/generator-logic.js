@@ -23,13 +23,11 @@ const state = {
 const templates = {
   classic: (data) => `
         <div class="w-full h-full relative bg-white p-12 flex flex-col items-center text-center font-playfair border-[20px] border-double border-[${data.accentColor}]/20">
-            <!-- Corner Ornaments -->
             <div class="absolute top-4 left-4 w-24 h-24 border-t-4 border-l-4 border-[${data.accentColor}] opacity-50"></div>
             <div class="absolute top-4 right-4 w-24 h-24 border-t-4 border-r-4 border-[${data.accentColor}] opacity-50"></div>
             <div class="absolute bottom-4 left-4 w-24 h-24 border-b-4 border-l-4 border-[${data.accentColor}] opacity-50"></div>
             <div class="absolute bottom-4 right-4 w-24 h-24 border-b-4 border-r-4 border-[${data.accentColor}] opacity-50"></div>
 
-            <!-- Header -->
             <div class="mt-8 max-w-3xl mx-auto z-10 w-full">
                 ${data.logoUrl ? `<img src="${data.logoUrl}" class="h-20 mx-auto mb-4 object-contain opacity-90" alt="Logo">` : ''}
                 <div class="text-xl font-bold uppercase tracking-widest text-gray-600 font-poppins mb-1">${data.organization}</div>
@@ -39,7 +37,6 @@ const templates = {
                 <div class="text-4xl font-alex text-[${data.accentColor}] mb-8">of Achievement</div>
             </div>
 
-            <!-- Body -->
             <div class="flex-1 flex flex-col justify-center w-full z-10">
                 <p class="text-lg text-gray-500 italic font-poppins mb-2">This certificate is proudly awarded to</p>
                 <div class="text-6xl font-bold text-gray-800 mb-6 border-b-2 border-gray-200 pb-4 mx-auto min-w-[500px] inline-block font-playfair tracking-wide leading-tight">
@@ -53,7 +50,6 @@ const templates = {
                 </div>
             </div>
 
-            <!-- Footer -->
             <div class="w-full flex justify-between items-end px-16 pb-8 z-10 mt-auto">
                 <div class="text-center">
                     <div class="w-48 border-b border-gray-400 mb-2 h-10"></div>
@@ -74,7 +70,6 @@ const templates = {
                 </div>
             </div>
 
-            <!-- Watermark -->
             ${data.watermarkEnabled ? `
             <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none z-0">
                 <img src="${data.logoUrl || 'https://via.placeholder.com/500'}" class="w-[600px] h-[600px] object-contain grayscale">
@@ -84,7 +79,6 @@ const templates = {
 
   modern: (data) => `
         <div class="w-full h-full relative bg-slate-50 flex overflow-hidden font-poppins">
-            <!-- Sidebar -->
             <div class="w-[30%] h-full bg-[${data.accentColor}] text-white p-12 flex flex-col justify-between relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-full bg-black/10 z-0"></div>
                 <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-white/10 rounded-full z-0"></div>
@@ -105,7 +99,6 @@ const templates = {
                 </div>
             </div>
 
-            <!-- Content -->
             <div class="flex-1 p-20 flex flex-col justify-center relative bg-white">
                 <div class="absolute top-10 right-10 opacity-5">
                     <i class="fas fa-certificate text-9xl"></i>
@@ -203,13 +196,11 @@ const templates = {
 
   dark: (data) => `
         <div class="w-full h-full bg-[#0F172A] relative p-16 flex flex-col font-cinzel text-gray-100 overflow-hidden border-[16px] border-[#1E293B]">
-            <!-- Background Elements -->
             <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-yellow-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
             <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
             <div class="relative z-10 h-full flex flex-col justify-between border border-white/10 p-12 bg-white/5 backdrop-blur-sm shadow-2xl">
                 
-                <!-- Header -->
                 <div class="flex justify-between items-start">
                     <div class="flex items-center gap-4">
                         ${data.logoUrl ? `<img src="${data.logoUrl}" class="h-16 invert opacity-90" alt="Logo">` : ''}
@@ -221,12 +212,10 @@ const templates = {
                     ${data.qrEnabled ? `<div id="qrcode" class="bg-white p-2 rounded shadow-lg"></div>` : ''}
                 </div>
 
-                <!-- Main Content -->
                 <div class="text-center space-y-10 my-auto">
                     <h1 class="text-7xl text-white font-bold tracking-tight drop-shadow-2xl">Certificate</h1>
                     
                     <div class="py-6 relative">
-                        <!-- Decorative Lines -->
                         <div class="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-yellow-600/50 to-transparent"></div>
                         
                         <div class="relative bg-[#0F172A]/80 inline-block px-10 py-2">
@@ -243,7 +232,6 @@ const templates = {
                     </div>
                 </div>
 
-                <!-- Footer -->
                 <div class="flex justify-between items-end border-t border-white/10 pt-8 mt-4">
                      <div>
                         <div class="h-12 border-b border-gray-600 w-56 mb-2 flex items-end pb-1 overflow-hidden">
@@ -272,11 +260,9 @@ const templates = {
 
   gold: (data) => `
         <div class="w-full h-full bg-gradient-to-br from-[#FFFDF5] to-[#FFFFFF] p-12 flex flex-col relative font-playfair text-[#5C481D]">
-            <!-- Gold Frame -->
             <div class="absolute inset-4 border-[3px] border-[#C59D45] z-0 pointer-events-none"></div>
             <div class="absolute inset-6 border border-[#E6C87F] z-0 pointer-events-none"></div>
             
-            <!-- Corner Accents -->
             <div class="absolute top-4 left-4 text-5xl text-[#C59D45]"><i class="fab fa-ethereum"></i></div>
             <div class="absolute top-4 right-4 text-5xl text-[#C59D45]"><i class="fab fa-ethereum"></i></div>
             <div class="absolute bottom-4 left-4 text-5xl text-[#C59D45] rotate-180"><i class="fab fa-ethereum"></i></div>
@@ -343,16 +329,31 @@ const templates = {
 // RENDER LOGIC
 // ==========================================
 function updatePreview() {
+  if (!document.getElementById('certificate-container')) return;
+
   // 1. Update State
-  state.recipientName = document.getElementById('recipientName').value || 'Recipient Name';
-  state.courseName = document.getElementById('courseName').value || 'Course Name';
-  state.description = document.getElementById('description').value;
-  state.date = document.getElementById('issueDate').value || new Date().toISOString().split('T')[0];
-  state.organization = document.getElementById('organization').value;
-  state.logoUrl = document.getElementById('logoUrl').value;
-  state.accentColor = document.getElementById('accentColor').value;
-  state.qrEnabled = document.getElementById('qrToggle').checked;
-  state.watermarkEnabled = document.getElementById('watermarkToggle').checked;
+  const elements = {
+    recipientName: document.getElementById('recipientName'),
+    courseName: document.getElementById('courseName'),
+    description: document.getElementById('description'),
+    issueDate: document.getElementById('issueDate'),
+    organization: document.getElementById('organization'),
+    logoUrl: document.getElementById('logoUrl'),
+    accentColor: document.getElementById('accentColor'),
+    qrToggle: document.getElementById('qrToggle'),
+    watermarkToggle: document.getElementById('watermarkToggle'),
+    certId: document.getElementById('certId')
+  };
+
+  if (elements.recipientName) state.recipientName = elements.recipientName.value || 'Recipient Name';
+  if (elements.courseName) state.courseName = elements.courseName.value || 'Course Name';
+  if (elements.description) state.description = elements.description.value;
+  if (elements.issueDate) state.date = elements.issueDate.value || new Date().toISOString().split('T')[0];
+  if (elements.organization) state.organization = elements.organization.value;
+  if (elements.logoUrl) state.logoUrl = elements.logoUrl.value;
+  if (elements.accentColor) state.accentColor = elements.accentColor.value;
+  if (elements.qrToggle) state.qrEnabled = elements.qrToggle.checked;
+  if (elements.watermarkToggle) state.watermarkEnabled = elements.watermarkToggle.checked;
 
   // 2. Render Template
   const container = document.getElementById('certificate-container');
@@ -363,7 +364,7 @@ function updatePreview() {
   if (state.qrEnabled) {
     // Find the QR div container injected by the template
     const qrDiv = document.getElementById('qrcode');
-    if (qrDiv) {
+    if (qrDiv && typeof QRCode !== 'undefined') {
       qrDiv.innerHTML = ''; // Clear previous
       try {
         // Use qrcode.js library
@@ -391,7 +392,7 @@ function updatePreview() {
   });
 
   // Update Cert ID Display
-  document.getElementById('certId').value = state.certId;
+  if (elements.certId) elements.certId.value = state.certId;
 }
 
 // ==========================================
@@ -406,7 +407,8 @@ function handleLogoUpload(input) {
   if (input.files && input.files[0]) {
     const reader = new FileReader();
     reader.onload = function (e) {
-      document.getElementById('logoUrl').value = e.target.result; // Set data URL to input
+      const db = document.getElementById('logoUrl');
+      if (db) db.value = e.target.result; // Set data URL to input
       updatePreview();
     };
     reader.readAsDataURL(input.files[0]);
@@ -420,20 +422,25 @@ function adjustZoom(delta) {
   // Apply zoom to the wrapper (scaling logic)
   // We scale the WRAPPER, not the container itself to keep px resolution high
   const wrapper = document.getElementById('preview-wrapper');
-  wrapper.style.transform = `scale(${state.zoom})`;
+  if (wrapper) wrapper.style.transform = `scale(${state.zoom})`;
 
   // Update label
-  document.getElementById('zoomLevel').innerText = Math.round(state.zoom * 100) + '%';
+  const lbl = document.getElementById('zoomLevel');
+  if (lbl) lbl.innerText = Math.round(state.zoom * 100) + '%';
 }
 
 function toggleFullScreen() {
   const section = document.querySelector('main');
+  if (!section) return;
+
   if (!document.fullscreenElement) {
-    section.requestFullscreen().catch(err => {
-      alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-    });
+    if (section.requestFullscreen) {
+      section.requestFullscreen().catch(err => {
+        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+      });
+    }
   } else {
-    document.exitFullscreen();
+    if (document.exitFullscreen) document.exitFullscreen();
   }
 }
 
@@ -441,10 +448,15 @@ function toggleFullScreen() {
 // EXPORT & SAVE
 // ==========================================
 async function downloadPDF() {
+  if (!window.jspdf) return alert('jsPDF not loaded');
+  if (!window.html2canvas) return alert('html2canvas not loaded');
+
   const { jsPDF } = window.jspdf;
 
   const container = document.getElementById('certificate-container');
   const wrapper = document.getElementById('preview-wrapper');
+
+  if (!container || !wrapper) return;
 
   // 1. Temporarily reset transform/scale to ensure clean capture
   const originalTransform = wrapper.style.transform;
@@ -452,9 +464,11 @@ async function downloadPDF() {
 
   // 2. Show loading (optional: change button text)
   const btn = document.querySelector('button[onclick="downloadPDF()"]');
-  const originalText = btn.innerHTML;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-  btn.disabled = true;
+  if (btn) {
+    var originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    btn.disabled = true;
+  }
 
   try {
     // 3. HTML2Canvas Capture
@@ -479,7 +493,7 @@ async function downloadPDF() {
     showToast("Certificate Downloaded!");
 
     // Record Action in Backend (if certId exists/saved)
-    if (state.certId) {
+    if (state.certId && typeof recordCertificateAction !== 'undefined') {
       recordCertificateAction(state.certId, 'DOWNLOADED', `Downloaded PDF for ${state.recipientName}`);
     }
 
@@ -489,14 +503,16 @@ async function downloadPDF() {
   } finally {
     // Restore UI
     wrapper.style.transform = originalTransform;
-    btn.innerHTML = originalText;
-    btn.disabled = false;
+    if (btn) {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
   }
 }
 
 async function saveCertificate() {
   const btn = document.querySelector('button[onclick="saveCertificate()"]');
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
   try {
     const formData = {
@@ -517,16 +533,22 @@ async function saveCertificate() {
     // For now, use dummy or prompt
     const email = prompt("Enter recipient email to save record:", "student@example.com");
     if (!email) {
-      btn.innerHTML = '<i class="fas fa-save text-green-600"></i> Save to Cloud';
+      if (btn) btn.innerHTML = '<i class="fas fa-save text-green-600"></i> Save to Cloud';
       return;
     }
     formData.recipientEmail = email;
+
+    // currentUser global comes from auth.js usually, check if exists
+    const token = (typeof currentUser !== 'undefined' && currentUser.token) ? currentUser.token :
+      (JSON.parse(localStorage.getItem('user'))?.token);
+
+    if (!token) throw new Error('Not authenticated');
 
     const res = await fetch('http://localhost:5000/api/certificates', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${currentUser.token}`
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(formData)
     });
@@ -539,9 +561,9 @@ async function saveCertificate() {
     }
   } catch (e) {
     console.error(e);
-    alert("Network Error");
+    alert("Network Error or Auth Failed");
   } finally {
-    btn.innerHTML = '<i class="fas fa-save text-green-600"></i> Save to Cloud';
+    if (btn) btn.innerHTML = '<i class="fas fa-save text-green-600"></i> Save to Cloud';
   }
 }
 
@@ -552,7 +574,9 @@ async function saveCertificate() {
 
 function showToast(msg) {
   const toast = document.getElementById('toast');
-  toast.querySelector('span').innerText = msg;
+  if (!toast) return;
+  const span = toast.querySelector('span');
+  if (span) span.innerText = msg;
   toast.classList.remove('translate-y-20', 'opacity-0');
   setTimeout(() => {
     toast.classList.add('translate-y-20', 'opacity-0');
@@ -563,48 +587,50 @@ function showToast(msg) {
 // INIT
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-  // Parse URL params for "Edit" mode
-  const urlParams = new URLSearchParams(window.location.search);
-  const fromSandbox = urlParams.get('from');
+  try {
+    // Parse URL params for "Edit" mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromSandbox = urlParams.get('from');
 
-  // Check if loading from sandbox data
-  if (fromSandbox) {
-    const sbData = sessionStorage.getItem('sandboxData');
-    if (sbData) {
-      try {
-        const d = JSON.parse(sbData);
-        if (d.name) document.getElementById('recipientName').value = d.name;
-        if (d.course) document.getElementById('courseName').value = d.course;
-        if (d.desc) document.getElementById('description').value = d.desc;
-        if (d.date) document.getElementById('issueDate').value = d.date;
+    // Check if loading from sandbox data
+    if (fromSandbox) {
+      const sbData = sessionStorage.getItem('sandboxData');
+      if (sbData) {
+        try {
+          const d = JSON.parse(sbData);
+          if (d.name && document.getElementById('recipientName')) document.getElementById('recipientName').value = d.name;
+          if (d.course && document.getElementById('courseName')) document.getElementById('courseName').value = d.course;
+          if (d.desc && document.getElementById('description')) document.getElementById('description').value = d.desc;
+          if (d.date && document.getElementById('issueDate')) document.getElementById('issueDate').value = d.date;
 
-        // Map Sandbox templates to Editor templates
-        if (d.template) {
-          const templateMap = {
-            'professional': 'classic',
-            'academic': 'minimal'
-          };
-          state.template = templateMap[d.template] || (templates[d.template] ? d.template : 'classic');
+          // Map Sandbox templates to Editor templates
+          if (d.template) {
+            const templateMap = {
+              'professional': 'classic',
+              'academic': 'minimal'
+            };
+            state.template = templateMap[d.template] || (templates[d.template] ? d.template : 'classic');
+          }
+        } catch (e) {
+          console.error("Error parsing sandbox data", e);
         }
-      } catch (e) {
-        console.error("Error parsing sandbox data", e);
+        showToast("Loaded Playground Data");
       }
-      showToast("Loaded Playground Data");
     }
+
+    // Set Date Default if empty
+    const dateInput = document.getElementById('issueDate');
+    if (dateInput && !dateInput.value) {
+      dateInput.valueAsDate = new Date();
+    }
+
+    // Render
+    updatePreview();
+
+    // Initial Zoom Fit (approx 0.7 for standard screens)
+    state.zoom = 0.7;
+    adjustZoom(0);
+  } catch (e) {
+    console.error("Init Error:", e);
   }
-
-  // Set Date Default if empty
-  const dateInput = document.getElementById('issueDate');
-  if (!dateInput.value) {
-    dateInput.valueAsDate = new Date();
-  }
-
-  // Set Font Size Controller (if needed) but we rely on tailwind classes in templates
-
-  // Render
-  updatePreview();
-
-  // Initial Zoom Fit (approx 0.6 for standard screens)
-  state.zoom = 0.7;
-  adjustZoom(0);
 });

@@ -121,27 +121,51 @@ function updateUI() {
         const roleBadge = user.role === 'admin' ? `<span class="badge bg-danger ms-1">Admin</span>` : '';
         authButtons.innerHTML = `
             <div class="dropdown">
-                <button class="btn btn-outline-primary rounded-pill px-4 fw-semibold dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                <button class="btn btn-outline-primary rounded-pill px-4 fw-semibold dropdown-toggle d-flex align-items-center gap-2 shadow-sm" type="button" data-bs-toggle="dropdown" style="transition: all 0.2s;">
                     <i class="fas fa-user-circle fs-5"></i>
                     <span>${userName}</span>
-                    ${roleBadge}
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2">
-                    <li><a class="dropdown-item rounded py-2" href="dashboard.html"><i class="fas fa-th-large me-2 text-primary"></i> Dashboard</a></li>
-                    <li><a class="dropdown-item rounded py-2" href="generator.html"><i class="fas fa-magic me-2 text-primary"></i> Create Certificate</a></li>
-                    <li><a class="dropdown-item rounded py-2" href="naming-engine.html"><i class="fas fa-robot me-2 text-primary"></i> Smart Naming</a></li>
-                    <li><a class="dropdown-item rounded py-2" href="generator.html#watermark"><i class="fas fa-stamp me-2 text-primary"></i> Watermark Control</a></li>
-                    <li><a class="dropdown-item rounded py-2" href="analytics.html"><i class="fas fa-chart-line me-2 text-primary"></i> Usage Analytics</a></li>
-                    <li><a class="dropdown-item rounded py-2" href="notifications.html"><i class="fas fa-bell me-2 text-primary"></i> Smart Notifications</a></li>
-                    <li><a class="dropdown-item rounded py-2" href="history.html"><i class="fas fa-share-alt me-2 text-primary"></i> Sharing Hub</a></li>
-                    ${user.role === 'admin' ? '<li><a class="dropdown-item rounded py-2" href="audit-logs.html"><i class="fas fa-shield-alt me-2 text-primary"></i> Audit Logs</a></li>' : ''}
-                    ${user.role === 'admin' ? '<li><a class="dropdown-item rounded py-2" href="expiry-rules.html"><i class="fas fa-hourglass-end me-2 text-primary"></i> Expiry Rules</a></li>' : ''}
-                    ${user.role === 'admin' ? '<li><a class="dropdown-item rounded py-2" href="fraud-detection.html"><i class="fas fa-user-shield me-2 text-primary"></i> Fraud Detection</a></li>' : ''}
-                    <li><a class="dropdown-item rounded py-2" href="sandbox.html"><i class="fas fa-vials me-2 text-primary"></i> Preview Sandbox</a></li>
-                    <li><a class="dropdown-item rounded py-2" href="profile.html"><i class="fas fa-user-cog me-2 text-primary"></i> Profile Settings</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item rounded py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-2 rounded-4" style="animation: dropIn 0.2s ease-out forwards; transform-origin: top right;">
+                    <li>
+                        <a class="dropdown-item rounded-3 py-2 px-3 mb-1 d-flex align-items-center" href="dashboard.html">
+                            <div class="bg-blue-50 text-primary rounded-circle p-1 me-2 d-flex align-items-center justify-center" style="width: 24px; height: 24px; background: #eff6ff;">
+                                <i class="fas fa-th-large" style="font-size: 0.8rem;"></i>
+                            </div>
+                            <span class="fw-medium">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item rounded-3 py-2 px-3 mb-1 d-flex align-items-center" href="profile.html">
+                            <div class="bg-blue-50 text-primary rounded-circle p-1 me-2 d-flex align-items-center justify-center" style="width: 24px; height: 24px; background: #eff6ff;">
+                                <i class="fas fa-user-cog" style="font-size: 0.8rem;"></i>
+                            </div>
+                            <span class="fw-medium">Profile Settings</span>
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider my-1"></li>
+                    <li>
+                        <a class="dropdown-item rounded-3 py-2 px-3 d-flex align-items-center text-danger" href="#" onclick="logout()">
+                            <div class="bg-red-50 text-danger rounded-circle p-1 me-2 d-flex align-items-center justify-center" style="width: 24px; height: 24px; background: #fef2f2;">
+                                <i class="fas fa-sign-out-alt" style="font-size: 0.8rem;"></i>
+                            </div>
+                            <span class="fw-medium">Logout</span>
+                        </a>
+                    </li>
                 </ul>
+                <style>
+                    @keyframes dropIn {
+                        from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+                        to { opacity: 1; transform: translateY(0) scale(1); }
+                    }
+                    .dropdown-item:hover {
+                        background-color: #f8fafc;
+                        transform: translateX(4px);
+                        transition: all 0.2s ease;
+                    }
+                    .dropdown-item {
+                        transition: all 0.2s ease;
+                    }
+                </style>
             </div>
         `;
 
@@ -160,7 +184,7 @@ function updateUI() {
             if (heroButtons) {
                 heroButtons.innerHTML = `
                     <a href="generator.html" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg">New Certificate</a>
-                    <a href="history.html" class="btn btn-white btn-lg rounded-pill px-5 border shadow-sm">View History</a>
+                    <a href="demo.html" class="btn btn-white btn-lg rounded-pill px-5 border shadow-sm"><i class="fas fa-play me-2 text-primary"></i> Watch Demo</a>
                 `;
             }
         }

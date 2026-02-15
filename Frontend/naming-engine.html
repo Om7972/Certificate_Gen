@@ -4,292 +4,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Naming Engine - CertGen</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="darkmode.css">
+    <title>Smart Naming Engine - CertGen Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/auth.js"></script>
-    <script defer src="js/darkmode.js"></script>
+    <script src="js/sidebar.js"></script>
     <script>
         const currentUser = checkAuth();
         if (!currentUser) window.location.href = 'login.html';
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            corePlugins: {
-                preflight: false,
-            },
-            theme: {
-                extend: {
-                    boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .template-preview {
-            background: #f8fafc;
-            border: 2px dashed #e2e8f0;
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            color: #64748b;
-        }
-
-        .variable-chip {
-            background: #dbeafe;
-            color: #2563eb;
-            padding: 4px 12px;
-            border-radius: 100px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid #bfdbfe;
-            transition: all 0.2s;
-        }
-
-        .variable-chip:hover {
-            background: #2563eb;
-            color: white;
-        }
-
-        .live-result {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1e293b;
-        }
-    </style>
 </head>
 
-<body>
+<body class="bg-slate-50 font-sans text-slate-800">
+    <div class="flex h-screen overflow-hidden">
 
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h3>Cert<span>Gen</span></h3>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="generator.html"><i class="fas fa-certificate"></i> Generator</a></li>
-            <li><a href="history.html"><i class="fas fa-history"></i> History</a></li>
-            <li><a href="naming-engine.html" class="active"><i class="fas fa-robot"></i> Smart Naming</a></li>
-            <li><a href="generator.html#watermark"><i class="fas fa-stamp"></i> Watermark Control</a></li>
-            <li><a href="analytics.html"><i class="fas fa-chart-line"></i> Usage Analytics</a></li>
-            <li><a href="notifications.html"><i class="fas fa-bell"></i> Smart Notifications</a></li>
-            <li><a href="history.html"><i class="fas fa-share-alt"></i> Sharing Hub</a></li>
-            <li><a href="sandbox.html"><i class="fas fa-vials"></i> Preview Sandbox</a></li>
-            <li class="admin-only" style="display:none;"><a href="audit-logs.html"><i class="fas fa-shield-alt"></i>
-                    Audit Logs</a></li>
-            <li class="admin-only" style="display:none;"><a href="expiry-rules.html"><i
-                        class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
-            <li class="admin-only" style="display:none;"><a href="fraud-detection.html"><i
-                        class="fas fa-user-shield"></i> Fraud Detection</a></li>
-            <li><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a></li>
-            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="top-navbar">
-            <h4 class="mb-0">Smart Certificate Naming Engine</h4>
-            <div class="d-flex align-items-center">
-                <div class="theme-switch-wrapper">
-                    <label class="theme-switch" for="checkbox">
-                        <input type="checkbox" id="checkbox" />
-                        <div class="slider round"></div>
-                    </label>
-                </div>
-                <div class="user-profile">
-                    <span id="userNameDisplay">Welcome, User</span>
-                    <div class="user-avatar" id="userInitial">U</div>
-                </div>
+        <!-- Sidebar Placeholder -->
+        <aside class="hidden md:flex w-64 flex-col bg-slate-900 text-white transition-all duration-300 relative z-20">
+            <div class="flex items-center justify-center h-16 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <span>Cert<span class="text-blue-400">Gen</span></span>
+                </a>
             </div>
-        </div>
-
-        <div class="container-fluid py-4">
-            <div class="row">
-                <div class="col-lg-8">
-                    <!-- Configurator Card -->
-                    <div
-                        class="card border-0 shadow-glass rounded-2xl p-6 mb-4 bg-white/90 backdrop-blur-lg hover:shadow-2xl transition-all duration-300">
-                        <h5 class="fw-bold mb-4"><i class="fas fa-cog text-primary me-2"></i>Template Configurator</h5>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Naming Pattern</label>
-                            <input type="text" id="namingPattern" class="form-control form-control-lg"
-                                placeholder="e.g. Certificate of {achievement} in {course} {year}">
-                            <div class="form-text mt-2">
-                                Tip: Use curly braces for variables: <code>{achievement}</code>, <code>{course}</code>,
-                                <code>{year}</code>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label d-block fw-semibold">Quick Add Variables</label>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="variable-chip" onclick="addVar('achievement')">{achievement}</span>
-                                <span class="variable-chip" onclick="addVar('course')">{course}</span>
-                                <span class="variable-chip" onclick="addVar('year')">{year}</span>
-                                <span class="variable-chip" onclick="addVar('grade')">{grade}</span>
-                                <span class="variable-chip" onclick="addVar('rank')">{rank}</span>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label small fw-bold">Sample Achievement</label>
-                                <input type="text" class="form-control form-control-sm sample-input"
-                                    data-var="achievement" placeholder="Excellence" oninput="updatePreview()">
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label small fw-bold">Sample Course</label>
-                                <input type="text" class="form-control form-control-sm sample-input" data-var="course"
-                                    placeholder="AI Workshop" oninput="updatePreview()">
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label small fw-bold">Sample Year</label>
-                                <input type="text" class="form-control form-control-sm sample-input" data-var="year"
-                                    placeholder="2025" oninput="updatePreview()">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Preview Card -->
-                    <div
-                        class="card border-0 shadow-glass rounded-2xl p-6 bg-gradient-to-br from-white to-blue-50/50 backdrop-blur-lg">
-                        <h5 class="fw-bold mb-4"><i class="fas fa-eye text-success me-2"></i>Live Preview</h5>
-                        <div class="template-preview text-center">
-                            <div class="mb-2 small text-muted text-uppercase fw-bold ls-1">Generated Title</div>
-                            <div id="previewResult" class="live-result">Certificate of Excellence in AI Workshop 2025
-                            </div>
-                        </div>
-                        <div class="mt-4 d-flex gap-2">
-                            <button class="btn btn-primary" onclick="saveTemplate()">Save Template</button>
-                            <button class="btn btn-outline-secondary" onclick="resetConfig()">Reset</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <!-- Saved Templates List -->
-                    <div class="card border-0 shadow-glass rounded-2xl p-6 h-100 bg-white/80 backdrop-blur-md">
-                        <h5 class="fw-bold mb-4"><i class="fas fa-list text-info me-2"></i>Saved Templates</h5>
-                        <div id="templatesList" class="list-group list-group-flush">
-                            <!-- Templates will be loaded here -->
-                            <div class="text-center py-4 text-muted">Loading templates...</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav class="space-y-1 px-2"></nav>
             </div>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()"
+                    class="flex w-full items-center px-4 py-2 text-sm font-medium text-red-400 rounded-lg hover:bg-slate-800 transition-colors">
+                    <i class="fas fa-sign-out-alt w-6 text-center mr-2"></i>
+                    Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <header
+                class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm z-10">
+                <h1 class="text-lg font-semibold text-slate-800">Smart Naming Engine</h1>
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden sm:block">
+                        <p id="userNameDisplay" class="text-sm font-semibold text-slate-700">User</p>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-8 bg-slate-50">
+                <div class="max-w-4xl mx-auto space-y-6">
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+                        <h2 class="text-xl font-bold text-slate-800 mb-4">Certificate ID Format</h2>
+                        <p class="text-slate-500 mb-6 text-sm">Define how your certificate IDs are generated
+                            automatically.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div
+                                class="border rounded-xl p-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all border-blue-500 bg-blue-50 relative">
+                                <div class="absolute top-2 right-2 text-blue-600"><i class="fas fa-check-circle"></i>
+                                </div>
+                                <h3 class="font-bold text-slate-700 mb-1">Standard</h3>
+                                <div class="font-mono text-xs bg-white border px-2 py-1 rounded text-slate-500">
+                                    CERT-2024-12345</div>
+                            </div>
+                            <div
+                                class="border rounded-xl p-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
+                                <h3 class="font-bold text-slate-700 mb-1">UUID</h3>
+                                <div class="font-mono text-xs bg-slate-100 border px-2 py-1 rounded text-slate-500">
+                                    a1b2-c3d4-e5f6...</div>
+                            </div>
+                            <div
+                                class="border rounded-xl p-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
+                                <h3 class="font-bold text-slate-700 mb-1">Custom</h3>
+                                <div class="font-mono text-xs bg-slate-100 border px-2 py-1 rounded text-slate-500">
+                                    {PREFIX}-{DATE}-{SEQ}</div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Prefix</label>
+                                <input type="text" value="CERT" class="w-full border-slate-200 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Sequence Start</label>
+                                <input type="number" value="1000" class="w-full border-slate-200 rounded-lg px-4 py-2">
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-end">
+                            <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Save
+                                Configuration</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+                        <h2 class="text-xl font-bold text-slate-800 mb-4">File Naming Convention</h2>
+                        <p class="text-slate-500 mb-6 text-sm">How PDF files will be named when downloaded.</p>
+                        <div class="flex items-center gap-2 font-mono text-sm bg-slate-100 p-3 rounded-lg">
+                            <span class="text-slate-400">Example:</span>
+                            <span class="text-slate-800">Certificate_JohnDoe_2024.pdf</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('userNameDisplay').textContent = currentUser?.name || 'User';
-            document.getElementById('userInitial').textContent = (currentUser?.name || 'U').charAt(0).toUpperCase();
-            loadTemplates();
-        });
-
-        function addVar(v) {
-            const input = document.getElementById('namingPattern');
-            input.value += `{${v}}`;
-            updatePreview();
-        }
-
-        async function updatePreview() {
-            const pattern = document.getElementById('namingPattern').value;
-            const data = {};
-            document.querySelectorAll('.sample-input').forEach(el => {
-                data[el.dataset.var] = el.value || el.placeholder;
-            });
-
-            if (!pattern) {
-                document.getElementById('previewResult').textContent = "Start typing your pattern...";
-                return;
-            }
-
-            try {
-                const res = await fetch('http://localhost:5000/api/naming/preview', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pattern, data })
-                });
-                const result = await res.json();
-                document.getElementById('previewResult').textContent = result.result;
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        async function saveTemplate() {
-            const pattern = document.getElementById('namingPattern').value;
-            const name = prompt("Enter a unique name for this template:");
-            if (!name || !pattern) return;
-
-            try {
-                const res = await fetch('http://localhost:5000/api/naming/templates', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentUser.token}`
-                    },
-                    body: JSON.stringify({ name, pattern })
-                });
-                if (res.ok) {
-                    alert('Template saved!');
-                    loadTemplates();
-                } else {
-                    const error = await res.json();
-                    alert('Error: ' + error.message);
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        async function loadTemplates() {
-            const list = document.getElementById('templatesList');
-            try {
-                const res = await fetch('http://localhost:5000/api/naming/templates');
-                const templates = await res.json();
-
-                if (templates.length === 0) {
-                    list.innerHTML = '<div class="text-center py-4 text-muted">No templates saved yet.</div>';
-                    return;
-                }
-
-                list.innerHTML = templates.map(t => `
-                    <div class="list-group-item border-0 px-0 py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="fw-bold text-dark">${t.name}</div>
-                            <button class="btn btn-sm btn-link p-0" onclick="applyTemplate('${t.pattern}')">Apply</button>
-                        </div>
-                        <div class="small text-muted mt-1 font-monospace">${t.pattern}</div>
-                    </div>
-                `).join('');
-            } catch (e) {
-                list.innerHTML = '<div class="text-center py-4 text-danger">Failed to load templates.</div>';
-            }
-        }
-
-        function applyTemplate(p) {
-            document.getElementById('namingPattern').value = p;
-            updatePreview();
-        }
-
-        function resetConfig() {
-            document.getElementById('namingPattern').value = '';
-            updatePreview();
-        }
-
-        // Trigger initial preview if there's default value
-        updatePreview();
+        const u = JSON.parse(localStorage.getItem('user'));
+        if (u) document.getElementById('userNameDisplay').textContent = u.name;
     </script>
 </body>
 

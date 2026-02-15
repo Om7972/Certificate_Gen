@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preview Sandbox - CertGen Platform</title>
+    <title>Blockchain Verification - CertGen Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -45,7 +45,7 @@
         <div class="flex-1 flex flex-col overflow-hidden relative">
             <header
                 class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm z-10">
-                <h1 class="text-lg font-semibold text-slate-800">Developer Sandbox</h1>
+                <h1 class="text-lg font-semibold text-slate-800">Blockchain Ledger</h1>
                 <div class="flex items-center gap-4">
                     <p id="userNameDisplay" class="text-sm font-semibold text-slate-700 hidden sm:block">User</p>
                 </div>
@@ -53,29 +53,16 @@
 
             <main class="flex-1 overflow-y-auto p-8 bg-slate-50">
                 <div class="max-w-4xl mx-auto space-y-6">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <h2 class="text-xl font-bold text-slate-800 mb-2">API Playground</h2>
-                        <p class="text-slate-500 mb-6 text-sm">Test API endpoints directly from your browser.</p>
-
-                        <div class="bg-slate-900 rounded-lg p-4 font-mono text-xs text-green-400 overflow-x-auto mb-4">
-                            <span class="text-purple-400">POST</span> /api/generate <br>
-                            {<br>
-                            &nbsp;&nbsp;"recipient": "Test User",<br>
-                            &nbsp;&nbsp;"template": "modern"<br>
-                            }
-                        </div>
+                    <div
+                        class="bg-gray-100 rounded-2xl shadow-sm border border-slate-200 p-8 text-center text-slate-500 font-mono text-sm">
+                        <i class="fas fa-link mb-2 text-2xl"></i>
+                        <h2 class="font-bold text-slate-700 text-lg mb-2">Immutable Record</h2>
+                        <p class="mb-6">Verify authenticity against the public ledger.</p>
+                        <input type="text" placeholder="Enter Transaction Hash (0x...)"
+                            class="w-full max-w-lg mx-auto bg-white border border-slate-300 rounded px-4 py-2 text-center text-slate-800 outline-none focus:border-blue-500">
                         <button
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-lg shadow-blue-500/20">Send
-                            Request</button>
-                    </div>
-
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <h2 class="text-xl font-bold text-slate-800 mb-2">Dynamic Template Preview</h2>
-                        <div
-                            class="h-64 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-400 flex-col">
-                            <i class="fas fa-code text-4xl mb-2"></i>
-                            <p>Live Code Editor Integration Coming Soon</p>
-                        </div>
+                            class="mt-4 bg-slate-800 text-white px-6 py-2 rounded hover:bg-slate-900 transition-colors">Verify
+                            Hash</button>
                     </div>
                 </div>
             </main>

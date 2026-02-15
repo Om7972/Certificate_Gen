@@ -4,257 +4,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Audit Logs - Admin - CertGen</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="darkmode.css">
+    <title>Audit Logs - CertGen Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
     <script>
-        const user = checkAuth();
-        if (!user || user.role !== 'admin') {
-            alert('Access Denied: Admin privileges required.');
+        const currentUser = checkAuth();
+        if (!currentUser) window.location.href = 'login.html';
+        if (currentUser.email !== 'odhumkekar@gmail.com') {
             window.location.href = 'dashboard.html';
         }
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
     </script>
-    <style>
-        .filter-section {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .action-badge {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 5px 10px;
-            border-radius: 60px;
-            text-transform: uppercase;
-        }
-
-        .badge-CREATED {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .badge-EDITED {
-            background: #fef9c3;
-            color: #854d0e;
-        }
-
-        .badge-REVOKED {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .badge-VIEWED {
-            background: #e0f2fe;
-            color: #075985;
-        }
-
-        .badge-VERIFIED {
-            background: #f3e8ff;
-            color: #6b21a8;
-        }
-
-        .log-row:hover {
-            background-color: #f8fafc;
-        }
-    </style>
 </head>
 
-<body>
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h3>Cert<span>Gen</span></h3>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="generator.html"><i class="fas fa-certificate"></i> Generator</a></li>
-            <li><a href="history.html"><i class="fas fa-history"></i> History</a></li>
-            <li><a href="sandbox.html"><i class="fas fa-vials"></i> Preview Sandbox</a></li>
-            <li><a href="audit-logs.html" class="active"><i class="fas fa-shield-alt"></i> Audit Logs</a></li>
-            <li><a href="expiry-rules.html"><i class="fas fa-hourglass-end"></i> Expiry Rules</a></li>
-            <li><a href="fraud-detection.html"><i class="fas fa-user-shield"></i> Fraud Detection</a></li>
-            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </nav>
+<body class="bg-slate-50 font-sans text-slate-800">
+    <div class="flex h-screen overflow-hidden">
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="top-navbar">
-            <h4 class="mb-0">Immutable Audit Logs</h4>
-            <div class="user-profile">
-                <span id="userNameDisplay">Admin</span>
-                <div class="user-avatar" id="userInitial">A</div>
+        <aside class="hidden md:flex w-64 flex-col bg-slate-900 text-white transition-all duration-300 relative z-20">
+            <div class="flex items-center justify-center h-16 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <span>Cert<span class="text-blue-400">Gen</span></span>
+                </a>
             </div>
-        </div>
-
-        <div class="container-fluid py-4">
-            <!-- Filters -->
-            <div class="filter-section">
-                <form id="filterForm" class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold">Action Type</label>
-                        <select id="actionFilter" class="form-select border-0 bg-light">
-                            <option value="">All Actions</option>
-                            <option value="CREATED">Created</option>
-                            <option value="EDITED">Edited</option>
-                            <option value="REVOKED">Revoked</option>
-                            <option value="VIEWED">Viewed</option>
-                            <option value="VERIFIED">Verified</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold">Admin/User</label>
-                        <select id="userFilter" class="form-select border-0 bg-light">
-                            <option value="">All Users</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold">Start Date</label>
-                        <input type="date" id="startDate" class="form-control border-0 bg-light">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold">End Date</label>
-                        <input type="date" id="endDate" class="form-control border-0 bg-light">
-                    </div>
-                    <div class="col-12 text-end">
-                        <button type="button" onclick="clearFilters()"
-                            class="btn btn-link text-muted me-2">Clear</button>
-                        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-filter me-2"></i>Apply
-                            Filters</button>
-                    </div>
-                </form>
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav class="space-y-1 px-2"></nav>
             </div>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()"
+                    class="flex w-full items-center px-4 py-2 text-sm font-medium text-red-400 rounded-lg hover:bg-slate-800 transition-colors">
+                    <i class="fas fa-sign-out-alt w-6 text-center mr-2"></i>
+                    Sign Out
+                </button>
+            </div>
+        </aside>
 
-            <!-- Log Table -->
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead class="table-light">
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <header
+                class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm z-10">
+                <h1 class="text-lg font-semibold text-slate-800">Audit Logs</h1>
+                <span class="bg-red-100 text-red-600 font-bold px-2 py-1 rounded text-xs ml-4">CONFIDENTIAL</span>
+                <div class="flex items-center gap-4">
+                    <p id="userNameDisplay" class="text-sm font-semibold text-slate-700 hidden sm:block">User</p>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-8 bg-slate-50">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200">
+                    <div class="p-4 border-b border-slate-200">
+                        Search Filters
+                        <input type="text" placeholder="Filter by User, IP, or Action..."
+                            class="ml-2 border rounded px-2 py-1 text-sm w-64">
+                    </div>
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-semibold">
                             <tr>
-                                <th class="ps-4">Timestamp</th>
-                                <th>User</th>
-                                <th>Action</th>
-                                <th>Details</th>
-                                <th>IP Address</th>
-                                <th class="pe-4">Subject</th>
+                                <th class="px-6 py-4">Timestamp</th>
+                                <th class="px-6 py-4">User</th>
+                                <th class="px-6 py-4">Action</th>
+                                <th class="px-6 py-4">IP Address</th>
+                                <th class="px-6 py-4">Status</th>
                             </tr>
                         </thead>
-                        <tbody id="logTableBody">
-                            <tr>
-                                <td colspan="6" class="text-center py-5">
-                                    <div class="spinner-border text-primary" role="status"></div>
-                                    <p class="mt-2 text-muted">Loading audit trails...</p>
-                                </td>
-                            </tr>
+                        <tbody id="logsTableBody" class="divide-y divide-slate-50 text-sm text-slate-700 font-mono">
+                            <!-- Populated via JS -->
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('userNameDisplay').textContent = user?.name || 'Admin';
-            document.getElementById('userInitial').textContent = (user?.name || 'A').charAt(0).toUpperCase();
+        const u = JSON.parse(localStorage.getItem('user'));
+        if (u) document.getElementById('userNameDisplay').textContent = u.name;
 
-            loadUsers();
-            loadLogs();
-
-            document.getElementById('filterForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                loadLogs();
-            });
-        });
-
-        async function loadUsers() {
+        async function fetchLogs() {
             try {
-                const res = await fetch('http://localhost:5000/api/admin/users', {
-                    headers: { 'Authorization': `Bearer ${user.token}` }
+                const token = u.token;
+                const res = await fetch('http://localhost:5000/api/admin/logs', {
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const users = await res.json();
-                const select = document.getElementById('userFilter');
-                users.forEach(u => {
-                    const opt = document.createElement('option');
-                    opt.value = u._id;
-                    opt.textContent = `${u.name} (${u.role})`;
-                    select.appendChild(opt);
-                });
-            } catch (err) {
-                console.error('Failed to load users:', err);
-            }
-        }
 
-        async function loadLogs() {
-            const tbody = document.getElementById('logTableBody');
+                if (!res.ok) throw new Error('Failed to fetch logs');
 
-            const action = document.getElementById('actionFilter').value;
-            const userId = document.getElementById('userFilter').value;
-            const start = document.getElementById('startDate').value;
-            const end = document.getElementById('endDate').value;
-
-            const params = new URLSearchParams();
-            if (action) params.append('action', action);
-            if (userId) params.append('userId', userId);
-            if (start) params.append('startDate', start);
-            if (end) params.append('endDate', end);
-
-            try {
-                const res = await fetch(`http://localhost:5000/api/admin/logs?${params.toString()}`, {
-                    headers: { 'Authorization': `Bearer ${user.token}` }
-                });
-                const logs = await res.json();
-
+                const data = await res.json();
+                const logs = data.logs || data; // Handle different response formats
+                const tbody = document.getElementById('logsTableBody');
                 tbody.innerHTML = '';
-                if (logs.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No audit logs match these filters.</td></tr>';
-                    return;
-                }
 
                 logs.forEach(log => {
-                    const date = new Date(log.timestamp).toLocaleString();
-                    const actionClass = `badge-${log.action}`;
-                    const subject = log.certificate ?
-                        `<span class="text-primary fw-bold">${log.certificate.recipientName}</span><br><small class="text-muted">${log.certificate.certificateId}</small>` :
-                        '<span class="text-muted">N/A</span>';
+                    const row = document.createElement('tr');
+                    const statusColor = log.status === 'SUCCESS' ? 'text-green-600' : 'text-red-600';
+                    const userHighlight = log.user === 'admin@certgen.com' ? 'text-blue-600 font-semibold' : '';
 
-                    const row = `
-                        <tr class="log-row">
-                            <td class="ps-4"><small class="fw-bold">${date}</small></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="rounded-circle bg-light p-2 me-2" style="width:35px;height:35px;display:flex;align-items:center;justify-content:center;">
-                                        <i class="fas fa-user-shield text-secondary small"></i>
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold small">${log.user ? log.user.name : 'Public/System'}</div>
-                                        <div class="text-muted" style="font-size:0.7rem;">${log.user ? log.user.email : 'No auth'}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><span class="action-badge ${actionClass}">${log.action}</span></td>
-                            <td><div class="small text-truncate" style="max-width:200px;" title="${log.details}">${log.details}</div></td>
-                            <td><code class="small">${log.ipAddress || 'Unknown'}</code></td>
-                            <td class="pe-4">${subject}</td>
-                        </tr>
+                    row.innerHTML = `
+                        <td class="px-6 py-3">${new Date(log.timestamp).toLocaleString()}</td>
+                        <td class="px-6 py-3 font-semibold ${userHighlight}">${log.userEmail || log.userId}</td>
+                        <td class="px-6 py-3">${log.action}</td>
+                        <td class="px-6 py-3">${log.ip || '-'}</td>
+                        <td class="px-6 py-3"><span class="${statusColor}">${log.status || 'OK'}</span></td>
                     `;
-                    tbody.innerHTML += row;
+                    tbody.appendChild(row);
                 });
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Failed to load logs: ${err.message}</td></tr>`;
+                console.error(err);
+                // Keep placeholder if fetch fails (e.g. server down)
+                document.getElementById('logsTableBody').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">Error loading logs: ${err.message}</td></tr>`;
             }
         }
 
-        function clearFilters() {
-            document.getElementById('filterForm').reset();
-            loadLogs();
-        }
+        fetchLogs();
     </script>
 </body>
 

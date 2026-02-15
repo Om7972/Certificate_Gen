@@ -123,250 +123,290 @@
     </style>
 </head>
 
-<body class="bg-gray-100 text-gray-800 h-screen overflow-hidden font-poppins">
+<body class="bg-gray-100 text-gray-800 font-poppins">
 
-    <div class="flex h-full">
-        <!-- SIDEBAR: Controls -->
-        <aside class="w-[400px] bg-white shadow-2xl z-20 flex flex-col h-full border-r border-gray-200">
-            <!-- Header -->
-            <div class="p-5 border-b border-gray-100 bg-white sticky top-0 z-10">
-                <div class="flex justify-between items-center mb-1">
-                    <h1
-                        class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                        <i class="fas fa-certificate mr-2 text-indigo-500"></i>Editor
-                    </h1>
-                    <a href="dashboard.html" class="text-xs text-gray-500 hover:text-blue-600 font-medium"><i
-                            class="fas fa-arrow-left"></i> Exit</a>
-                </div>
-                <p class="text-xs text-gray-400">Design premium credentials</p>
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Main Application Sidebar -->
+        <aside class="hidden md:flex w-64 flex-col bg-slate-900 text-white transition-all duration-300 relative z-30">
+            <div class="flex items-center justify-center h-16 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <span>Cert<span class="text-blue-400">Gen</span></span>
+                </a>
             </div>
-
-            <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6">
-
-                <!-- 1. Templates -->
-                <div>
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 block">Select
-                        Template</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <!-- Classic Thumbnail -->
-                        <button onclick="setTemplate('classic')"
-                            class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-blue-500 transition-all overflow-hidden text-center bg-white shadow-sm active-template"
-                            data-template="classic">
-                            <div
-                                class="absolute inset-1 border-2 border-double border-gray-300 group-hover:border-blue-200">
-                            </div>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center p-2 opacity-60">
-                                <div class="w-8 h-8 rounded-full bg-gray-200 mb-1"></div>
-                                <div class="h-1 w-12 bg-gray-300 mb-1"></div>
-                                <div class="h-1 w-16 bg-gray-800 mb-1"></div>
-                            </div>
-                            <span
-                                class="absolute bottom-1 left-0 w-full text-[10px] font-playfair font-bold text-gray-600 z-10">Classic</span>
-                        </button>
-
-                        <!-- Modern Thumbnail -->
-                        <button onclick="setTemplate('modern')"
-                            class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-blue-500 transition-all overflow-hidden bg-white shadow-sm text-left"
-                            data-template="modern">
-                            <div
-                                class="absolute left-0 top-0 h-full w-6 bg-slate-700 group-hover:bg-blue-600 transition-colors">
-                            </div>
-                            <div class="absolute inset-0 pl-8 flex flex-col justify-center opacity-60">
-                                <div class="h-2 w-12 bg-gray-800 mb-1 rounded-sm"></div>
-                                <div class="h-1 w-16 bg-gray-300 mb-1"></div>
-                                <div class="h-1 w-10 bg-gray-300"></div>
-                            </div>
-                            <span
-                                class="absolute bottom-1 right-2 text-[10px] font-poppins font-bold text-gray-600">Modern</span>
-                        </button>
-
-                        <!-- Minimal Thumbnail -->
-                        <button onclick="setTemplate('minimal')"
-                            class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-blue-500 transition-all overflow-hidden bg-white shadow-sm"
-                            data-template="minimal">
-                            <div class="absolute inset-x-4 top-4 flex flex-col items-center opacity-60">
-                                <div class="h-px w-full bg-gray-200 mb-2"></div>
-                                <div class="h-2 w-16 bg-gray-800 mb-1"></div>
-                                <div class="h-px w-10 bg-gray-300"></div>
-                            </div>
-                            <span
-                                class="absolute bottom-1 left-0 w-full text-[10px] text-center font-poppins font-light text-gray-500 uppercase tracking-widest">Minimal</span>
-                        </button>
-
-                        <!-- Dark Thumbnail -->
-                        <button onclick="setTemplate('dark')"
-                            class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-yellow-500 transition-all overflow-hidden bg-slate-900 shadow-sm"
-                            data-template="dark">
-                            <div class="absolute inset-1 border border-yellow-600/30"></div>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center opacity-80">
-                                <div class="h-2 w-16 bg-yellow-500 mb-1"></div>
-                                <div class="h-px w-10 bg-gray-500"></div>
-                            </div>
-                            <span
-                                class="absolute bottom-1 left-0 w-full text-[10px] text-center font-cinzel font-bold text-yellow-500">Dark</span>
-                        </button>
-
-                        <!-- Gold Thumbnail -->
-                        <button onclick="setTemplate('gold')"
-                            class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-yellow-600 transition-all overflow-hidden bg-amber-50 shadow-sm"
-                            data-template="gold">
-                            <div class="absolute inset-1 border border-amber-200 rounded-lg"></div>
-                            <div class="absolute top-2 left-2 text-[8px] text-amber-600"><i
-                                    class="fas fa-certificate"></i></div>
-                            <div class="absolute bottom-2 right-2 text-[8px] text-amber-600"><i
-                                    class="fas fa-certificate"></i></div>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center opacity-60">
-                                <div class="h-2 w-14 bg-gradient-to-r from-amber-300 to-yellow-500 rounded-sm"></div>
-                            </div>
-                            <span
-                                class="absolute bottom-1 left-0 w-full text-[10px] text-center font-playfair font-bold italic text-amber-800">Gold</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 2. Content -->
-                <div class="space-y-4">
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Certificate
-                        Details</label>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Recipient Name</label>
-                        <input type="text" id="recipientName"
-                            class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                            placeholder="John Doe" value="Alice Johnson" oninput="updatePreview()">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Course / Achievement</label>
-                        <textarea id="courseName" rows="2"
-                            class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                            placeholder="Course Name" oninput="updatePreview()">Full Stack Web Development</textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Details / Description</label>
-                        <textarea id="description" rows="2"
-                            class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                            placeholder="For outstanding performance..."
-                            oninput="updatePreview()">For successfully completing the comprehensive professional development program with distinction.</textarea>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">Date</label>
-                            <input type="date" id="issueDate"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"
-                                onchange="updatePreview()">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">ID (Ref)</label>
-                            <input type="text" id="certId"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-gray-100"
-                                value="CERT-12345" readonly>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Organization / Department</label>
-                        <input type="text" id="organization"
-                            class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                            placeholder="Tech Institute" value="Tech Academy of Excellence" oninput="updatePreview()">
-                    </div>
-                </div>
-
-                <!-- 3. Styling -->
-                <div class="space-y-4">
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Design &
-                        Assets</label>
-
-                    <div class="flex items-center gap-3">
-                        <div class="flex-1">
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">Logo URL</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="logoUrl"
-                                    class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"
-                                    placeholder="https://..." oninput="updatePreview()">
-                                <label
-                                    class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg px-3 py-2 flex items-center justify-center transition-colors">
-                                    <i class="fas fa-upload text-xs"></i>
-                                    <input type="file" class="hidden" accept="image/*"
-                                        onchange="handleLogoUpload(this)">
-                                </label>
-                            </div>
-                        </div>
-                        <div class="w-16">
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">Color</label>
-                            <input type="color" id="accentColor" class="w-full h-9 rounded cursor-pointer border-0"
-                                value="#C59D45" oninput="updatePreview()">
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        <span class="text-xs font-semibold text-gray-600">Show QR Code</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="qrToggle" class="sr-only peer" checked
-                                onchange="updatePreview()">
-                            <div
-                                class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600">
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        <span class="text-xs font-semibold text-gray-600">Watermark</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="watermarkToggle" class="sr-only peer" onchange="updatePreview()">
-                            <div
-                                class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600">
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav class="space-y-1 px-2"></nav>
             </div>
-
-            <!-- Footer Actions -->
-            <div class="p-5 border-t border-gray-200 bg-gray-50 z-10 space-y-3">
-                <button onclick="downloadPDF()"
-                    class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transform transition-all active:scale-95 font-semibold flex items-center justify-center gap-2">
-                    <i class="fas fa-download"></i> Download PDF (A4)
-                </button>
-                <button onclick="saveCertificate()"
-                    class="w-full py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
-                    <i class="fas fa-save text-green-600"></i> Save to Cloud
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()"
+                    class="flex w-full items-center px-4 py-2 text-sm font-medium text-red-400 rounded-lg hover:bg-slate-800 transition-colors">
+                    <i class="fas fa-sign-out-alt w-6 text-center mr-2"></i>
+                    Sign Out
                 </button>
             </div>
         </aside>
+        <script src="js/sidebar.js"></script>
 
-        <!-- MAIN PREVIEW -->
-        <main class="flex-1 h-full bg-gray-200 overflow-hidden relative flex flex-col items-center">
-
-            <!-- Toolbar -->
-            <div
-                class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur rounded-full shadow-lg px-4 py-2 flex items-center gap-4 z-30 border border-gray-200">
-                <button onclick="adjustZoom(-0.1)"
-                    class="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 flex items-center justify-center transition"><i
-                        class="fas fa-minus"></i></button>
-                <span id="zoomLevel" class="text-xs font-mono font-bold text-gray-500">100%</span>
-                <button onclick="adjustZoom(0.1)"
-                    class="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 flex items-center justify-center transition"><i
-                        class="fas fa-plus"></i></button>
-                <div class="w-px h-4 bg-gray-300 mx-2"></div>
-                <button onclick="toggleFullScreen()" class="text-gray-500 hover:text-blue-600 text-xs font-medium"><i
-                        class="fas fa-expand mr-1"></i> Full</button>
-            </div>
-
-            <!-- Canvas Wrapper -->
-            <div
-                class="flex-1 overflow-auto w-full flex items-center justify-center p-10 custom-scrollbar bg-slate-200">
-                <div id="preview-wrapper" class="origin-center shadow-paper transition-transform duration-200 ease-out">
-                    <!-- THE CERTIFICATE CONTAINER -->
-                    <div id="certificate-container">
-                        <!-- Content will be injected by JS -->
+        <!-- Generator Content -->
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <div class="flex h-full">
+                <!-- Editor Sidebar: Controls -->
+                <aside class="w-[340px] bg-white shadow-xl z-20 flex flex-col h-full border-r border-gray-200">
+                    <!-- Header -->
+                    <div class="p-5 border-b border-gray-100 bg-white sticky top-0 z-10">
+                        <div class="flex justify-between items-center mb-1">
+                            <h1
+                                class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                                <i class="fas fa-pen-nib mr-2 text-indigo-500"></i>Editor
+                            </h1>
+                        </div>
+                        <p class="text-xs text-gray-400">Design premium credentials</p>
                     </div>
-                </div>
+
+                    <!-- Scrollable Content -->
+                    <div class="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6">
+
+                        <!-- 1. Templates -->
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 block">Select
+                                Template</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <!-- Classic Thumbnail -->
+                                <button onclick="setTemplate('classic')"
+                                    class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-blue-500 transition-all overflow-hidden text-center bg-white shadow-sm active-template"
+                                    data-template="classic">
+                                    <div
+                                        class="absolute inset-1 border-2 border-double border-gray-300 group-hover:border-blue-200">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 flex flex-col items-center justify-center p-2 opacity-60">
+                                        <div class="w-8 h-8 rounded-full bg-gray-200 mb-1"></div>
+                                        <div class="h-1 w-12 bg-gray-300 mb-1"></div>
+                                        <div class="h-1 w-16 bg-gray-800 mb-1"></div>
+                                    </div>
+                                    <span
+                                        class="absolute bottom-1 left-0 w-full text-[10px] font-playfair font-bold text-gray-600 z-10">Classic</span>
+                                </button>
+
+                                <!-- Modern Thumbnail -->
+                                <button onclick="setTemplate('modern')"
+                                    class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-blue-500 transition-all overflow-hidden bg-white shadow-sm text-left"
+                                    data-template="modern">
+                                    <div
+                                        class="absolute left-0 top-0 h-full w-6 bg-slate-700 group-hover:bg-blue-600 transition-colors">
+                                    </div>
+                                    <div class="absolute inset-0 pl-8 flex flex-col justify-center opacity-60">
+                                        <div class="h-2 w-12 bg-gray-800 mb-1 rounded-sm"></div>
+                                        <div class="h-1 w-16 bg-gray-300 mb-1"></div>
+                                        <div class="h-1 w-10 bg-gray-300"></div>
+                                    </div>
+                                    <span
+                                        class="absolute bottom-1 right-2 text-[10px] font-poppins font-bold text-gray-600">Modern</span>
+                                </button>
+
+                                <!-- Minimal Thumbnail -->
+                                <button onclick="setTemplate('minimal')"
+                                    class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-blue-500 transition-all overflow-hidden bg-white shadow-sm"
+                                    data-template="minimal">
+                                    <div class="absolute inset-x-4 top-4 flex flex-col items-center opacity-60">
+                                        <div class="h-px w-full bg-gray-200 mb-2"></div>
+                                        <div class="h-2 w-16 bg-gray-800 mb-1"></div>
+                                        <div class="h-px w-10 bg-gray-300"></div>
+                                    </div>
+                                    <span
+                                        class="absolute bottom-1 left-0 w-full text-[10px] text-center font-poppins font-light text-gray-500 uppercase tracking-widest">Minimal</span>
+                                </button>
+
+                                <!-- Dark Thumbnail -->
+                                <button onclick="setTemplate('dark')"
+                                    class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-yellow-500 transition-all overflow-hidden bg-slate-900 shadow-sm"
+                                    data-template="dark">
+                                    <div class="absolute inset-1 border border-yellow-600/30"></div>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center opacity-80">
+                                        <div class="h-2 w-16 bg-yellow-500 mb-1"></div>
+                                        <div class="h-px w-10 bg-gray-500"></div>
+                                    </div>
+                                    <span
+                                        class="absolute bottom-1 left-0 w-full text-[10px] text-center font-cinzel font-bold text-yellow-500">Dark</span>
+                                </button>
+
+                                <!-- Gold Thumbnail -->
+                                <button onclick="setTemplate('gold')"
+                                    class="template-btn group relative h-24 rounded-xl border-2 border-transparent hover:border-yellow-600 transition-all overflow-hidden bg-amber-50 shadow-sm"
+                                    data-template="gold">
+                                    <div class="absolute inset-1 border border-amber-200 rounded-lg"></div>
+                                    <div class="absolute top-2 left-2 text-[8px] text-amber-600"><i
+                                            class="fas fa-certificate"></i></div>
+                                    <div class="absolute bottom-2 right-2 text-[8px] text-amber-600"><i
+                                            class="fas fa-certificate"></i></div>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center opacity-60">
+                                        <div class="h-2 w-14 bg-gradient-to-r from-amber-300 to-yellow-500 rounded-sm">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="absolute bottom-1 left-0 w-full text-[10px] text-center font-playfair font-bold italic text-amber-800">Gold</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2. Content -->
+                        <div class="space-y-4">
+                            <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Certificate
+                                Details</label>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">Recipient Name</label>
+                                <input type="text" id="recipientName"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    placeholder="John Doe" value="Alice Johnson" oninput="updatePreview()">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">Course /
+                                    Achievement</label>
+                                <textarea id="courseName" rows="2"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    placeholder="Course Name"
+                                    oninput="updatePreview()">Full Stack Web Development</textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">Details /
+                                    Description</label>
+                                <textarea id="description" rows="2"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    placeholder="For outstanding performance..."
+                                    oninput="updatePreview()">For successfully completing the comprehensive professional development program with distinction.</textarea>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Date</label>
+                                    <input type="date" id="issueDate"
+                                        class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"
+                                        onchange="updatePreview()">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">ID (Ref)</label>
+                                    <input type="text" id="certId"
+                                        class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-gray-100"
+                                        value="CERT-12345" readonly>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">Organization /
+                                    Department</label>
+                                <input type="text" id="organization"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                    placeholder="Tech Institute" value="Tech Academy of Excellence"
+                                    oninput="updatePreview()">
+                            </div>
+                        </div>
+
+                        <!-- 3. Styling -->
+                        <div class="space-y-4">
+                            <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Design &
+                                Assets</label>
+
+                            <div class="flex items-center gap-3">
+                                <div class="flex-1">
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Logo URL</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="logoUrl"
+                                            class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"
+                                            placeholder="https://..." oninput="updatePreview()">
+                                        <label
+                                            class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg px-3 py-2 flex items-center justify-center transition-colors">
+                                            <i class="fas fa-upload text-xs"></i>
+                                            <input type="file" class="hidden" accept="image/*"
+                                                onchange="handleLogoUpload(this)">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="w-16">
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Color</label>
+                                    <input type="color" id="accentColor"
+                                        class="w-full h-9 rounded cursor-pointer border-0" value="#C59D45"
+                                        oninput="updatePreview()">
+                                </div>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                <span class="text-xs font-semibold text-gray-600">Show QR Code</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="qrToggle" class="sr-only peer" checked
+                                        onchange="updatePreview()">
+                                    <div
+                                        class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600">
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                <span class="text-xs font-semibold text-gray-600">Watermark</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="watermarkToggle" class="sr-only peer"
+                                        onchange="updatePreview()">
+                                    <div
+                                        class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600">
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Actions -->
+                    <div class="p-5 border-t border-gray-200 bg-gray-50 z-10 space-y-3">
+                        <button onclick="downloadPDF()"
+                            class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transform transition-all active:scale-95 font-semibold flex items-center justify-center gap-2">
+                            <i class="fas fa-download"></i> Download PDF (A4)
+                        </button>
+                        <button onclick="saveCertificate()"
+                            class="w-full py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
+                            <i class="fas fa-save text-green-600"></i> Save to Cloud
+                        </button>
+                    </div>
+                </aside>
+
+                <!-- MAIN PREVIEW -->
+                <main class="flex-1 h-full bg-gray-200 overflow-hidden relative flex flex-col items-center">
+
+                    <!-- Toolbar -->
+                    <div
+                        class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur rounded-full shadow-lg px-4 py-2 flex items-center gap-4 z-30 border border-gray-200">
+                        <button onclick="adjustZoom(-0.1)"
+                            class="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 flex items-center justify-center transition"><i
+                                class="fas fa-minus"></i></button>
+                        <span id="zoomLevel" class="text-xs font-mono font-bold text-gray-500">100%</span>
+                        <button onclick="adjustZoom(0.1)"
+                            class="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 flex items-center justify-center transition"><i
+                                class="fas fa-plus"></i></button>
+                        <div class="w-px h-4 bg-gray-300 mx-2"></div>
+                        <button onclick="toggleFullScreen()"
+                            class="text-gray-500 hover:text-blue-600 text-xs font-medium"><i
+                                class="fas fa-expand mr-1"></i> Full</button>
+                    </div>
+
+                    <!-- Canvas Wrapper -->
+                    <div
+                        class="flex-1 overflow-auto w-full flex items-center justify-center p-10 custom-scrollbar bg-slate-200">
+                        <div id="preview-wrapper"
+                            class="origin-center shadow-paper transition-transform duration-200 ease-out">
+                            <!-- THE CERTIFICATE CONTAINER -->
+                            <div id="certificate-container">
+                                <!-- Content will be injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </main>
             </div>
-        </main>
+        </div>
     </div>
 
     <!-- NOTIFICATION TOAST -->
@@ -376,7 +416,7 @@
         <span>Action Successful</span>
     </div>
 
-    <script src="script.js"></script>
+    <script src="js/generator-logic.js"></script>
 </body>
 
 </html>
