@@ -52,41 +52,79 @@
                 </div>
             </header>
 
-            <main class="flex-1 overflow-y-auto p-8 bg-slate-900 flex items-center justify-center">
-                <div class="max-w-5xl w-full">
-                    <div
-                        class="aspect-w-16 aspect-h-9 w-full bg-slate-800 rounded-2xl overflow-hidden shadow-2xl relative group">
-                        <!-- Placeholder for Video -->
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <main class="flex-1 overflow-y-auto p-8 bg-slate-900 flex flex-col items-center">
+                <div class="max-w-5xl w-full space-y-8">
+
+                    <!-- Video Player Container -->
+                    <div id="videoContainer"
+                        class="w-full bg-slate-800 rounded-2xl overflow-hidden shadow-2xl relative border border-slate-700 group cursor-pointer"
+                        style="aspect-ratio: 16/9;" onclick="loadVideo()">
+
+                        <!-- Poster / Overlay -->
+                        <div id="videoOverlay" class="absolute inset-0 z-10">
+                            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=2072&q=80"
+                                class="w-full h-full object-cover opacity-40 transition-transform duration-700 group-hover:scale-105"
+                                alt="Demo Poster">
+
                             <div
-                                class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white text-3xl shadow-lg ring-4 ring-blue-500/30 cursor-pointer hover:scale-110 transition-transform mb-4">
-                                <i class="fas fa-play ml-1"></i>
+                                class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80">
                             </div>
-                            <h2 class="text-2xl font-bold text-white mb-2">Watch the Walkthrough</h2>
-                            <p class="text-slate-400">Learn how to generate, verify, and manage certificates in under 3
-                                minutes.</p>
+
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <div
+                                    class="w-24 h-24 bg-blue-600/90 backdrop-blur rounded-full flex items-center justify-center text-white text-3xl shadow-xl ring-4 ring-blue-500/30 group-hover:scale-110 group-hover:bg-blue-600 transition-all duration-300">
+                                    <i class="fas fa-play ml-2"></i>
+                                </div>
+                                <h2 class="mt-6 text-3xl font-bold text-white tracking-tight drop-shadow-md">Watch the
+                                    Walkthrough</h2>
+                                <p class="mt-2 text-slate-300 text-lg font-medium drop-shadow">See the platform in
+                                    action (3 min)</p>
+                            </div>
                         </div>
-                        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=2072&q=80"
-                            class="w-full h-full object-cover opacity-30 group-hover:opacity-20 transition-opacity">
+
+                        <!-- Iframe Injection Target -->
+                        <div id="iframeTarget" class="absolute inset-0 z-20 hidden bg-black"></div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
-                            <div class="text-blue-500 text-xl mb-3"><i class="fas fa-bolt"></i></div>
-                            <h3 class="font-bold text-white mb-2">Quick Start</h3>
-                            <p class="text-sm text-slate-400">Jump right into certificate creation with our optimized
-                                templates.</p>
+                    <!-- Feature Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Card 1 -->
+                        <div
+                            class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700/50 hover:bg-slate-800 hover:border-blue-500/30 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10">
+                            <div
+                                class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition-colors">
+                                <i class="fas fa-bolt text-blue-400 text-xl"></i>
+                            </div>
+                            <h3 class="font-bold text-xl text-white mb-3 group-hover:text-blue-400 transition-colors">
+                                Quick Start</h3>
+                            <p class="text-slate-400 leading-relaxed">Instantly generate professional certificates using
+                                our pre-optimized, industry-standard templates.</p>
                         </div>
-                        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
-                            <div class="text-purple-500 text-xl mb-3"><i class="fas fa-cogs"></i></div>
-                            <h3 class="font-bold text-white mb-2">Advanced Config</h3>
-                            <p class="text-sm text-slate-400">Master the naming engine and expiration rules.</p>
+
+                        <!-- Card 2 -->
+                        <div
+                            class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700/50 hover:bg-slate-800 hover:border-purple-500/30 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-900/10">
+                            <div
+                                class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition-colors">
+                                <i class="fas fa-cogs text-purple-400 text-xl"></i>
+                            </div>
+                            <h3 class="font-bold text-xl text-white mb-3 group-hover:text-purple-400 transition-colors">
+                                Advanced Config</h3>
+                            <p class="text-slate-400 leading-relaxed">Customize every aspect with our powerful naming
+                                engine and flexible expiration rules logic.</p>
                         </div>
-                        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
-                            <div class="text-green-500 text-xl mb-3"><i class="fas fa-shield-alt"></i></div>
-                            <h3 class="font-bold text-white mb-2">Security Features</h3>
-                            <p class="text-sm text-slate-400">Understanding fraud detection and blockchain verification.
-                            </p>
+
+                        <!-- Card 3 -->
+                        <div
+                            class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700/50 hover:bg-slate-800 hover:border-green-500/30 transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl hover:shadow-green-900/10">
+                            <div
+                                class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-green-500/20 transition-colors">
+                                <i class="fas fa-shield-alt text-green-400 text-xl"></i>
+                            </div>
+                            <h3 class="font-bold text-xl text-white mb-3 group-hover:text-green-400 transition-colors">
+                                Security First</h3>
+                            <p class="text-slate-400 leading-relaxed">Bank-grade security with AI-powered fraud
+                                detection and immutable blockchain verification.</p>
                         </div>
                     </div>
                 </div>
@@ -96,6 +134,33 @@
     <script>
         const u = JSON.parse(localStorage.getItem('user'));
         if (u) document.getElementById('userNameDisplay').textContent = u.name;
+
+        function loadVideo() {
+            const container = document.getElementById('videoContainer');
+            const overlay = document.getElementById('videoOverlay');
+            const target = document.getElementById('iframeTarget');
+
+            // Hide overlay
+            overlay.style.opacity = '0';
+            overlay.style.pointerEvents = 'none';
+
+            // Show iframe container
+            target.classList.remove('hidden');
+
+            // Inject iframe
+            target.innerHTML = `
+                <iframe 
+                    src="https://drive.google.com/file/d/1i1OoreAKyVi_jRberKflhe2mj_ejmaih/preview?autoplay=1" 
+                    class="w-full h-full border-0" 
+                    allow="autoplay; encrypted-media; fullscreen" 
+                    allowfullscreen>
+                </iframe>
+            `;
+
+            // Remove click listener
+            container.onclick = null;
+            container.classList.remove('cursor-pointer');
+        }
     </script>
 </body>
 
