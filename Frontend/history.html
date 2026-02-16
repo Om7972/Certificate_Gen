@@ -202,17 +202,20 @@
             }
 
             data.forEach(item => {
-                const date = new Date(item.createdAt).toLocaleDateString();
+                const date = new Date(item.createdAt || Date.now()).toLocaleDateString();
+                const recipientName = item.recipientName || 'Unknown Recipient';
+                const initial = recipientName.charAt(0).toUpperCase();
+
                 const row = `
                     <tr class="hover:bg-slate-50 transition-colors group">
-                        <td class="px-6 py-4 font-mono text-slate-500">${item.certificateId}</td>
+                        <td class="px-6 py-4 font-mono text-slate-500 text-xs">${item.certificateId || 'N/A'}</td>
                         <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
                              <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">
-                                ${item.recipientName.charAt(0)}
+                                ${initial}
                              </div>
-                             ${item.recipientName}
+                             ${recipientName}
                         </td>
-                        <td class="px-6 py-4 text-blue-600 font-medium">${item.courseName}</td>
+                        <td class="px-6 py-4 text-blue-600 font-medium">${item.courseName || 'Untitled Course'}</td>
                         <td class="px-6 py-4 text-slate-500">${date}</td>
                         <td class="px-6 py-4 text-center">
                             <div class="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
