@@ -1,11 +1,15 @@
-require('dotenv').config({ path: './certificat.env' });
+const fs = require('fs');
+const path = require('path');
+if (fs.existsSync(path.join(__dirname, 'certificat.env'))) {
+    require('dotenv').config({ path: path.join(__dirname, 'certificat.env') });
+} else {
+    require('dotenv').config();
+}
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
-const path = require('path');
 const upload = require('multer')({ dest: 'uploads/' }); // Basic setup if needed elsewhere, but routes handle specifics usually
-const fs = require('fs');
 const XLSX = require('xlsx');
 const cron = require('node-cron');
 const { checkExpirations, sendScheduledReminders } = require('./controllers/certificateController');

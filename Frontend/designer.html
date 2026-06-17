@@ -128,20 +128,20 @@
             <h6 class="text-uppercase text-muted small mb-3">Properties</h6>
 
             <div class="mb-3">
-                <label>Font Size</label>
-                <input type="number" id="fontSize" class="form-control"
+                <label for="fontSize">Font Size</label>
+                <input type="number" id="fontSize" title="Font Size" placeholder="Font Size" class="form-control"
                     onchange="updateProp('fontSize', parseInt(this.value))">
             </div>
 
             <div class="mb-3">
-                <label>Color</label>
-                <input type="color" id="fill" class="form-control form-control-color w-100"
+                <label for="fill">Color</label>
+                <input type="color" id="fill" title="Color" placeholder="Color Picker" class="form-control form-control-color w-100"
                     onchange="updateProp('fill', this.value)">
             </div>
 
             <div class="mb-3">
-                <label>Font Family</label>
-                <select id="fontFamily" class="form-select" onchange="updateProp('fontFamily', this.value)">
+                <label for="fontFamily">Font Family</label>
+                <select id="fontFamily" title="Font Family" class="form-select" onchange="updateProp('fontFamily', this.value)">
                     <option value="Times New Roman">Times New Roman</option>
                     <option value="Arial">Arial</option>
                     <option value="Helvetica">Helvetica</option>
@@ -151,8 +151,8 @@
             </div>
 
             <div class="mb-3">
-                <label>Opacity</label>
-                <input type="range" id="opacity" class="form-range" min="0" max="1" step="0.1"
+                <label for="opacity">Opacity</label>
+                <input type="range" id="opacity" title="Opacity" placeholder="Opacity Slider" class="form-range" min="0" max="1" step="0.1"
                     onchange="updateProp('opacity', parseFloat(this.value))">
             </div>
 

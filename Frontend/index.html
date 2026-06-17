@@ -21,6 +21,32 @@
     }
 
     /* Navbar height offset */
+    .delay-100 {
+      transition-delay: 100ms;
+    }
+    .delay-150 {
+      transition-delay: 150ms;
+    }
+    .delay-200 {
+      transition-delay: 200ms;
+    }
+    .delay-300 {
+      transition-delay: 300ms;
+    }
+    .delay-450 {
+      transition-delay: 450ms;
+    }
+    .float-anim-1 {
+      top: 10% !important;
+      animation: float 6s infinite ease-in-out;
+    }
+    .float-anim-2 {
+      bottom: 15% !important;
+      animation: float 7s infinite ease-in-out 1s;
+    }
+    .cta-paragraph {
+      max-width: 700px;
+    }
   </style>
 </head>
 
@@ -115,7 +141,7 @@
           </div>
         </div>
 
-        <div class="col-lg-6 animate-on-scroll" style="transition-delay: 200ms;">
+        <div class="col-lg-6 animate-on-scroll delay-200">
           <div class="position-relative">
             <div class="glass-card p-2 transform-rotate-3">
               <img src="https://placehold.co/600x400/png?text=Certificate+Preview" alt="Certificate Mockup"
@@ -124,8 +150,7 @@
 
             <!-- Floating Badges -->
             <div
-              class="position-absolute top-0 end-0 translate-middle-y bg-white p-3 rounded-4 shadow-lg border animate-float"
-              style="top: 10% !important; animation: float 6s infinite ease-in-out;">
+              class="position-absolute translate-middle-y bg-white p-3 rounded-4 shadow-lg border animate-float float-anim-1">
               <div class="d-flex align-items-center gap-3">
                 <div class="bg-primary bg-opacity-10 p-2 rounded-circle text-primary">
                   <i class="fas fa-shield-alt fa-lg"></i>
@@ -138,8 +163,7 @@
             </div>
 
             <div
-              class="position-absolute bottom-0 start-0 translate-middle-x bg-white p-3 rounded-4 shadow-lg border animate-float"
-              style="bottom: 15% !important; animation: float 7s infinite ease-in-out 1s;">
+              class="position-absolute translate-middle-x bg-white p-3 rounded-4 shadow-lg border animate-float float-anim-2">
               <div class="d-flex align-items-center gap-3">
                 <div class="bg-warning bg-opacity-10 p-2 rounded-circle text-warning">
                   <i class="fas fa-magic fa-lg"></i>
@@ -179,7 +203,7 @@
           </div>
         </div>
         <!-- Feature 2 -->
-        <div class="col-md-4 animate-on-scroll" style="transition-delay: 100ms;">
+        <div class="col-md-4 animate-on-scroll delay-100">
           <div class="glass-card p-4 h-100 border-0 bg-light">
             <div class="feature-icon shadow-sm mb-4 bg-success">
               <i class="fas fa-qrcode"></i>
@@ -190,7 +214,7 @@
           </div>
         </div>
         <!-- Feature 3 -->
-        <div class="col-md-4 animate-on-scroll" style="transition-delay: 200ms;">
+        <div class="col-md-4 animate-on-scroll delay-200">
           <div class="glass-card p-4 h-100 border-0 bg-light">
             <div class="feature-icon shadow-sm mb-4 bg-info">
               <i class="fab fa-ethereum"></i>
@@ -211,7 +235,7 @@
           </div>
         </div>
         <!-- Feature 5 -->
-        <div class="col-md-4 animate-on-scroll" style="transition-delay: 100ms;">
+        <div class="col-md-4 animate-on-scroll delay-100">
           <div class="glass-card p-4 h-100 border-0 bg-light">
             <div class="feature-icon shadow-sm mb-4 bg-danger">
               <i class="fas fa-file-excel"></i>
@@ -222,7 +246,7 @@
           </div>
         </div>
         <!-- Feature 6 -->
-        <div class="col-md-4 animate-on-scroll" style="transition-delay: 200ms;">
+        <div class="col-md-4 animate-on-scroll delay-200">
           <div class="glass-card p-4 h-100 border-0 bg-light">
             <div class="feature-icon shadow-sm mb-4 bg-primary">
               <i class="fas fa-paper-plane"></i>
@@ -250,19 +274,19 @@
           <h5 class="fw-bold mt-3">Choose Template</h5>
           <p class="text-muted small">Select from library or custom design</p>
         </div>
-        <div class="col-md-3 step-item animate-on-scroll" style="transition-delay: 150ms;">
+        <div class="col-md-3 step-item animate-on-scroll delay-150">
           <div class="step-line d-none d-md-block"></div>
           <div class="step-number shadow-lg">2</div>
           <h5 class="fw-bold mt-3">Upload Data</h5>
           <p class="text-muted small">Import names via Excel/CSV</p>
         </div>
-        <div class="col-md-3 step-item animate-on-scroll" style="transition-delay: 300ms;">
+        <div class="col-md-3 step-item animate-on-scroll delay-300">
           <div class="step-line d-none d-md-block"></div>
           <div class="step-number shadow-lg">3</div>
           <h5 class="fw-bold mt-3">Generate</h5>
           <p class="text-muted small">AI processes thousands in seconds</p>
         </div>
-        <div class="col-md-3 step-item animate-on-scroll" style="transition-delay: 450ms;">
+        <div class="col-md-3 step-item animate-on-scroll delay-450">
           <div class="step-number shadow-lg bg-success"><i class="fas fa-check"></i></div>
           <h5 class="fw-bold mt-3">Send & Verify</h5>
           <p class="text-muted small">Auto-email and enable verification</p>
@@ -285,7 +309,7 @@
             <div class="row justify-content-center">
               <div class="col-md-4">
                 <div class="glass-card p-2 border shadow-sm">
-                  <img src="https://placehold.co/400x300?text=Classic" class="img-fluid rounded mb-3 w-100">
+                  <img src="https://placehold.co/400x300?text=Classic" alt="Classic Diploma Template" title="Classic Diploma Template" class="img-fluid rounded mb-3 w-100">
                   <div class="text-center">
                     <h5 class="fw-bold">Classic Diploma</h5>
                   </div>
@@ -293,7 +317,7 @@
               </div>
               <div class="col-md-4 d-none d-md-block">
                 <div class="glass-card p-2 border shadow-sm">
-                  <img src="https://placehold.co/400x300?text=Modern" class="img-fluid rounded mb-3 w-100">
+                  <img src="https://placehold.co/400x300?text=Modern" alt="Modern Achievement Template" title="Modern Achievement Template" class="img-fluid rounded mb-3 w-100">
                   <div class="text-center">
                     <h5 class="fw-bold">Modern Achievement</h5>
                   </div>
@@ -301,7 +325,7 @@
               </div>
               <div class="col-md-4 d-none d-md-block">
                 <div class="glass-card p-2 border shadow-sm">
-                  <img src="https://placehold.co/400x300?text=Tech" class="img-fluid rounded mb-3 w-100">
+                  <img src="https://placehold.co/400x300?text=Tech" alt="Tech Certification Template" title="Tech Certification Template" class="img-fluid rounded mb-3 w-100">
                   <div class="text-center">
                     <h5 class="fw-bold">Tech Certification</h5>
                   </div>
@@ -359,7 +383,7 @@
             <small class="text-primary fw-bold">Dean, Tech Institute</small>
           </div>
         </div>
-        <div class="col-md-4 animate-on-scroll" style="transition-delay: 100ms;">
+        <div class="col-md-4 animate-on-scroll delay-100">
           <div class="glass-card p-4 h-100 bg-white border-0 shadow-sm text-center">
             <img src="https://ui-avatars.com/api/?name=Mark+Johnson&background=random"
               class="rounded-circle mb-3 shadow-sm" width="60" alt="User">
@@ -369,7 +393,7 @@
             <small class="text-primary fw-bold">Event Organizer</small>
           </div>
         </div>
-        <div class="col-md-4 animate-on-scroll" style="transition-delay: 200ms;">
+        <div class="col-md-4 animate-on-scroll delay-200">
           <div class="glass-card p-4 h-100 bg-white border-0 shadow-sm text-center">
             <img src="https://ui-avatars.com/api/?name=Emily+Chen&background=random"
               class="rounded-circle mb-3 shadow-sm" width="60" alt="User">
@@ -450,7 +474,7 @@
         <div class="col-lg-9 animate-on-scroll">
           <h2 class="display-4 fw-bolder text-white mb-4">Ready to Issue <span class="fw-bold">Smart
               Certificates?</span></h2>
-          <p class="lead text-white-50 mb-5 mx-auto fs-4 fw-light" style="max-width: 700px;">
+          <p class="lead text-white-50 mb-5 mx-auto fs-4 fw-light cta-paragraph">
             Join thousands of organizations using <strong class="text-white">CertGen</strong> to streamline their
             credentialing process.
           </p>
@@ -472,9 +496,9 @@
           <h4 class="text-white fw-bold mb-3">CertGen</h4>
           <p>The standard for digital credential verification and issuance. Secure, fast, and globally recognized.</p>
           <div class="d-flex gap-3 mt-4">
-            <a href="#" class="text-white"><i class="fab fa-twitter fa-lg"></i></a>
-            <a href="#" class="text-white"><i class="fab fa-linkedin fa-lg"></i></a>
-            <a href="#" class="text-white"><i class="fab fa-github fa-lg"></i></a>
+            <a href="#" class="text-white" title="Twitter" aria-label="Twitter"><i class="fab fa-twitter fa-lg"></i></a>
+            <a href="#" class="text-white" title="LinkedIn" aria-label="LinkedIn"><i class="fab fa-linkedin fa-lg"></i></a>
+            <a href="#" class="text-white" title="GitHub" aria-label="GitHub"><i class="fab fa-github fa-lg"></i></a>
           </div>
         </div>
         <div class="col-lg-2">

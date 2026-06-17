@@ -29,6 +29,10 @@
             display: none;
         }
 
+        #certIdInput {
+            max-width: 300px;
+        }
+
         #storedImage {
             max-width: 200px;
             display: none;
@@ -55,14 +59,14 @@
                 <div class="mb-4">
                     <label for="certIdInput">Enter Certificate ID</label>
                     <div class="input-group justify-content-center">
-                        <input type="text" id="certIdInput" class="form-control" style="max-width: 300px;"
+                        <input type="text" id="certIdInput" class="form-control"
                             placeholder="CERT-...">
                         <button class="btn btn-primary" onclick="loadCertificate()">Load Data</button>
                     </div>
                 </div>
 
                 <!-- Step 2: Camera & Comparison -->
-                <div id="verificationSection" style="display: none;">
+                <div id="verificationSection" class="d-none">
                     <div class="row align-items-center">
                         <div class="col-md-6">
                             <h5>stored Photo</h5>

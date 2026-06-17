@@ -1,4 +1,10 @@
-require('dotenv').config({ path: './certificat.env' });
+const fs = require('fs');
+const path = require('path');
+if (fs.existsSync(path.join(__dirname, 'certificat.env'))) {
+    require('dotenv').config({ path: path.join(__dirname, 'certificat.env') });
+} else {
+    require('dotenv').config();
+}
 const mongoose = require('mongoose');
 const User = require('./models/User');
 const connectDB = require('./config/db');
