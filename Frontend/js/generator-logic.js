@@ -544,7 +544,7 @@ async function saveCertificate() {
 
     if (!token) throw new Error('Not authenticated');
 
-    const res = await fetch('http://localhost:5000/api/certificates', {
+    const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/certificates`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

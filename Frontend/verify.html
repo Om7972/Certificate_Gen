@@ -11,6 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <script src="js/auth.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -261,7 +262,7 @@
         <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full mx-4">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-lg">Scan QR Code</h3>
-                <button onclick="stopScanner()" class="text-slate-400 hover:text-slate-600"><i
+                <button onclick="stopScanner()" title="Close Scanner" class="text-slate-400 hover:text-slate-600"><i
                         class="fas fa-times"></i></button>
             </div>
             <div id="reader" class="rounded-xl overflow-hidden bg-black"></div>
@@ -304,7 +305,7 @@
 
                 let data;
                 try {
-                    const res = await fetch(`http://localhost:5000/api/certificates/${id}`); // Trying standard get-by-id first as verify might be same
+                    const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/certificates/${id}`); // Trying standard get-by-id first as verify might be same
 
                     if (res.ok) {
                         const json = await res.json();

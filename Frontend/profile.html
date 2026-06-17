@@ -97,13 +97,13 @@
                         <form id="profileForm" class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                                    <label for="profName" class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
                                     <input type="text" id="profName"
                                         class="w-full rounded-lg border-slate-200 focus:ring-2 focus:ring-blue-500 px-4 py-2.5 text-sm transition-all"
                                         placeholder="Your Name">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                                    <label for="profEmail" class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
                                     <input type="email" id="profEmail"
                                         class="w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-500 cursor-not-allowed"
                                         readonly>
@@ -115,13 +115,13 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">New Password</label>
+                                    <label for="profPass" class="block text-sm font-medium text-slate-700 mb-1">New Password</label>
                                     <input type="password" id="profPass"
                                         class="w-full rounded-lg border-slate-200 focus:ring-2 focus:ring-blue-500 px-4 py-2.5 text-sm transition-all"
                                         placeholder="********">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Confirm
+                                    <label for="profPassConfirm" class="block text-sm font-medium text-slate-700 mb-1">Confirm
                                         Password</label>
                                     <input type="password" id="profPassConfirm"
                                         class="w-full rounded-lg border-slate-200 focus:ring-2 focus:ring-blue-500 px-4 py-2.5 text-sm transition-all"
@@ -147,8 +147,8 @@
                                 <h3 class="text-sm font-medium text-slate-800">Email Notifications</h3>
                                 <p class="text-xs text-slate-500">Receive updates about your certificates.</p>
                             </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" checked>
+                            <label class="relative inline-flex items-center cursor-pointer" for="emailNotificationsToggle">
+                                <input type="checkbox" id="emailNotificationsToggle" title="Toggle Email Notifications" class="sr-only peer" checked>
                                 <div
                                     class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
                                 </div>
@@ -199,7 +199,7 @@
                 }
 
                 try {
-                    const res = await fetch('http://localhost:5000/api/auth/profile', {
+                    const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/auth/profile`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',

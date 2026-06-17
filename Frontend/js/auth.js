@@ -1,4 +1,8 @@
-const API_URL = 'http://localhost:5000/api/auth';
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000'
+    : 'https://dbms-sce-backend.onrender.com'; // Production Backend URL
+const API_URL = `${API_BASE_URL}/api/auth`;
+window.API_BASE_URL = API_BASE_URL;
 
 // Register User
 async function register(name, email, password, role) {
@@ -211,7 +215,7 @@ async function recordCertificateAction(certId, action, details = '') {
             headers['Authorization'] = `Bearer ${user.token}`;
         }
 
-        await fetch(`http://localhost:5000/api/certificates/${certId}/log`, {
+        await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/certificates/${certId}/log`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({ action, details })

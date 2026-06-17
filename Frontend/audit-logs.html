@@ -59,7 +59,7 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200">
                     <div class="p-4 border-b border-slate-200">
                         Search Filters
-                        <input type="text" placeholder="Filter by User, IP, or Action..."
+                        <input type="text" id="logSearch" title="Search Filter" placeholder="Filter by User, IP, or Action..."
                             class="ml-2 border rounded px-2 py-1 text-sm w-64">
                     </div>
                     <table class="w-full text-left">
@@ -87,7 +87,7 @@
         async function fetchLogs() {
             try {
                 const token = u.token;
-                const res = await fetch('http://localhost:5000/api/admin/logs', {
+                const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/admin/logs`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 

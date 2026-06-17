@@ -74,7 +74,7 @@
     <main class="main-content">
         <div class="top-navbar">
             <div class="d-flex align-items-center">
-                <a href="history.html" class="btn btn-sm btn-outline-secondary me-3"><i
+                <a href="history.html" title="Back to History" class="btn btn-sm btn-outline-secondary me-3"><i
                         class="fas fa-arrow-left"></i></a>
                 <h4 class="mb-0">Version History</h4>
             </div>
@@ -110,7 +110,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h5 class="fw-bold mb-0" id="viewTitle">Current Version Details</h5>
                             <div id="compareActions" class="d-none">
-                                <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="resetView()">Back
+                                <button title="Back to Latest Version" class="btn btn-sm btn-outline-primary rounded-pill" onclick="resetView()">Back
                                     to Latest</button>
                             </div>
                         </div>
@@ -177,7 +177,7 @@
 
         async function fetchCurrentState() {
             try {
-                const res = await fetch(`http://localhost:5000/api/certificates/${certId}`, {
+                const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/certificates/${certId}`, {
                     headers: { 'Authorization': `Bearer ${user.token}` }
                 });
                 currentCertData = await res.json();
@@ -190,7 +190,7 @@
 
         async function fetchHistory() {
             try {
-                const res = await fetch(`http://localhost:5000/api/certificates/${certId}/versions`, {
+                const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/certificates/${certId}/versions`, {
                     headers: { 'Authorization': `Bearer ${user.token}` }
                 });
                 pastVersions = await res.json();

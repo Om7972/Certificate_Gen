@@ -66,13 +66,13 @@
                                         set period.</p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <input type="number" class="w-16 border rounded px-2 py-1 text-sm text-center"
+                                    <input type="number" title="Expiration duration in days" class="w-16 border rounded px-2 py-1 text-sm text-center"
                                         value="365">
                                     <span class="text-sm text-slate-600">Days</span>
-                                    <input type="checkbox" checked class="toggle ml-2">
+                                    <input type="checkbox" title="Enable expiration duration rule" checked class="toggle ml-2">
                                 </div>
                             </div>
-
+ 
                             <!-- Rule 2 -->
                             <div
                                 class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
@@ -82,13 +82,13 @@
                                         expiration.</p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <input type="number" class="w-16 border rounded px-2 py-1 text-sm text-center"
+                                    <input type="number" title="Days before expiration to send notification" class="w-16 border rounded px-2 py-1 text-sm text-center"
                                         value="30">
                                     <span class="text-sm text-slate-600">Days Before</span>
-                                    <input type="checkbox" checked class="toggle ml-2">
+                                    <input type="checkbox" title="Enable pre-expiry notification" checked class="toggle ml-2">
                                 </div>
                             </div>
-
+ 
                             <!-- Rule 3 -->
                             <div
                                 class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
@@ -97,7 +97,7 @@
                                     <p class="text-xs text-slate-500">Immediately revoke if fraud confidence > 90%.</p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <input type="checkbox" class="toggle ml-2">
+                                    <input type="checkbox" title="Enable auto-revoke on fraud alert" class="toggle ml-2">
                                 </div>
                             </div>
                         </div>

@@ -112,7 +112,7 @@
 
             <hr>
             <h6 class="text-uppercase text-muted small mb-3">Images</h6>
-            <input type="file" id="imgUpload" accept="image/*" class="form-control mb-2" onchange="addImage(this)">
+            <input type="file" id="imgUpload" accept="image/*" class="form-control mb-2" onchange="addImage(this)" title="Upload image">
             <small class="text-muted">Upload Logo/Signature</small>
         </div>
 
@@ -124,7 +124,7 @@
         </div>
 
         <!-- Properties -->
-        <div class="properties-panel" id="propsPanel" style="display:none;">
+        <div class="properties-panel d-none" id="propsPanel">
             <h6 class="text-uppercase text-muted small mb-3">Properties</h6>
 
             <div class="mb-3">
@@ -169,7 +169,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5>Load Template</h5><button class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5>Load Template</h5><button class="btn-close" data-bs-dismiss="modal" title="Close"></button>
                 </div>
                 <div class="modal-body">
                     <ul class="list-group" id="templateList"></ul>
@@ -198,14 +198,14 @@
         canvas.on('selection:created', onSelection);
         canvas.on('selection:updated', onSelection);
         canvas.on('selection:cleared', () => {
-            document.getElementById('propsPanel').style.display = 'none';
+            document.getElementById('propsPanel').classList.add('d-none');
         });
 
         function onSelection(e) {
             const obj = e.selected[0];
             if (!obj) return;
 
-            document.getElementById('propsPanel').style.display = 'block';
+            document.getElementById('propsPanel').classList.remove('d-none');
 
             // Populate inputs
             if (obj.fontSize) document.getElementById('fontSize').value = obj.fontSize;
@@ -272,7 +272,7 @@
 
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
-                const res = await fetch('http://localhost:5000/api/templates', {
+                const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/templates`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -303,7 +303,7 @@
         async function loadTemplates() {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
-                const res = await fetch('http://localhost:5000/api/templates', {
+                const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/templates`, {
                     headers: { 'Authorization': `Bearer ${user.token}` }
                 });
 
@@ -336,7 +336,7 @@
         async function loadCanvas(id) {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
-                const res = await fetch(`http://localhost:5000/api/templates/${id}`, {
+                const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/templates/${id}`, {
                     headers: { 'Authorization': `Bearer ${user.token}` }
                 });
                 const data = await res.json();

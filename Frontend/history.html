@@ -70,7 +70,7 @@
             <header
                 class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm z-10">
                 <div class="flex items-center gap-4">
-                    <button class="md:hidden text-slate-500 hover:text-slate-700">
+                    <button title="Toggle Sidebar" class="md:hidden text-slate-500 hover:text-slate-700">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                     <h1 class="text-lg font-semibold text-slate-800">History</h1>
@@ -106,7 +106,7 @@
                         <h2 class="text-lg font-bold text-slate-800">Certificate Log</h2>
 
                         <div class="flex items-center gap-3">
-                            <select
+                            <select title="Filter by Status"
                                 class="text-sm border-slate-200 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                                 <option>All Status</option>
                                 <option>Issued</option>
@@ -146,10 +146,10 @@
                         <span class="text-sm text-slate-500">Showing <span class="font-medium">1</span> to <span
                                 class="font-medium">10</span> of <span class="font-medium">24</span> results</span>
                         <div class="flex gap-2">
-                            <button
+                            <button title="Previous Page"
                                 class="px-3 py-1 border border-slate-200 rounded hover:bg-slate-50 text-slate-600 disabled:opacity-50"><i
                                     class="fas fa-chevron-left"></i></button>
-                            <button
+                            <button title="Next Page"
                                 class="px-3 py-1 border border-slate-200 rounded hover:bg-slate-50 text-slate-600"><i
                                     class="fas fa-chevron-right"></i></button>
                         </div>
@@ -177,7 +177,7 @@
             // Load Data
             try {
                 // Mock Fetch
-                const res = await fetch('http://localhost:5000/api/certificates', {
+                const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/certificates`, {
                     headers: { 'Authorization': `Bearer ${user.token}` }
                 });
                 if (res.ok) {

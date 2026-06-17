@@ -104,7 +104,7 @@
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center transition-all hover:border-blue-400 group relative overflow-hidden"
                         id="dropZone">
 
-                        <input type="file" id="fileInput" class="hidden" accept=".csv, .xlsx, .xls">
+                        <input type="file" id="fileInput" class="hidden" accept=".csv, .xlsx, .xls" title="Upload spreadsheet file">
 
                         <div
                             class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 group-hover:text-blue-500 group-hover:bg-blue-50 transition-colors">
@@ -136,7 +136,7 @@
                                 <label
                                     class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Template
                                     Style</label>
-                                <select id="templateSelect"
+                                <select id="templateSelect" title="Template Style"
                                     class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                                     <option value="classic">Classic Professional</option>
                                     <option value="modern">Modern minimalist</option>
@@ -148,7 +148,7 @@
                                 <label
                                     class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email
                                     Strategy</label>
-                                <select id="emailStrategy"
+                                <select id="emailStrategy" title="Email Strategy"
                                     class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                                     <option value="immediate">Send Immediately</option>
                                     <option value="queue">Queue for Later</option>
@@ -175,8 +175,7 @@
                             <span id="progressText">0%</span>
                         </div>
                         <div class="w-full bg-slate-100 rounded-full h-2.5 mb-6 overflow-hidden">
-                            <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-                                style="width: 0%"></div>
+                            <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300 w-0"></div>
                         </div>
                         <p class="text-xs text-slate-400">Do not close this window until completion.</p>
                     </div>
@@ -254,7 +253,7 @@
 
             try {
                 const token = JSON.parse(localStorage.getItem('user')).token;
-                const res = await fetch('http://localhost:5000/api/bulk-certificates', {
+                const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/bulk-certificates`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData

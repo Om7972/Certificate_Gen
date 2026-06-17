@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/auth.js"></script>
     <script>
         tailwind.config = {
             corePlugins: {
@@ -148,7 +149,7 @@
                         class="fas fa-link"></i></button>
 
                 <div class="mt-4">
-                    <button onclick="downloadPDF()"
+                    <button onclick="downloadPDF()" title="Download PDF"
                         class="btn btn-outline-primary px-5 py-2 rounded-full shadow-lg hover:shadow-xl hover:bg-blue-50 transition-all font-bold">
                         <i class="fas fa-download me-2"></i> Download PDF
                     </button>
@@ -168,7 +169,7 @@
             }
 
             try {
-                const res = await fetch(`http://localhost:5000/api/certificates/verify/${certId}`);
+                const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/certificates/verify/${certId}`);
                 if (!res.ok) throw new Error('Not found');
                 const cert = await res.json();
                 renderCertificate(cert);
