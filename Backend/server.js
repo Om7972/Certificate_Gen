@@ -27,6 +27,11 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploaded photos
 
+// Root Route for checking API status
+app.get('/', (req, res) => {
+  res.send('CertGen Backend API is running successfully!');
+});
+
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/certificates', require('./routes/certificateRoutes'));
