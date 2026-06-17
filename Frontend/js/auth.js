@@ -195,7 +195,7 @@ function updateUI() {
     }
 
     // Show admin-only elements if user is admin
-    if (user.role === 'admin') {
+    if (user && user.role === 'admin') {
         const adminLinks = document.querySelectorAll('.admin-only');
         adminLinks.forEach(link => link.style.display = 'block');
     }

@@ -284,30 +284,70 @@
             document.getElementById('userNameDisplay').textContent = user.name || 'User';
             document.getElementById('userInitial').textContent = (user.name || 'U').charAt(0).toUpperCase();
 
-            // Mock Data or Fetch
+            const roleElement = document.querySelector('.text-xs.text-slate-500');
+            if (roleElement) {
+                roleElement.textContent = (user.role === 'admin' || user.email === 'odhumkekar@gmail.com') ? 'Administrator' : 'Organizer';
+            }
+
             try {
                 const token = user.token;
-                // Fetch logic similar to original but adapting to new UI structure
-                // For polishing, I'll simulate data population to ensure UI looks good immediately
-                // In prod, uncomment fetch
+                const isAdmin = user.email === 'odhumkekar@gmail.com' || user.role === 'admin';
 
-                const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/certificates`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                if (isAdmin) {
+                    // Update Active Recipients card title to System Users for admin
+                    const card2Title = document.querySelector('#monthCerts').previousElementSibling;
+                    if (card2Title) card2Title.textContent = 'System Users';
 
-                if (res.ok) {
-                    const result = await res.json();
-                    const certs = result.data || [];
+                    // Fetch admin-specific dashboard stats
+                    const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/admin/stats`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
 
-                    // Update Counts
-                    document.getElementById('totalCerts').innerText = certs.length;
-                    document.getElementById('monthCerts').innerText = certs.length; // Logic to filter by month can be added
+                    if (res.ok) {
+                        const stats = await res.json();
 
-                    // Populate Chart
-                    renderChart([12, 19, 3, 5, 2, 3]); // Mock trend for clean look if no real historical data endpoint
+                        document.getElementById('totalCerts').innerText = (stats.counts && stats.counts.certificates) || 0;
+                        document.getElementById('monthCerts').innerText = (stats.counts && stats.counts.users) || 0;
+                        document.getElementById('emailsSent').innerText = (stats.counts && stats.counts.verifications) || 0;
 
-                    // Populate Activity & Table
-                    populateRecent(certs);
+                        // Populate admin chart (Certificates by Month)
+                        const chartData = new Array(6).fill(0);
+                        if (stats.charts && stats.charts.certificatesByMonth) {
+                            stats.charts.certificatesByMonth.forEach(item => {
+                                const index = item._id - 1;
+                                if (index >= 0 && index < 6) {
+                                    chartData[index] = item.count;
+                                }
+                            });
+                        }
+                        renderChart(chartData);
+                        populateAdminActivity(stats.recentLogs || []);
+                    }
+
+                    // Also fetch all certificates to populate the main table
+                    const certRes = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/certificates`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (certRes.ok) {
+                        const result = await certRes.json();
+                        const certs = result.data || [];
+                        populateRecent(certs);
+                    }
+                } else {
+                    const res = await fetch(`${window.API_BASE_URL || 'http://localhost:5000'}/api/certificates`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (res.ok) {
+                        const result = await res.json();
+                        const certs = result.data || [];
+
+                        document.getElementById('totalCerts').innerText = certs.length;
+                        document.getElementById('monthCerts').innerText = certs.length; // Logic to filter by month can be added
+
+                        renderChart([12, 19, 3, 5, 2, 3]); // Mock trend for clean look
+                        populateRecent(certs);
+                    }
                 }
 
             } catch (e) {
@@ -315,11 +355,61 @@
             }
         });
 
+        function populateAdminActivity(logs) {
+            const activityList = document.getElementById('recentActivityList');
+            if (!activityList) return;
+            activityList.innerHTML = '';
+
+            const recentLogs = logs.slice(0, 5);
+
+            if (recentLogs.length === 0) {
+                activityList.innerHTML = '<p class="text-slate-400 text-center py-4">No recent audit logs.</p>';
+                return;
+            }
+
+            recentLogs.forEach(log => {
+                const date = new Date(log.timestamp || log.createdAt).toLocaleDateString();
+                const userName = log.user ? log.user.name : 'System/Anonymous';
+                
+                let iconClass = 'fas fa-info-circle';
+                let iconColor = 'bg-slate-100 text-slate-600';
+                
+                if (log.action.includes('LOGIN')) {
+                    iconClass = 'fas fa-sign-in-alt';
+                    iconColor = 'bg-green-100 text-green-600';
+                } else if (log.action.includes('GENERATE') || log.action.includes('CREATE')) {
+                    iconClass = 'fas fa-plus';
+                    iconColor = 'bg-blue-100 text-blue-600';
+                } else if (log.action.includes('VERIFY')) {
+                    iconClass = 'fas fa-shield-alt';
+                    iconColor = 'bg-purple-100 text-purple-600';
+                }
+
+                const actItem = `
+                    <div class="flex gap-3 items-start p-3 hover:bg-slate-50 rounded-lg transition-colors">
+                        <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center flex-shrink-0 text-xs">
+                            <i class="${iconClass}"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-800">${log.action.replace(/_/g, ' ')}</p>
+                            <p class="text-xs text-slate-500">By ${userName} • ${date}</p>
+                        </div>
+                    </div>
+                `;
+                activityList.innerHTML += actItem;
+            });
+        }
+
         function populateRecent(certs) {
             const activityList = document.getElementById('recentActivityList');
             const tableBody = document.getElementById('recentTableBody');
 
-            activityList.innerHTML = '';
+            // If not admin, populate activityList with certificates
+            const user = JSON.parse(localStorage.getItem('user'));
+            const isAdmin = user && (user.email === 'odhumkekar@gmail.com' || user.role === 'admin');
+            if (!isAdmin) {
+                activityList.innerHTML = '';
+            }
             tableBody.innerHTML = '';
 
             const recentCerts = certs.slice(0, 5);

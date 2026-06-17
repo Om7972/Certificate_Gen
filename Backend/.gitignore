@@ -1,0 +1,16 @@
+# Node dependencies
+node_modules/
+
+# Local configuration and environment secrets
+.env
+certificat.env
+*.env
+
+# Local file uploads
+uploads/*
+!uploads/.gitkeep
+
+# System & IDE files
+.vscode/
+.DS_Store
+*.log
