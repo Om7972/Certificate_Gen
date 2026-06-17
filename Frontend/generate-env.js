@@ -22,16 +22,19 @@ if (!apiBaseUrl) {
     console.log(`Resolved API_BASE_URL: ${apiBaseUrl}`);
 }
 
+// Strip trailing slash if present
+apiBaseUrl = apiBaseUrl.replace(/\/$/, '');
+
 // 2. Inject into js/auth.js
 const authJsPath = path.join(__dirname, 'js', 'auth.js');
 if (fs.existsSync(authJsPath)) {
     let authContent = fs.readFileSync(authJsPath, 'utf8');
     
-    // Regex matches the line: : '...'; // Production Backend URL
-    const regex = /:\s*['"`]([^'"`]+)['"`];\s*\/\/\s*Production\s+Backend\s+URL/i;
+    // Regex matches the URL inside quotes followed by any optional wrapping code and the comment: // Production Backend URL
+    const regex = /(['"`])(https?:\/\/[^'"`\)]+)(['"`])(.*?)\/\/\s*Production\s+Backend\s+URL/i;
     
     if (regex.test(authContent)) {
-        authContent = authContent.replace(regex, `: '${apiBaseUrl}'; // Production Backend URL`);
+        authContent = authContent.replace(regex, `$1${apiBaseUrl}$3$4// Production Backend URL`);
         fs.writeFileSync(authJsPath, authContent, 'utf8');
         console.log(`Successfully updated production backend URL in js/auth.js to: ${apiBaseUrl}`);
     } else {

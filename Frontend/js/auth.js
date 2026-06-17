@@ -1,6 +1,6 @@
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5000'
-    : 'https://certificategen-3f56.onrender.com/'; // Production Backend URL
+    : 'https://certificategen-3f56.onrender.com').replace(/\/$/, ''); // Production Backend URL
 const API_URL = `${API_BASE_URL}/api/auth`;
 window.API_BASE_URL = API_BASE_URL;
 
